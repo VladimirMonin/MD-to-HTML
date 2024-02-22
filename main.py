@@ -3,8 +3,12 @@ import os
 import re
 import shutil
 
-def copy_local_images(md_content, images_dir):
-    # Найти все локальные ссылки на изображения
+def copy_local_images(md_content: str, images_dir: str) -> str:
+    """
+    Копирует локальные изображения в папку images и обновляет содержимое Markdown
+    :param md_content: Содержимое Markdown
+    :param images_dir: Папка для изображений
+    """
     image_paths = re.findall(r'!\[.*?\]\((.*?)\)', md_content)
     for image_path in image_paths:
         if not image_path.startswith('http'):
@@ -18,8 +22,11 @@ def copy_local_images(md_content, images_dir):
             md_content = md_content.replace(image_path, new_path)
     return md_content
 
-def convert_markdown_to_html(markdown_path):
-    # Определить папку для изображений
+def convert_markdown_to_html(markdown_path: str):
+    """
+    Преобразует Markdown в HTML и сохраняет его в файле
+    :param markdown_path: Путь к файлу Markdown
+    """
     images_dir = os.path.join(os.path.dirname(markdown_path), 'images')
 
     # Чтение Markdown файла

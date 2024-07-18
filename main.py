@@ -1,7 +1,8 @@
-import markdown
+import mistune
 import os
 import re
 import shutil
+
 
 def copy_local_images(md_content: str, images_dir: str) -> str:
     """
@@ -22,6 +23,18 @@ def copy_local_images(md_content: str, images_dir: str) -> str:
             md_content = md_content.replace(image_path, new_path)
     return md_content
 
+def save_html_content_txt(html_content: str, markdown_path: str):
+    """
+    Сохраняет HTML-контент в файле txt
+    :param html_content: HTML-контент
+    :param markdown_path: Путь к исходному файлу Markdown
+    """
+    base = os.path.splitext(markdown_path)[0]
+    html_txt_path = base + '_html.txt'
+    with open(html_txt_path, 'w', encoding='utf-8') as file:
+        file.write(html_content)
+    print(f"HTML-контент успешно сохранен как {html_txt_path}")
+
 def convert_markdown_to_html(markdown_path: str):
     """
     Преобразует Markdown в HTML и сохраняет его в файле
@@ -37,11 +50,9 @@ def convert_markdown_to_html(markdown_path: str):
         # Обработать локальные изображения
         md_content = copy_local_images(md_content, images_dir)
 
-        # Включение расширений для улучшенной обработки
-        md_extensions = ['extra', 'fenced_code', 'tables']
-
-        # Преобразование Markdown в HTML с расширениями
-        html_content = markdown.markdown(md_content, extensions=md_extensions)
+        # Преобразование Markdown в HTML
+        markdown = mistune.create_markdown()
+        html_content = markdown(md_content)
 
         # Создание HTML-структуры с Bootstrap 5
         html = f"""<!doctype html>
@@ -88,6 +99,9 @@ def convert_markdown_to_html(markdown_path: str):
         # Сохранение HTML файла
         with open(html_path, 'w', encoding='utf-8') as file:
             file.write(html)
+
+        # Сохранение HTML-контента в файле txt
+        save_html_content_txt(html_content, markdown_path)
 
         print(f"HTML файл успешно сохранен как {html_path}")
     except FileNotFoundError:

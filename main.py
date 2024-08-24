@@ -7,6 +7,9 @@ import mimetypes
 # Путь к шаблону HTML
 TEMPLATE = 'main.html'
 
+# Папка для сохранения результатов
+RESULT_FOLDER = './result'\
+
 # Папка для исходных файлов (определена вами)
 FILES_FOLDER = r'C:\Users\user\Syncthing\База Obsidian\9 файлы'
 
@@ -75,7 +78,8 @@ def convert_markdown_to_html(markdown_path: str):
     """
     # Определение имени файла и создание папки с этим именем
     base_name = os.path.splitext(os.path.basename(markdown_path))[0]
-    target_dir = os.path.join(os.getcwd(), base_name)
+    target_dir = os.path.join(RESULT_FOLDER, base_name)
+
     os.makedirs(target_dir, exist_ok=True)
 
     media_dir = os.path.join(target_dir, 'media')

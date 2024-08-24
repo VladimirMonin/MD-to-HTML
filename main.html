@@ -51,22 +51,22 @@
     </script>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
-        // Находим все блоки цитаты
         let blockquotes = document.querySelectorAll("blockquote");
 
         blockquotes.forEach(function (blockquote) {
-          // Ищем первый параграф внутри цитаты
-          let firstParagraph = blockquote.querySelector("p:first-child");
+          // Поиск первого элемента внутри blockquote, не обязательно параграфа
+          let firstElement = blockquote.firstElementChild;
 
-          if (firstParagraph) {
-            let textContent = firstParagraph.textContent.trim();
+          if (firstElement && firstElement.tagName === "P") {
+            let content = firstElement.textContent.trim();
 
-            if (textContent === "[!info]") {
+            // Проверяем содержимое блока
+            if (content === "[!info]") {
               blockquote.classList.add("alert", "alert-info");
-              firstParagraph.classList.add("hidden-info"); // Скрываем его позже
-            } else if (textContent === "[!warning]") {
+              firstElement.classList.add("hidden-info");
+            } else if (content === "[!warning]") {
               blockquote.classList.add("alert", "alert-warning");
-              firstParagraph.classList.add("hidden-info"); // Скрываем его позже
+              firstElement.classList.add("hidden-info");
             }
           }
         });

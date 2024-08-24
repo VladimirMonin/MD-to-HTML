@@ -32,21 +32,21 @@
     <script>
       hljs.highlightAll();
     </script>
-    <!-- Making images responsive -->
+    <!-- Making images, iframes, tables, etc. centered and responsive -->
     <script>
       document.addEventListener("DOMContentLoaded", function () {
-        {
-          document.querySelectorAll("img").forEach(function (img) {
-            {
-              img.classList.add("img-fluid");
-            }
+        const elementsToCenter = {
+          img: ['img-fluid', 'd-block', 'mx-auto'],
+          iframe: ['d-block', 'mx-auto'],
+          table: ['table', 'table-striped']  // Таблицы теперь тоже включены
+        };
+
+        // Применяем классы для каждого элемента из словаря
+        Object.keys(elementsToCenter).forEach(tag => {
+          document.querySelectorAll(tag).forEach(function (el) {
+            elementsToCenter[tag].forEach(className => el.classList.add(className));
           });
-          document.querySelectorAll("table").forEach(function (table) {
-            {
-              table.classList.add("table", "table-striped");
-            }
-          });
-        }
+        });
       });
     </script>
     <script>
@@ -74,3 +74,4 @@
     </script>
   </body>
 </html>
+

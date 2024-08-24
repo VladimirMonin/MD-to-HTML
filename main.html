@@ -19,6 +19,7 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css"
     />
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
 
     <style>
       /* Скроем только параграф с специальным тегом внутри blockquote */
@@ -68,6 +69,56 @@
         max-height: 90%;
         cursor: zoom-out;
       }
+
+      img {
+        cursor: zoom-in;
+      }
+
+      /* Дополнительные стили для корректной работы в полноэкранном режиме */
+      video {
+        width: 100%;
+        height: auto;
+        max-width: 100%;
+      }
+      .plyr__video-wrapper {
+        position: relative;
+        width: 100%;
+        height: auto;
+        padding-bottom: 56.25%; /* Соотношение сторон 16:9 */
+      }
+      .plyr__video-wrapper video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      /* Выделение заголовков второго уровня */
+      h2 {
+        color: darkslategray;
+        font-weight: bold; /* Жирность шрифта */
+        font-size: 2.25rem; /* Увеличенный размер шрифта */
+        border-bottom: 2px solid darkslategray; /* Добавили подчеркиваниезу */
+        padding-bottom: 0.3rem; /* Отступ снизу */
+      }
+
+      /* Пропорциональное уменьшение заголовков 3, 4, и 5 уровней */
+      h3 {
+        font-size: 1.75rem;
+      }
+
+      h4 {
+        font-size: 1.5rem;
+      }
+
+      h5 {
+        font-size: 1.25rem;
+      }
+
+      p {
+        font-size: 1.125rem;
+      }
     </style>
   </head>
   <body>
@@ -80,7 +131,39 @@
     <script>
       hljs.highlightAll();
     </script>
+    <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
     <script>
+      // Основная функция, которая инициализируется при загрузке DOM
+      document.addEventListener("DOMContentLoaded", function () {
+        // Центрируем элементы
+        const elementsToCenter = {
+          img: ["img-fluid", "d-block", "mx-auto"],
+          iframe: ["d-block", "mx-auto"],
+          table: ["table", "table-striped"],
+          video: ["d-block", "mx-auto"],
+        };
+        centerElements(elementsToCenter);
+
+        // Обрабатываем выноски
+        processBlockquotes();
+
+        // Добавляем кнопки копирования кода
+        addCodeCopyButtons();
+
+        // Включаем режим полноэкранного просмотра изображений
+        enableFullscreenImages();
+
+        // Инициализируем видеоплеер
+        initVideoPlayer();
+      });
+
+      // Функция центрирования элементов
+      function centerElements(elementsToCenter) {
+        Object.entries(elementsToCenter).forEach(([tag, classes]) =>
+          addClassesToElements(tag, classes)
+        );
+      }
+
       // Функция для добавления классов к элементам по их тегу
       function addClassesToElements(tag, classes) {
         document.querySelectorAll(tag).forEach((el) => {
@@ -172,26 +255,36 @@
         container.classList.add("active");
       }
 
-      // Инициализация всех функций после загрузки DOM
-      document.addEventListener("DOMContentLoaded", function () {
-        const elementsToCenter = {
-          img: ["img-fluid", "d-block", "mx-auto"],
-          iframe: ["d-block", "mx-auto"],
-          table: ["table", "table-striped"],
-          video: ["d-block", "mx-auto"],
-        };
+      // Функция для инициализации видеоплеера
+      function initVideoPlayer() {
+        if (typeof Plyr === "undefined") {
+          console.error("Plyr is not loaded correctly.");
+          return;
+        }
 
-        // Центрируем элементы
-        Object.entries(elementsToCenter).forEach(([tag, classes]) =>
-          addClassesToElements(tag, classes)
-        );
-        // Обрабатываем выноски
-        processBlockquotes();
-        // Добавляем кнопки копирования кода
-        addCodeCopyButtons();
-        // Включаем режим полноэкранного просмотра изображений
-        enableFullscreenImages();
-      });
+        // Инициализация Plyr в случае успешной загрузки библиотеки
+        const players = Plyr.setup("video", {
+          controls: [
+            "play-large", // Кнопка воспроизведения по центру
+            "play", // Кнопка воспроизведения/паузы
+            "progress", // Прогресс-бар
+            "current-time", // Текущее время
+            "duration", // Длительность
+            "mute", // Кнопка включения/выключения звука
+            "volume", // Индикатор громкости
+            "fullscreen", // Кнопка перехода в полноэкранный режим
+          ],
+          settings: ["speed"], // Показываем опцию выбора скорости
+          speed: {
+            selected: 1, // Стандартная скорость воспроизведения
+            options: [0.5, 1, 1.25, 1.5, 2, 2.25, 2.5], // Возможные варианты скорости
+          },
+        });
+
+        if (!players.length) {
+          console.warn("No videos were found to initialize Plyr on.");
+        }
+      }
     </script>
   </body>
 </html>

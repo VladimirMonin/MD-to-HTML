@@ -37,6 +37,36 @@
 
       .pre-container {
         position: relative;
+        white-space: pre-wrap; /* Используем pre-wrap для того, чтобы текст кодового блока переносился */
+        word-break: break-word; /* Нам нужно разрешить перенос длинных слов */
+      }
+
+      .code-block {
+        overflow-wrap: break-word; /* Обеспечивает перенос содержимого */
+      }
+
+      /* Стили для полноэкранного просмотра изображения */
+      .fullscreen-img-container {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        z-index: 9999;
+      }
+
+      .fullscreen-img-container.active {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .fullscreen-img-container img {
+        max-width: 90%;
+        max-height: 90%;
+        cursor: zoom-out;
       }
     </style>
   </head>
@@ -56,7 +86,8 @@
         const elementsToCenter = {
           img: ['img-fluid', 'd-block', 'mx-auto'],
           iframe: ['d-block', 'mx-auto'],
-          table: ['table', 'table-striped']  // Таблицы включены
+          table: ['table', 'table-striped'],  // Таблицы включены
+          video: ['d-block', 'mx-auto'],
         };
 
         // Применяем классы для каждого элемента из словаря
@@ -118,6 +149,25 @@
               }, 3000);
             });
           });
+        });
+      });
+
+      // Полноэкранное изображение и увеличение
+      document.addEventListener("DOMContentLoaded", function () {
+        const imgElements = document.querySelectorAll('img');
+        const fullscreenContainer = document.createElement('div');
+        fullscreenContainer.classList.add('fullscreen-img-container');
+        document.body.appendChild(fullscreenContainer);
+
+        imgElements.forEach(function (img) {
+          img.addEventListener('click', function () {
+            fullscreenContainer.innerHTML = `<img src="${img.src}" alt="Полноэкранное изображение" />`;
+            fullscreenContainer.classList.add('active');
+          });
+        });
+
+        fullscreenContainer.addEventListener('click', function () {
+          fullscreenContainer.classList.remove('active');
         });
       });
     </script>

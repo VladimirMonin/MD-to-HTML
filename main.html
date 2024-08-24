@@ -80,97 +80,118 @@
     <script>
       hljs.highlightAll();
     </script>
-    <!-- Центрирование картинок, iframe, таблиц и добавление классов -->
     <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const elementsToCenter = {
-          img: ['img-fluid', 'd-block', 'mx-auto'],
-          iframe: ['d-block', 'mx-auto'],
-          table: ['table', 'table-striped'],  // Таблицы включены
-          video: ['d-block', 'mx-auto'],
-        };
-
-        // Применяем классы для каждого элемента из словаря
-        Object.keys(elementsToCenter).forEach(tag => {
-          document.querySelectorAll(tag).forEach(function (el) {
-            elementsToCenter[tag].forEach(className => el.classList.add(className));
-          });
+      // Функция для добавления классов к элементам по их тегу
+      function addClassesToElements(tag, classes) {
+        document.querySelectorAll(tag).forEach((el) => {
+          classes.forEach((className) => el.classList.add(className));
         });
-      });
+      }
 
-      // Обработка выносок
-      document.addEventListener("DOMContentLoaded", function () {
-        let blockquotes = document.querySelectorAll("blockquote");
-
-        blockquotes.forEach(function (blockquote) {
-          // Поиск первого элемента внутри blockquote, не обязательно параграфа
-          let firstElement = blockquote.firstElementChild;
-
+      // Функция для обработки выносок в blockquote
+      function processBlockquotes() {
+        document.querySelectorAll("blockquote").forEach((blockquote) => {
+          const firstElement = blockquote.firstElementChild;
           if (firstElement && firstElement.tagName === "P") {
-            let content = firstElement.textContent.trim();
-
-            // Проверяем содержимое блока на спецификаторы [!info] и [!warning]
-            if (content === "[!info]") {
-              blockquote.classList.add("alert", "alert-info");
-              firstElement.classList.add("hidden-info");
-            } else if (content === "[!warning]") {
-              blockquote.classList.add("alert", "alert-warning");
+            const content = firstElement.textContent.trim();
+            const alertTypes = {
+              "[!info]": "alert-info",
+              "[!warning]": "alert-warning",
+            };
+            const alertClass = alertTypes[content];
+            if (alertClass) {
+              blockquote.classList.add("alert", alertClass);
               firstElement.classList.add("hidden-info");
             }
           }
         });
-      });
+      }
 
-      // Добавление кнопок для копирования кода из блоков <pre>
-      document.addEventListener("DOMContentLoaded", function () {
-        document.querySelectorAll('pre').forEach(function (preBlock) {
-          // Добавляем контейнер вокруг <pre> для позиционирования
-          preBlock.classList.add('pre-container');
-
-          // Создание кнопки для копирования блока кода
-          const copyButton = document.createElement('i');
-          copyButton.classList.add('bi', 'bi-clipboard', 'code-copy-btn');
+      // Функция для добавления кнопок копирования к блокам кода
+      function addCodeCopyButtons() {
+        document.querySelectorAll("pre").forEach((preBlock) => {
+          preBlock.classList.add("pre-container");
+          const copyButton = createCopyButton();
           preBlock.appendChild(copyButton);
-
-          // Добавление обработчика клика для копирования кода
-          copyButton.addEventListener('click', function () {
-            const codeContent = preBlock.querySelector('code').innerText;
-
-            navigator.clipboard.writeText(codeContent).then(() => {
-              // Поменять иконку на bi-clipboard-check
-              copyButton.classList.replace('bi-clipboard', 'bi-clipboard-check');
-              // Устанавка цвета иконки на зеленый
-              copyButton.style.color = 'lightgreen';
-
-              // Вернуть иконку через 3 секунды
-              setTimeout(() => {
-                copyButton.classList.replace('bi-clipboard-check', 'bi-clipboard');
-                copyButton.style.color = 'white';
-              }, 3000);
-            });
-          });
+          copyButton.addEventListener(
+            "click",
+            handleCopyButtonClick.bind(null, preBlock, copyButton)
+          );
         });
-      });
+      }
 
-      // Полноэкранное изображение и увеличение
-      document.addEventListener("DOMContentLoaded", function () {
-        const imgElements = document.querySelectorAll('img');
-        const fullscreenContainer = document.createElement('div');
-        fullscreenContainer.classList.add('fullscreen-img-container');
+      // Функция создания кнопки копирования
+      function createCopyButton() {
+        const btn = document.createElement("i");
+        btn.classList.add("bi", "bi-clipboard", "code-copy-btn");
+        return btn;
+      }
+
+      // Обработчик события клика по кнопке копирования
+      function handleCopyButtonClick(preBlock, copyButton) {
+        const codeContent = preBlock.querySelector("code").innerText;
+        navigator.clipboard.writeText(codeContent).then(() => {
+          toggleCopyIcon(copyButton, true);
+          setTimeout(() => toggleCopyIcon(copyButton, false), 3000);
+        });
+      }
+
+      // Переключение иконки кнопки и её цвета
+      function toggleCopyIcon(copyButton, copied) {
+        copyButton.classList.toggle("bi-clipboard", !copied);
+        copyButton.classList.toggle("bi-clipboard-check", copied);
+        copyButton.style.color = copied ? "lightgreen" : "white";
+      }
+
+      // Обработка полноэкранного изображения
+      function enableFullscreenImages() {
+        const fullscreenContainer = createFullscreenContainer();
         document.body.appendChild(fullscreenContainer);
 
-        imgElements.forEach(function (img) {
-          img.addEventListener('click', function () {
-            fullscreenContainer.innerHTML = `<img src="${img.src}" alt="Полноэкранное изображение" />`;
-            fullscreenContainer.classList.add('active');
-          });
+        document.querySelectorAll("img").forEach((img) => {
+          img.addEventListener("click", () =>
+            showFullscreenImage(fullscreenContainer, img.src)
+          );
         });
 
-        fullscreenContainer.addEventListener('click', function () {
-          fullscreenContainer.classList.remove('active');
+        fullscreenContainer.addEventListener("click", () => {
+          fullscreenContainer.classList.remove("active");
         });
+      }
+
+      // Создание контейнера для полноэкранных изображений
+      function createFullscreenContainer() {
+        const container = document.createElement("div");
+        container.classList.add("fullscreen-img-container");
+        return container;
+      }
+
+      // Показываем изображение в полноэкранном режиме
+      function showFullscreenImage(container, src) {
+        container.innerHTML = `<img src="${src}" alt="Полноэкранное изображение" />`;
+        container.classList.add("active");
+      }
+
+      // Инициализация всех функций после загрузки DOM
+      document.addEventListener("DOMContentLoaded", function () {
+        const elementsToCenter = {
+          img: ["img-fluid", "d-block", "mx-auto"],
+          iframe: ["d-block", "mx-auto"],
+          table: ["table", "table-striped"],
+          video: ["d-block", "mx-auto"],
+        };
+
+        // Центрируем элементы
+        Object.entries(elementsToCenter).forEach(([tag, classes]) =>
+          addClassesToElements(tag, classes)
+        );
+        // Обрабатываем выноски
+        processBlockquotes();
+        // Добавляем кнопки копирования кода
+        addCodeCopyButtons();
+        // Включаем режим полноэкранного просмотра изображений
+        enableFullscreenImages();
       });
     </script>
   </body>
 </html>
-

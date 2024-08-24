@@ -2,6 +2,7 @@ import markdown
 import os
 import re
 import shutil
+import mimetypes
 
 # Путь к шаблону HTML
 TEMPLATE = 'main.html'
@@ -37,8 +38,22 @@ def copy_local_media(md_content: str, media_dir: str) -> str:
                 # Копировать медиафайл
                 abs_media_path = os.path.join(FILES_FOLDER, media_path)
                 shutil.copy(abs_media_path, new_path)
-                # Обновить содержимое Markdown
-                md_content = md_content.replace(media_path, './media/' + os.path.basename(media_path))
+
+                # Определите MIME-тип файла
+                mime_type, _ = mimetypes.guess_type(new_path)
+
+                # Определение типа медиафайла и замена в md_content
+                if mime_type:
+                    if mime_type.startswith('image'):
+                        md_content = md_content.replace(media_path, './media/' + os.path.basename(media_path))
+                    elif mime_type.startswith('audio'):
+                        md_content = md_content.replace(
+                            f'![{media_path}]({media_path})',
+                            f'<audio controls><source src="./media/{os.path.basename(media_path)}" type="{mime_type}">Your browser does not support the audio element.</audio>')
+                    elif mime_type.startswith('video'):
+                        md_content = md_content.replace(
+                            f'![{media_path}]({media_path})',
+                            f'<video controls><source src="./media/{os.path.basename(media_path)}" type="{mime_type}">Your browser does not support the video element.</video>')
                 print(f"Копируется: {media_path} в {new_path}")
     
     if not media_found:

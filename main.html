@@ -25,7 +25,7 @@
       blockquote .hidden-info {
         display: none;
       }
-      
+
       /* Стили для иконок в блоках кода */
       .code-copy-btn {
         position: absolute;
@@ -50,13 +50,13 @@
     <script>
       hljs.highlightAll();
     </script>
-    <!-- Making images, iframes, tables, etc. centered and responsive -->
+    <!-- Центрирование картинок, iframe, таблиц и добавление классов -->
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         const elementsToCenter = {
           img: ['img-fluid', 'd-block', 'mx-auto'],
           iframe: ['d-block', 'mx-auto'],
-          table: ['table', 'table-striped']  // Таблицы теперь тоже включены
+          table: ['table', 'table-striped']  // Таблицы включены
         };
 
         // Применяем классы для каждого элемента из словаря
@@ -66,8 +66,31 @@
           });
         });
       });
-    </script>
-    <script>
+
+      // Обработка выносок
+      document.addEventListener("DOMContentLoaded", function () {
+        let blockquotes = document.querySelectorAll("blockquote");
+
+        blockquotes.forEach(function (blockquote) {
+          // Поиск первого элемента внутри blockquote, не обязательно параграфа
+          let firstElement = blockquote.firstElementChild;
+
+          if (firstElement && firstElement.tagName === "P") {
+            let content = firstElement.textContent.trim();
+
+            // Проверяем содержимое блока на спецификаторы [!info] и [!warning]
+            if (content === "[!info]") {
+              blockquote.classList.add("alert", "alert-info");
+              firstElement.classList.add("hidden-info");
+            } else if (content === "[!warning]") {
+              blockquote.classList.add("alert", "alert-warning");
+              firstElement.classList.add("hidden-info");
+            }
+          }
+        });
+      });
+
+      // Добавление кнопок для копирования кода из блоков <pre>
       document.addEventListener("DOMContentLoaded", function () {
         document.querySelectorAll('pre').forEach(function (preBlock) {
           // Добавляем контейнер вокруг <pre> для позиционирования

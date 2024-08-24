@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Highlight.js Stylesheet -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/tomorrow-night-bright.min.css"
+    />
+
+    <style>
+      blockquote p:first-child {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container mt-5">{{ content }}</div>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Highlight.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"></script>
+    <!-- Initialization of Highlight.js -->
+    <script>
+      hljs.highlightAll();
+    </script>
+    <!-- Making images responsive -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        {
+          document.querySelectorAll("img").forEach(function (img) {
+            {
+              img.classList.add("img-fluid");
+            }
+          });
+          document.querySelectorAll("table").forEach(function (table) {
+            {
+              table.classList.add("table", "table-striped");
+            }
+          });
+        }
+      });
+    </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        let blockquotes = document.querySelectorAll("blockquote");
+
+        blockquotes.forEach(function (blockquote) {
+          let firstParagraph = blockquote.querySelector("p:first-child");
+
+          if (firstParagraph) {
+            let textContent = firstParagraph.textContent.trim();
+
+            if (textContent === "[!info]") {
+              blockquote.classList.add("alert", "alert-info");
+            } else if (textContent === "[!warning]") {
+              blockquote.classList.add("alert", "alert-warning");
+            }
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -3,6 +3,8 @@ import os
 import re
 import shutil
 
+TEMPLATE = 'main.html'
+
 def copy_local_images(md_content: str, images_dir: str) -> str:
     """
     Копирует локальные изображения в папку images и обновляет содержимое Markdown
@@ -21,6 +23,15 @@ def copy_local_images(md_content: str, images_dir: str) -> str:
             # Обновить содержимое Markdown
             md_content = md_content.replace(image_path, new_path)
     return md_content
+
+def read_template(template_path: str) -> str:
+    """
+    Читает шаблон HTML из файла
+    :param template_path: Путь к файлу шаблона
+    :return: Содержимое шаблона
+    """
+    with open(template_path, 'r', encoding='utf-8') as file:
+        return file.read()
 
 def convert_markdown_to_html(markdown_path: str):
     """
@@ -43,43 +54,10 @@ def convert_markdown_to_html(markdown_path: str):
         # Преобразование Markdown в HTML с расширениями
         html_content = markdown.markdown(md_content, extensions=md_extensions)
 
-        # Создание HTML-структуры с Bootstrap 5
-        html = f"""<!doctype html>
-<html lang="ru">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Markdown Converted Document</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Highlight.js Stylesheet -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/tomorrow-night-bright.min.css">
-  </head>
-  <body>
-    <div class="container mt-5">
-        {html_content}
-    </div>
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Highlight.js Library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"></script>
-    <!-- Initialization of Highlight.js -->
-    <script>hljs.highlightAll();</script>
-    <!-- Making images responsive -->
-    <script>
-      document.addEventListener("DOMContentLoaded", function() {{
-        // Adding Bootstrap 'img-fluid' class to all images
-        document.querySelectorAll('img').forEach(function(img) {{
-          img.classList.add('img-fluid');
-        }});
-        // Adding Bootstrap 'table' and 'table-striped' classes to all tables
-        document.querySelectorAll('table').forEach(function(table) {{
-          table.classList.add('table', 'table-striped');
-        }});
-      }});
-    </script>
-  </body>
-</html>"""
+        # Чтение шаблона
+        template = read_template(TEMPLATE)
+       
+        html = template.replace('{{ content }}', html_content)
 
         # Определение пути для сохранения HTML файла
         base = os.path.splitext(markdown_path)[0]

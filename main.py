@@ -3,50 +3,75 @@ import os
 import re
 import shutil
 
+# Путь к шаблону HTML
 TEMPLATE = 'main.html'
 
-def copy_local_images(md_content: str, images_dir: str) -> str:
+# Папка для исходных файлов (определена вами)
+FILES_FOLDER = r'C:\Users\user\Syncthing\База Obsidian\9 файлы'
+
+
+def copy_local_media(md_content: str, media_dir: str) -> str:
     """
-    Копирует локальные изображения в папку images и обновляет содержимое Markdown
+    Копирует локальные медиафайлы в папку media и обновляет содержимое Markdown
     :param md_content: Содержимое Markdown
-    :param images_dir: Папка для изображений
+    :param media_dir: Папка для медиафайлов
     """
-    image_paths = re.findall(r'!\[.*?\]\((.*?)\)', md_content)
-    for image_path in image_paths:
-        if not image_path.startswith('http'):
-            # Создать папку для изображений, если она еще не существует
-            os.makedirs(images_dir, exist_ok=True)
-            # Определить новый путь для изображения
-            new_path = os.path.join(images_dir, os.path.basename(image_path))
-            # Копировать изображение
-            shutil.copy(image_path, new_path)
-            # Обновить содержимое Markdown
-            md_content = md_content.replace(image_path, new_path)
+    # Добавим поддержку для синтаксиса ![[image.png]]
+    md_content = re.sub(r'!\[\[(.*?)\]\]', r'![\1](\1)', md_content)
+
+    # Найдем все пути к изображениям, аудио и видео в формате Markdown
+    media_paths = re.findall(r'!\[.*?\]\((.*?)\)|\[(.*?)\]\((.*?)\)', md_content)
+    
+    media_found = False
+
+    for media_path_tuple in media_paths:
+        # Путь к медиафайлу
+        for media_path in media_path_tuple:
+            if media_path and not media_path.startswith('http'):
+                media_found = True
+                # Создать папку для медиафайлов, если она еще не существует
+                os.makedirs(media_dir, exist_ok=True)
+                # Определить новый путь для медиафайла
+                new_path = os.path.join(media_dir, os.path.basename(media_path))
+
+                # Копировать медиафайл
+                abs_media_path = os.path.join(FILES_FOLDER, media_path)
+                shutil.copy(abs_media_path, new_path)
+                # Обновить содержимое Markdown
+                md_content = md_content.replace(media_path, './media/' + os.path.basename(media_path))
+                print(f"Копируется: {media_path} в {new_path}")
+    
+    if not media_found:
+        print("Медиафайлы не найдены в разметке Markdown. Папка media не была создана.")
+
     return md_content
 
+
 def read_template(template_path: str) -> str:
-    """
-    Читает шаблон HTML из файла
-    :param template_path: Путь к файлу шаблона
-    :return: Содержимое шаблона
-    """
+    """Читает шаблон HTML из файла"""
     with open(template_path, 'r', encoding='utf-8') as file:
         return file.read()
+
 
 def convert_markdown_to_html(markdown_path: str):
     """
     Преобразует Markdown в HTML и сохраняет его в файле
     :param markdown_path: Путь к файлу Markdown
     """
-    images_dir = os.path.join(os.path.dirname(markdown_path), 'images')
+    # Определение имени файла и создание папки с этим именем
+    base_name = os.path.splitext(os.path.basename(markdown_path))[0]
+    target_dir = os.path.join(os.getcwd(), base_name)
+    os.makedirs(target_dir, exist_ok=True)
+
+    media_dir = os.path.join(target_dir, 'media')
 
     # Чтение Markdown файла
     try:
         with open(markdown_path, 'r', encoding='utf-8') as file:
             md_content = file.read()
         
-        # Обработать локальные изображения
-        md_content = copy_local_images(md_content, images_dir)
+        # Обработать локальные медиафайлы (изображения, аудио, видео)
+        md_content = copy_local_media(md_content, media_dir)
 
         # Включение расширений для улучшенной обработки
         md_extensions = ['extra', 'fenced_code', 'tables']
@@ -59,9 +84,8 @@ def convert_markdown_to_html(markdown_path: str):
        
         html = template.replace('{{ content }}', html_content)
 
-        # Определение пути для сохранения HTML файла
-        base = os.path.splitext(markdown_path)[0]
-        html_path = base + '.html'
+        # Определение пути для сохранения HTML файла внутри целевой папки
+        html_path = os.path.join(target_dir, base_name + '.html')
 
         # Сохранение HTML файла
         with open(html_path, 'w', encoding='utf-8') as file:
@@ -73,6 +97,8 @@ def convert_markdown_to_html(markdown_path: str):
     except Exception as e:
         print(f"Произошла ошибка: {e}")
 
+
 # Запрос пути к файлу от пользователя
 markdown_path = input("Введите путь к файлу Markdown: ").replace('"', '').replace("'", '')
 convert_markdown_to_html(markdown_path)
+

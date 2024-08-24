@@ -16,7 +16,8 @@
     />
 
     <style>
-      blockquote p:first-child {
+      /* Скроем только параграф с специальным тегом внутри blockquote */
+      blockquote .hidden-info {
         display: none;
       }
     </style>
@@ -50,9 +51,11 @@
     </script>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
+        // Находим все блоки цитаты
         let blockquotes = document.querySelectorAll("blockquote");
 
         blockquotes.forEach(function (blockquote) {
+          // Ищем первый параграф внутри цитаты
           let firstParagraph = blockquote.querySelector("p:first-child");
 
           if (firstParagraph) {
@@ -60,8 +63,10 @@
 
             if (textContent === "[!info]") {
               blockquote.classList.add("alert", "alert-info");
+              firstParagraph.classList.add("hidden-info"); // Скрываем его позже
             } else if (textContent === "[!warning]") {
               blockquote.classList.add("alert", "alert-warning");
+              firstParagraph.classList.add("hidden-info"); // Скрываем его позже
             }
           }
         });

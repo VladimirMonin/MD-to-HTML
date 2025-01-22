@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Highlight.js Stylesheet -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/tomorrow-night-bright.min.css"
+    />
+    <!-- Bootstrap Icons CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css"
+    />
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+
+    <style>
+      /* Скроем только параграф с специальным тегом внутри blockquote */
+      blockquote .hidden-info {
+        display: none;
+      }
+
+      /* Стили для иконок в блоках кода */
+      .code-copy-btn {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        color: white;
+        cursor: pointer;
+      }
+
+      .pre-container {
+        position: relative;
+        white-space: pre-wrap; /* Используем pre-wrap для того, чтобы текст кодового блока переносился */
+        word-break: break-word; /* Нам нужно разрешить перенос длинных слов */
+      }
+
+      .code-block {
+        overflow-wrap: break-word; /* Обеспечивает перенос содержимого */
+      }
+
+      /* Стили для полноэкранного просмотра изображения */
+      .fullscreen-img-container {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        z-index: 9999;
+      }
+
+      .fullscreen-img-container.active {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .fullscreen-img-container img {
+        max-width: 90%;
+        max-height: 90%;
+        cursor: zoom-out;
+      }
+
+      img {
+        cursor: zoom-in;
+      }
+
+      /* Дополнительные стили для корректной работы в полноэкранном режиме */
+      video {
+        width: 100%;
+        height: auto;
+        max-width: 100%;
+      }
+      .plyr__video-wrapper {
+        position: relative;
+        width: 100%;
+        height: auto;
+        padding-bottom: 56.25%; /* Соотношение сторон 16:9 */
+      }
+      .plyr__video-wrapper video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      /* Выделение заголовков второго уровня */
+      h2 {
+        color: darkslategray;
+        font-weight: bold; /* Жирность шрифта */
+        font-size: 2.25rem; /* Увеличенный размер шрифта */
+        border-bottom: 2px solid darkslategray; /* Добавили подчеркиваниезу */
+        padding-bottom: 0.3rem; /* Отступ снизу */
+      }
+
+      /* Пропорциональное уменьшение заголовков 3, 4, и 5 уровней */
+      h3 {
+        font-size: 1.75rem;
+      }
+
+      h4 {
+        font-size: 1.5rem;
+      }
+
+      h5 {
+        font-size: 1.25rem;
+      }
+
+      p {
+        font-size: 1.125rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container mt-5">{{ content }}</div>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Highlight.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"></script>
+    <!-- Initialization of Highlight.js -->
+    <script>
+      hljs.highlightAll();
+    </script>
+    <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+    <script>
+      // Основная функция, которая инициализируется при загрузке DOM
+      document.addEventListener("DOMContentLoaded", function () {
+        // Центрируем элементы
+        const elementsToCenter = {
+          img: ["img-fluid", "d-block", "mx-auto"],
+          iframe: ["d-block", "mx-auto"],
+          table: ["table", "table-striped"],
+          video: ["d-block", "mx-auto"],
+        };
+        centerElements(elementsToCenter);
+
+        // Обрабатываем выноски
+        processBlockquotes();
+
+        // Добавляем кнопки копирования кода
+        addCodeCopyButtons();
+
+        // Включаем режим полноэкранного просмотра изображений
+        enableFullscreenImages();
+
+        // Инициализируем видеоплеер
+        initVideoPlayer();
+      });
+
+      // Функция центрирования элементов
+      function centerElements(elementsToCenter) {
+        Object.entries(elementsToCenter).forEach(([tag, classes]) =>
+          addClassesToElements(tag, classes)
+        );
+      }
+
+      // Функция для добавления классов к элементам по их тегу
+      function addClassesToElements(tag, classes) {
+        document.querySelectorAll(tag).forEach((el) => {
+          classes.forEach((className) => el.classList.add(className));
+        });
+      }
+
+      // Функция для обработки выносок в blockquote
+      function processBlockquotes() {
+        document.querySelectorAll("blockquote").forEach((blockquote) => {
+          const firstElement = blockquote.firstElementChild;
+          if (firstElement && firstElement.tagName === "P") {
+            const content = firstElement.textContent.trim();
+            const alertTypes = {
+              "[!info]": "alert-info",
+              "[!warning]": "alert-warning",
+            };
+            const alertClass = alertTypes[content];
+            if (alertClass) {
+              blockquote.classList.add("alert", alertClass);
+              firstElement.classList.add("hidden-info");
+            }
+          }
+        });
+      }
+
+      // Функция для добавления кнопок копирования к блокам кода
+      function addCodeCopyButtons() {
+        document.querySelectorAll("pre").forEach((preBlock) => {
+          preBlock.classList.add("pre-container");
+          const copyButton = createCopyButton();
+          preBlock.appendChild(copyButton);
+          copyButton.addEventListener(
+            "click",
+            handleCopyButtonClick.bind(null, preBlock, copyButton)
+          );
+        });
+      }
+
+      // Функция создания кнопки копирования
+      function createCopyButton() {
+        const btn = document.createElement("i");
+        btn.classList.add("bi", "bi-clipboard", "code-copy-btn");
+        return btn;
+      }
+
+      // Обработчик события клика по кнопке копирования
+      function handleCopyButtonClick(preBlock, copyButton) {
+        const codeContent = preBlock.querySelector("code").innerText;
+        navigator.clipboard.writeText(codeContent).then(() => {
+          toggleCopyIcon(copyButton, true);
+          setTimeout(() => toggleCopyIcon(copyButton, false), 3000);
+        });
+      }
+
+      // Переключение иконки кнопки и её цвета
+      function toggleCopyIcon(copyButton, copied) {
+        copyButton.classList.toggle("bi-clipboard", !copied);
+        copyButton.classList.toggle("bi-clipboard-check", copied);
+        copyButton.style.color = copied ? "lightgreen" : "white";
+      }
+
+      // Обработка полноэкранного изображения
+      function enableFullscreenImages() {
+        const fullscreenContainer = createFullscreenContainer();
+        document.body.appendChild(fullscreenContainer);
+
+        document.querySelectorAll("img").forEach((img) => {
+          img.addEventListener("click", () =>
+            showFullscreenImage(fullscreenContainer, img.src)
+          );
+        });
+
+        fullscreenContainer.addEventListener("click", () => {
+          fullscreenContainer.classList.remove("active");
+        });
+      }
+
+      // Создание контейнера для полноэкранных изображений
+      function createFullscreenContainer() {
+        const container = document.createElement("div");
+        container.classList.add("fullscreen-img-container");
+        return container;
+      }
+
+      // Показываем изображение в полноэкранном режиме
+      function showFullscreenImage(container, src) {
+        container.innerHTML = `<img src="${src}" alt="Полноэкранное изображение" />`;
+        container.classList.add("active");
+      }
+
+      // Функция для инициализации видеоплеера
+      function initVideoPlayer() {
+        if (typeof Plyr === "undefined") {
+          console.error("Plyr is not loaded correctly.");
+          return;
+        }
+
+        // Инициализация Plyr в случае успешной загрузки библиотеки
+        const players = Plyr.setup("video", {
+          controls: [
+            "play-large", // Кнопка воспроизведения по центру
+            "play", // Кнопка воспроизведения/паузы
+            "progress", // Прогресс-бар
+            "current-time", // Текущее время
+            "duration", // Длительность
+            "mute", // Кнопка включения/выключения звука
+            "volume", // Индикатор громкости
+            "fullscreen", // Кнопка перехода в полноэкранный режим
+          ],
+          settings: ["speed"], // Показываем опцию выбора скорости
+          speed: {
+            selected: 1, // Стандартная скорость воспроизведения
+            options: [0.5, 1, 1.25, 1.5, 2, 2.25, 2.5], // Возможные варианты скорости
+          },
+        });
+
+        if (!players.length) {
+          console.warn("No videos were found to initialize Plyr on.");
+        }
+      }
+    </script>
+  </body>
+</html>

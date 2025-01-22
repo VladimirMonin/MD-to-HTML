@@ -1,114 +1,127 @@
-import mistune
+import markdown
 import os
 import re
 import shutil
+import mimetypes
+
+# Путь к шаблону HTML
+TEMPLATE = 'main.html'
+
+# Папка для сохранения результатов
+RESULT_FOLDER = './result'\
+
+# Папка для исходных файлов (определена вами)
+FILES_FOLDER = r'C:\Users\user\Syncthing\База Obsidian\9 файлы'
 
 
-def copy_local_images(md_content: str, images_dir: str) -> str:
+def copy_local_media(md_content: str, media_dir: str) -> str:
     """
-    Копирует локальные изображения в папку images и обновляет содержимое Markdown
+    Копирует локальные медиафайлы в папку media и обновляет содержимое Markdown
     :param md_content: Содержимое Markdown
-    :param images_dir: Папка для изображений
+    :param media_dir: Папка для медиафайлов
     """
-    image_paths = re.findall(r'!\[.*?\]\((.*?)\)', md_content)
-    for image_path in image_paths:
-        if not image_path.startswith('http'):
-            # Создать папку для изображений, если она еще не существует
-            os.makedirs(images_dir, exist_ok=True)
-            # Определить новый путь для изображения
-            new_path = os.path.join(images_dir, os.path.basename(image_path))
-            # Копировать изображение
-            shutil.copy(image_path, new_path)
-            # Обновить содержимое Markdown
-            md_content = md_content.replace(image_path, new_path)
+    # Добавим поддержку для синтаксиса ![[image.png]]
+    md_content = re.sub(r'!\[\[(.*?)\]\]', r'![\1](\1)', md_content)
+
+    # Ищем локальные медиафайлы (изображения, аудио, видео)
+    media_paths = re.findall(r'!\[.*?\]\((?!http)(.*?)\)', md_content)
+    
+    media_found = False
+
+    for media_path in media_paths:
+        if media_path:
+            media_found = True
+            # Создать папку для медиафайлов, если она еще не существует
+            os.makedirs(media_dir, exist_ok=True)
+            # Определить новый путь для медиафайла
+            new_path = os.path.join(media_dir, os.path.basename(media_path))
+
+            # Абсолютный путь к исходному медиафайлу
+            abs_media_path = os.path.join(FILES_FOLDER, media_path)
+            
+            if os.path.exists(abs_media_path):
+                # Копировать медиафайл
+                shutil.copy(abs_media_path, new_path)
+
+                # Определите MIME-тип файла
+                mime_type, _ = mimetypes.guess_type(new_path)
+
+                # Определение типа медиафайла и замена в md_content
+                if mime_type:
+                    if mime_type.startswith('image'):
+                        md_content = md_content.replace(media_path, './media/' + os.path.basename(media_path))
+                    elif mime_type.startswith('audio'):
+                        md_content = md_content.replace(
+                            f'![{media_path}]({media_path})',
+                            f'<audio controls><source src="./media/{os.path.basename(media_path)}" type="{mime_type}">Your browser does not support the audio element.</audio>')
+                    elif mime_type.startswith('video'):
+                        md_content = md_content.replace(
+                            f'![{media_path}]({media_path})',
+                            f'<video controls><source src="./media/{os.path.basename(media_path)}" type="{mime_type}">Your browser does not support the video element.</video>')
+                print(f"Копируется: {media_path} в {new_path}")
+            else:
+                print(f"Медиафайл не найден: {abs_media_path}")
+    
+    if not media_found:
+        print("Медиафайлы не найдены в разметке Markdown. Папка media не была создана.")
+
     return md_content
 
-def save_html_content_txt(html_content: str, markdown_path: str):
-    """
-    Сохраняет HTML-контент в файле txt
-    :param html_content: HTML-контент
-    :param markdown_path: Путь к исходному файлу Markdown
-    """
-    base = os.path.splitext(markdown_path)[0]
-    html_txt_path = base + '_html.txt'
-    with open(html_txt_path, 'w', encoding='utf-8') as file:
-        file.write(html_content)
-    print(f"HTML-контент успешно сохранен как {html_txt_path}")
+
+def read_template(template_path: str) -> str:
+    """Читает шаблон HTML из файла"""
+    with open(template_path, 'r', encoding='utf-8') as file:
+        return file.read()
+
 
 def convert_markdown_to_html(markdown_path: str):
     """
     Преобразует Markdown в HTML и сохраняет его в файле
     :param markdown_path: Путь к файлу Markdown
     """
-    images_dir = os.path.join(os.path.dirname(markdown_path), 'images')
+    # Определение имени файла и создание папки с этим именем
+    base_name = os.path.splitext(os.path.basename(markdown_path))[0]
+    target_dir = os.path.join(RESULT_FOLDER, base_name)
+
+    os.makedirs(target_dir, exist_ok=True)
+
+    media_dir = os.path.join(target_dir, 'media')
 
     # Чтение Markdown файла
     try:
         with open(markdown_path, 'r', encoding='utf-8') as file:
             md_content = file.read()
         
-        # Обработать локальные изображения
-        md_content = copy_local_images(md_content, images_dir)
+        # Обработать локальные медиафайлы (изображения, аудио, видео)
+        md_content = copy_local_media(md_content, media_dir)
 
-        # Преобразование Markdown в HTML
-        markdown = mistune.create_markdown()
-        html_content = markdown(md_content)
+        # Включение расширений для улучшенной обработки
+        md_extensions = ['extra', 'fenced_code', 'tables']
 
-        # Создание HTML-структуры с Bootstrap 5
-        html = f"""<!doctype html>
-<html lang="ru">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Markdown Converted Document</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Highlight.js Stylesheet -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/tomorrow-night-bright.min.css">
-  </head>
-  <body>
-    <div class="container mt-5">
-        {html_content}
-    </div>
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Highlight.js Library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"></script>
-    <!-- Initialization of Highlight.js -->
-    <script>hljs.highlightAll();</script>
-    <!-- Making images responsive -->
-    <script>
-      document.addEventListener("DOMContentLoaded", function() {{
-        // Adding Bootstrap 'img-fluid' class to all images
-        document.querySelectorAll('img').forEach(function(img) {{
-          img.classList.add('img-fluid');
-        }});
-        // Adding Bootstrap 'table' and 'table-striped' classes to all tables
-        document.querySelectorAll('table').forEach(function(table) {{
-          table.classList.add('table', 'table-striped');
-        }});
-      }});
-    </script>
-  </body>
-</html>"""
+        # Преобразование Markdown в HTML с расширениями
+        html_content = markdown.markdown(md_content, extensions=md_extensions)
 
-        # Определение пути для сохранения HTML файла
-        base = os.path.splitext(markdown_path)[0]
-        html_path = base + '.html'
+        # Чтение шаблона
+        template = read_template(TEMPLATE)
+       
+        html = template.replace('{{ content }}', html_content)
+
+        # Определение пути для сохранения HTML файла внутри целевой папки
+        html_path = os.path.join(target_dir, base_name + '.html')
 
         # Сохранение HTML файла
         with open(html_path, 'w', encoding='utf-8') as file:
             file.write(html)
 
-        # Сохранение HTML-контента в файле txt
-        save_html_content_txt(html_content, markdown_path)
-
         print(f"HTML файл успешно сохранен как {html_path}")
-    except FileNotFoundError:
-        print("Файл не найден. Проверьте путь к файлу и попробуйте снова.")
+    except FileNotFoundError as e:
+        print(f"Файл не найден: {e.filename}. Проверьте путь к файлу и попробуйте снова.")
     except Exception as e:
         print(f"Произошла ошибка: {e}")
 
+
 # Запрос пути к файлу от пользователя
-markdown_path = input("Введите путь к файлу Markdown: ").replace('"', '').replace("'", '')
+markdown_path = input(r"Введите путь к файлу Markdown: ").replace('"', '').replace("'", '')
+markdown_path = os.path.abspath(markdown_path)
+print(markdown_path)
 convert_markdown_to_html(markdown_path)

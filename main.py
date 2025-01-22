@@ -23,23 +23,24 @@ def copy_local_media(md_content: str, media_dir: str) -> str:
     # Добавим поддержку для синтаксиса ![[image.png]]
     md_content = re.sub(r'!\[\[(.*?)\]\]', r'![\1](\1)', md_content)
 
-    # Найдем все пути к изображениям, аудио и видео в формате Markdown
-    media_paths = re.findall(r'!\[.*?\]\((.*?)\)|\[(.*?)\]\((.*?)\)', md_content)
+    # Ищем локальные медиафайлы (изображения, аудио, видео)
+    media_paths = re.findall(r'!\[.*?\]\((?!http)(.*?)\)', md_content)
     
     media_found = False
 
-    for media_path_tuple in media_paths:
-        # Путь к медиафайлу
-        for media_path in media_path_tuple:
-            if media_path and not media_path.startswith('http'):
-                media_found = True
-                # Создать папку для медиафайлов, если она еще не существует
-                os.makedirs(media_dir, exist_ok=True)
-                # Определить новый путь для медиафайла
-                new_path = os.path.join(media_dir, os.path.basename(media_path))
+    for media_path in media_paths:
+        if media_path:
+            media_found = True
+            # Создать папку для медиафайлов, если она еще не существует
+            os.makedirs(media_dir, exist_ok=True)
+            # Определить новый путь для медиафайла
+            new_path = os.path.join(media_dir, os.path.basename(media_path))
 
+            # Абсолютный путь к исходному медиафайлу
+            abs_media_path = os.path.join(FILES_FOLDER, media_path)
+            
+            if os.path.exists(abs_media_path):
                 # Копировать медиафайл
-                abs_media_path = os.path.join(FILES_FOLDER, media_path)
                 shutil.copy(abs_media_path, new_path)
 
                 # Определите MIME-тип файла
@@ -58,6 +59,8 @@ def copy_local_media(md_content: str, media_dir: str) -> str:
                             f'![{media_path}]({media_path})',
                             f'<video controls><source src="./media/{os.path.basename(media_path)}" type="{mime_type}">Your browser does not support the video element.</video>')
                 print(f"Копируется: {media_path} в {new_path}")
+            else:
+                print(f"Медиафайл не найден: {abs_media_path}")
     
     if not media_found:
         print("Медиафайлы не найдены в разметке Markdown. Папка media не была создана.")
@@ -111,13 +114,14 @@ def convert_markdown_to_html(markdown_path: str):
             file.write(html)
 
         print(f"HTML файл успешно сохранен как {html_path}")
-    except FileNotFoundError:
-        print("Файл не найден. Проверьте путь к файлу и попробуйте снова.")
+    except FileNotFoundError as e:
+        print(f"Файл не найден: {e.filename}. Проверьте путь к файлу и попробуйте снова.")
     except Exception as e:
         print(f"Произошла ошибка: {e}")
 
 
 # Запрос пути к файлу от пользователя
-markdown_path = input("Введите путь к файлу Markdown: ").replace('"', '').replace("'", '')
+markdown_path = input(r"Введите путь к файлу Markdown: ").replace('"', '').replace("'", '')
+markdown_path = os.path.abspath(markdown_path)
+print(markdown_path)
 convert_markdown_to_html(markdown_path)
-

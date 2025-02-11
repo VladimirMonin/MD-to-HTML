@@ -134,3 +134,35 @@ p {
     display: none;
   }
 }
+
+blockquote:not(.alert) {
+  border-left: 4px solid var(--bs-primary);
+  padding: 1rem 1.5rem;
+  margin: 1.5rem 0;
+  background-color: rgba(var(--bs-primary-rgb), 0.05);
+  border-radius: 0.5rem;
+  font-style: italic;
+  position: relative;
+}
+
+blockquote:not(.alert)::before {
+  content: '"';
+  font-size: 3rem;
+  color: var(--bs-primary);
+  position: absolute;
+  left: 0.5rem;
+  top: -0.5rem;
+  opacity: 0.2;
+}
+
+blockquote:not(.alert) p {
+  margin-bottom: 0;
+  line-height: 1.6;
+  color: var(--bs-gray-800);
+}
+
+blockquote:not(.alert) footer {
+  margin-top: 0.5rem;
+  color: var(--bs-gray-600);
+  font-size: 0.9rem;
+}

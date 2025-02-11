@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
   parallaxContainer.classList.add("parallax-bg");
   document.body.insertBefore(parallaxContainer, document.body.firstChild);
 
-  // Массив классов BS5-иконок (убедитесь, что эти иконки существуют в Bootstrap Icons)
+  // Массив классов BS5-иконок (убедитесь, что эти иконки доступны)
   const shapesIcons = [
     "bi-square",
     "bi-circle-fill",
@@ -12,8 +12,11 @@ document.addEventListener("DOMContentLoaded", function () {
     "bi-triangle-fill",
   ];
 
-  // Количество фигур можно регулировать – здесь создаём случайное количество от 4 до 8
-  const shapesCount = Math.floor(Math.random() * 5) + 4;
+  // Увеличиваем количество фигур: от 10 до 20
+  const shapesCount = Math.floor(Math.random() * 11) + 10;
+
+  // Массив для хранения созданных фигур
+  const shapes = [];
 
   for (let i = 0; i < shapesCount; i++) {
     const shape = document.createElement("i");
@@ -23,17 +26,38 @@ document.addEventListener("DOMContentLoaded", function () {
       "parallax-shape"
     );
 
-    // Задаём случайные позицию и размер
-    shape.style.top = Math.random() * 100 + "%";
-    shape.style.left = Math.random() * 100 + "%";
+    // Случайные позиция в процентах
+    const topPos = Math.random() * 100;
+    const leftPos = Math.random() * 100;
+    shape.style.top = topPos + "%";
+    shape.style.left = leftPos + "%";
 
-    // Рандомное значение для цвета через HSL
-    shape.style.color = `hsl(${Math.floor(Math.random() * 360)}, 60%, 60%)`;
+    // Сохраняем исходные координаты в data-атрибутах (если потребуется для более сложных расчётов)
+    shape.dataset.baseTop = topPos;
+    shape.dataset.baseLeft = leftPos;
 
-    // Рандомное изменение длительности и задержки анимации
-    shape.style.animationDuration = 5 + Math.random() * 5 + "s";
-    shape.style.animationDelay = Math.random() * 2 + "s";
+    // Задаём случайный цвет через HSL
+    const hue = Math.floor(Math.random() * 360);
+    shape.style.color = `hsl(${hue}, 60%, 60%)`;
+
+    // Назначаем индивидуальные коэффициенты смещения по оси X и Y для параллакс-эффекта
+    // Диапазон от -0.3 до 0.3
+    shape.dataset.speedX = (Math.random() - 0.5) * 0.6;
+    shape.dataset.speedY = (Math.random() - 0.5) * 0.6;
 
     parallaxContainer.appendChild(shape);
+    shapes.push(shape);
   }
+
+  // Обновление позиций фигур при скролле страницы
+  window.addEventListener("scroll", () => {
+    const scrollY = window.scrollY;
+    shapes.forEach((shape) => {
+      const speedX = parseFloat(shape.dataset.speedX);
+      const speedY = parseFloat(shape.dataset.speedY);
+      const translateX = scrollY * speedX;
+      const translateY = scrollY * speedY;
+      shape.style.transform = `translate(${translateX}px, ${translateY}px)`;
+    });
+  });
 });

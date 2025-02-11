@@ -1,13 +1,5 @@
 :root {
-  /* Настройки фона */
-  --parallax-blur: 5px;
-  --parallax-gradient-start: rgba(0, 0, 0, 0.5);
-  --parallax-gradient-end: rgba(255, 255, 255, 0.5);
-  --parallax-gradient: linear-gradient(
-    135deg,
-    var(--parallax-gradient-start),
-    var(--parallax-gradient-end)
-  );
+  --parallax-shape-size: 3rem;
 }
 
 .parallax-bg {
@@ -16,28 +8,17 @@
   left: 0;
   width: 100%;
   height: 100%;
-  pointer-events: none; /* чтобы не блокировать клики по основному контенту */
+  pointer-events: none; /* не блокировать клики */
   z-index: -1; /* слой позади контента */
-  backdrop-filter: blur(var(--parallax-blur));
-  background: var(--parallax-gradient);
+  background: transparent; /* фон теперь прозрачный */
   overflow: hidden;
 }
 
 .parallax-shape {
   position: absolute;
-  font-size: 3rem;
-  opacity: 0.5;
-  animation: float 6s ease-in-out infinite;
+  font-size: var(--parallax-shape-size);
+  opacity: 0.7;
+  transition: transform 0.2s linear; /* плавное обновление смещения */
 }
 
-@keyframes float {
-  0% {
-    transform: translateX(0);
-  }
-  50% {
-    transform: translateX(10px);
-  }
-  100% {
-    transform: translateX(0);
-  }
-}
+/* Удалены keyframes, так как смещение будет управляться через JavaScript по скроллу */

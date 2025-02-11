@@ -166,3 +166,28 @@ blockquote:not(.alert) footer {
   color: var(--bs-gray-600);
   font-size: 0.9rem;
 }
+
+hr {
+  margin: 3rem 0;
+  border: 0;
+  height: 2px;
+  background-image: linear-gradient(
+    to right,
+    transparent,
+    var(--bs-primary),
+    transparent
+  );
+  position: relative;
+}
+
+hr::after {
+  content: "●";
+  color: var(--bs-primary);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 0 1rem;
+  font-size: 1rem;
+}

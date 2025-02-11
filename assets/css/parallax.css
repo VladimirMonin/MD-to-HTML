@@ -1,0 +1,43 @@
+:root {
+  /* Настройки фона */
+  --parallax-blur: 5px;
+  --parallax-gradient-start: rgba(0, 0, 0, 0.5);
+  --parallax-gradient-end: rgba(255, 255, 255, 0.5);
+  --parallax-gradient: linear-gradient(
+    135deg,
+    var(--parallax-gradient-start),
+    var(--parallax-gradient-end)
+  );
+}
+
+.parallax-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* чтобы не блокировать клики по основному контенту */
+  z-index: -1; /* слой позади контента */
+  backdrop-filter: blur(var(--parallax-blur));
+  background: var(--parallax-gradient);
+  overflow: hidden;
+}
+
+.parallax-shape {
+  position: absolute;
+  font-size: 3rem;
+  opacity: 0.5;
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(10px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}

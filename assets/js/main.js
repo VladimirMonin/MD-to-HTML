@@ -16,11 +16,9 @@ document.addEventListener("DOMContentLoaded", function () {
 function generateTableOfContents() {
   const toc = document.getElementById("table-of-contents");
   const headers = document.querySelectorAll("h2, h3");
-  console.log("Found headers:", headers.length);
   const ul = document.createElement("ul");
 
   if (headers.length === 0) {
-    console.log("No headers found");
     return;
   }
 
@@ -97,9 +95,8 @@ function addCodeCopyButtons() {
     preBlock.classList.add("pre-container");
     const copyButton = createCopyButton();
     preBlock.appendChild(copyButton);
-    copyButton.addEventListener(
-      "click",
-      handleCopyButtonClick.bind(null, preBlock, copyButton)
+    copyButton.addEventListener("click", () =>
+      handleCopyButtonClick(preBlock, copyButton)
     );
   });
 }
@@ -111,7 +108,9 @@ function createCopyButton() {
 }
 
 function handleCopyButtonClick(preBlock, copyButton) {
-  const codeContent = preBlock.querySelector("code").innerText;
+  const codeElement = preBlock.querySelector("code");
+  if (!codeElement) return;
+  const codeContent = codeElement.innerText;
   navigator.clipboard.writeText(codeContent).then(() => {
     toggleCopyIcon(copyButton, true);
     setTimeout(() => toggleCopyIcon(copyButton, false), 3000);
@@ -121,6 +120,13 @@ function handleCopyButtonClick(preBlock, copyButton) {
 function toggleCopyIcon(copyButton, copied) {
   copyButton.classList.toggle("bi-clipboard", !copied);
   copyButton.classList.toggle("bi-clipboard-check", copied);
+
+  if (copied) {
+    copyButton.classList.add("copied");
+    setTimeout(() => {
+      copyButton.classList.remove("copied");
+    }, 500);
+  }
   copyButton.style.color = copied ? "lightgreen" : "white";
 }
 

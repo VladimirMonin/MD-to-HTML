@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
+  generateTableOfContents();
   const elementsToCenter = {
     img: ["img-fluid", "d-block", "mx-auto"],
     iframe: ["d-block", "mx-auto"],
@@ -11,6 +12,55 @@ document.addEventListener("DOMContentLoaded", function () {
   enableFullscreenImages();
   initVideoPlayer();
 });
+
+function generateTableOfContents() {
+  const toc = document.getElementById("table-of-contents");
+  const headers = document.querySelectorAll("h2, h3");
+  console.log("Found headers:", headers.length);
+  const ul = document.createElement("ul");
+
+  if (headers.length === 0) {
+    console.log("No headers found");
+    return;
+  }
+
+  headers.forEach((header, index) => {
+    const li = document.createElement("li");
+    const a = document.createElement("a");
+
+    if (!header.id) {
+      header.id = `header-${index}`;
+    }
+
+    a.href = `#${header.id}`;
+    a.textContent = header.textContent;
+
+    if (header.tagName === "H3") {
+      li.style.marginLeft = "1.5rem";
+    }
+
+    li.appendChild(a);
+    ul.appendChild(li);
+  });
+
+  toc.appendChild(ul);
+
+  window.addEventListener("scroll", () => {
+    const scrollPosition = window.scrollY;
+
+    headers.forEach((header) => {
+      const headerTop = header.offsetTop;
+      const headerBottom = headerTop + header.offsetHeight;
+      const link = toc.querySelector(`a[href="#${header.id}"]`);
+
+      if (scrollPosition >= headerTop - 100 && scrollPosition < headerBottom) {
+        link.classList.add("active");
+      } else {
+        link.classList.remove("active");
+      }
+    });
+  });
+}
 
 function centerElements(elementsToCenter) {
   Object.entries(elementsToCenter).forEach(([tag, classes]) =>

@@ -91,3 +91,46 @@ h5 {
 p {
   font-size: 1.125rem;
 }
+
+#table-of-contents {
+  position: sticky;
+  top: 20px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  padding-right: 15px;
+}
+
+#table-of-contents ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+#table-of-contents ul ul {
+  padding-left: 1.5rem;
+}
+
+#table-of-contents a {
+  display: block;
+  padding: 5px 10px;
+  color: var(--bs-dark);
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  font-size: 0.9rem;
+}
+
+#table-of-contents a:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-left: 2px solid var(--bs-primary);
+}
+
+#table-of-contents a.active {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-left: 2px solid var(--bs-primary);
+  font-weight: bold;
+}
+
+@media (max-width: 991.98px) {
+  #table-of-contents {
+    display: none;
+  }
+}

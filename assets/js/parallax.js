@@ -17,10 +17,12 @@ document.addEventListener("DOMContentLoaded", function () {
   const EXTRA_BLUR = 2; // дополнительное блюр для мест под подложкой
 
   // Настройки движения фигур
-  const BASE_SPEED_RANGE = 50; // базовый диапазон скорости (сгенерированное значение: (Math.random()-0.5)*BASE_SPEED_RANGE)
+  const BASE_SPEED_RANGE = 40; // базовый диапазон скорости
   const FRICTION = 0.99; // коэффициент фрикции (замедление)
-  // Фактор ускорения при скролле – теперь используется для масштабирования скорости без изменения направления
-  const SCROLL_ACCEL_FACTOR = 0.002; // коэффициент ускорения при скролле
+  const SCROLL_ACCEL_FACTOR = 0.003; // коэффициент ускорения при скролле
+
+  // Ограничение максимальной скорости (px/с)
+  const MAX_SPEED = 100;
 
   // Настройки отталкивания между фигурами
   const REPEL_THRESHOLD = 100; // расстояние, при котором начинается отталкивание (px)
@@ -171,6 +173,14 @@ document.addEventListener("DOMContentLoaded", function () {
       // Применяем фрикцию
       shape.speedX *= FRICTION;
       shape.speedY *= FRICTION;
+
+      // Ограничение максимальной скорости
+      const currentSpeed = Math.hypot(shape.speedX, shape.speedY);
+      if (currentSpeed > MAX_SPEED) {
+        const ratio = MAX_SPEED / currentSpeed;
+        shape.speedX *= ratio;
+        shape.speedY *= ratio;
+      }
 
       // Обновляем смещение
       shape.posX += shape.speedX * dt;

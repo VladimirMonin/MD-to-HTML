@@ -23,16 +23,47 @@
   filter: blur(var(--icon-blur-default));
 }
 
-/* Подложка для основного текста – менее прозрачная (почти непрозрачная) */
+/* Подложка для основного текста – улучшенный вид с градиентом, тенью и легкой текстурой */
 .content-wrapper {
-  background-color: rgba(250, 250, 250, 0.9);
+  background: linear-gradient(
+    135deg,
+    rgba(250, 250, 250, 0.95),
+    rgba(245, 245, 245, 0.95)
+  );
   padding: 1.5rem;
   border-radius: 0.5rem;
+  position: relative;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }
 
-/* Если необходимо, можно сделать похожую подложку для меню */
+.content-wrapper::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background-image: url("../assets/img/texture.png"); /* Лёгкая текстура, замените путь при необходимости */
+  background-size: cover;
+  opacity: 0.05;
+  z-index: 0;
+  transform: rotate(15deg);
+}
+
+.content-wrapper > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Подложка для меню (оглавления) с улучшенным стилистическим решением */
 #table-of-contents {
-  background-color: rgba(250, 250, 250, 0.9);
+  background: linear-gradient(
+    135deg,
+    rgba(250, 250, 250, 0.95),
+    rgba(245, 245, 245, 0.95)
+  );
   border-radius: 0.5rem;
-  padding: 0.5rem;
+  padding: 0.5rem 1rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }

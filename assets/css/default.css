@@ -157,10 +157,15 @@ blockquote:not(.alert) footer {
   position: absolute;
   top: 8px;
   right: 8px;
-  color: var(--bg-light);
-  cursor: pointer;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.4);
+  border-radius: 50%;
   opacity: 0.7;
-  transition: opacity 0.2s, color 0.2s;
+  transition: all 0.3s ease-in-out;
 }
 
 .code-copy-btn:hover {
@@ -170,7 +175,7 @@ blockquote:not(.alert) footer {
 .pre-container:hover .code-copy-btn {
   opacity: 1;
   transform: scale(1.1);
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+  background-color: rgba(246, 202, 57, 0.8);
 }
 
 /* Эффект анимации копирования */

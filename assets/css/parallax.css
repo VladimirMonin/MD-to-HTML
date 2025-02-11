@@ -1,24 +1,38 @@
 :root {
   --parallax-shape-size: 3rem;
+  --icon-blur-default: 1px;
 }
 
+/* Фон под параллакс-иконки остаётся прозрачным */
 .parallax-bg {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  pointer-events: none; /* не блокировать клики */
-  z-index: -1; /* слой позади контента */
-  background: transparent; /* фон теперь прозрачный */
+  pointer-events: none;
+  z-index: -1;
+  background: transparent;
   overflow: hidden;
 }
 
 .parallax-shape {
   position: absolute;
-  font-size: var(--parallax-shape-size);
   opacity: 0.7;
-  transition: transform 0.2s linear; /* плавное обновление смещения */
+  transition: transform 0.2s linear;
+  filter: blur(var(--icon-blur-default));
 }
 
-/* Удалены keyframes, так как смещение будет управляться через JavaScript по скроллу */
+/* Подложка для основного текста – менее прозрачная (почти непрозрачная) */
+.content-wrapper {
+  background-color: rgba(250, 250, 250, 0.9);
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+}
+
+/* Если необходимо, можно сделать похожую подложку для меню */
+#table-of-contents {
+  background-color: rgba(250, 250, 250, 0.9);
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+}

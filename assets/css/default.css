@@ -119,7 +119,7 @@ blockquote .hidden-info {
   display: none;
 }
 
-blockquote:not(.alert) {
+blockquote:not([class]) {
   border-left: 4px solid var(--primary-color);
   padding: 1rem 1.5rem;
   margin: 1.5rem 0;
@@ -150,6 +150,55 @@ blockquote:not(.alert) footer {
   color: var(--text-color);
   opacity: 0.7;
   font-size: 0.9rem;
+}
+
+/* Стили для разных типов уведомлений */
+.alert-info {
+  background-color: #d9edf7;
+  border-left: 4px solid #31708f;
+  padding: 1rem 1.5rem;
+  margin: 1.5rem 0;
+  border-radius: 0.5rem;
+}
+
+.alert-warning {
+  background-color: #fcf8e3;
+  border-left: 4px solid #8a6d3b;
+  padding: 1rem 1.5rem;
+  margin: 1.5rem 0;
+  border-radius: 0.5rem;
+}
+
+.alert-success {
+  background-color: #dff0d8;
+  border-left: 4px solid #3c763d;
+  padding: 1rem 1.5rem;
+  margin: 1.5rem 0;
+  border-radius: 0.5rem;
+}
+
+.alert-error {
+  background-color: #f2dede;
+  border-left: 4px solid #a94442;
+  padding: 1rem 1.5rem;
+  margin: 1.5rem 0;
+  border-radius: 0.5rem;
+}
+
+.alert-tip {
+  background-color: #eeeeee;
+  border-left: 4px solid #999999;
+  padding: 1rem 1.5rem;
+  margin: 1.5rem 0;
+  border-radius: 0.5rem;
+}
+
+.alert-highlight {
+  background-color: #fff3cd;
+  border-left: 4px solid #d58512;
+  padding: 1rem 1.5rem;
+  margin: 1.5rem 0;
+  border-radius: 0.5rem;
 }
 
 /* Код */

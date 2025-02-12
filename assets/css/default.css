@@ -20,6 +20,40 @@ body {
   padding: 0;
 }
 
+/*  стили для блока брендирования */
+.branding-header {
+  width: 100%;
+  max-height: 30vh;
+  /* Используем padding для создания соотношения сторон, например 54% (600/1112 ≈ 0.54) */
+  padding-top: 54%;
+  background-image: inherit; /* будет подставлено инлайн-стилем из шаблона */
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  filter: blur(4px);
+  position: relative;
+  /* Можно добавить оверлей для затемнения */
+}
+.branding-header::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(
+    255,
+    255,
+    255,
+    0.3
+  ); /* беловатый оверлей, отрегулируй прозрачность по вкусу */
+}
+
+/* Если брендирования нет, можно скрыть блок обложки */
+.branding-header[style*="url('')"] {
+  display: none;
+}
+
 /* Типографика */
 h1 {
   font-family: var(--heading-font);
@@ -30,6 +64,9 @@ h1 {
   letter-spacing: -0.03em;
   line-height: 1.2;
   color: var(--text-color);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* плавная обводка для улучшения читаемости */
+  position: relative;
+  z-index: 1;
 }
 
 h2 {
@@ -390,5 +427,12 @@ hr::after {
 @media (max-width: 991.98px) {
   #table-of-contents {
     display: none;
+  }
+}
+/* Адаптив бренда и заголовка */
+@media (max-width: 768px) {
+  .branding-header {
+    height: 100px;
+    margin-bottom: -50px;
   }
 }

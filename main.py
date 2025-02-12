@@ -10,6 +10,10 @@ RESULT_FOLDER = "./result"
 FILES_FOLDER = r"C:\Syncthing\База Obsidian\9 файлы"
 ASSETS_FOLDER = "assets"
 
+# Константа для обложки
+# Если обложка отсутствует, можно оставить пустую строку
+BRAND_IMAGE = r""  # укажите нужный путь к изображению
+
 
 def copy_assets(target_dir: str):
     """Копирует assets в папку назначения"""
@@ -77,32 +81,51 @@ def convert_markdown_to_html(markdown_path: str):
 
     # Копируем assets в папку результата
     copy_assets(target_dir)
-    
-    media_dir = os.path.join(target_dir, 'media')
+
+    media_dir = os.path.join(target_dir, "media")
+
+    # Копируем обложку, если задана
+    if BRAND_IMAGE:
+        try:
+            brand_filename = os.path.basename(BRAND_IMAGE)
+            brand_target_path = os.path.join(target_dir, brand_filename)
+            shutil.copy(BRAND_IMAGE, brand_target_path)
+            print(f"Обложка скопирована в {brand_target_path}")
+            # используем относительный путь к обложке относительно HTML файла
+            brand_image_relative = "./" + brand_filename
+        except Exception as e:
+            print(f"Ошибка копирования обложки: {e}")
+            brand_image_relative = ""
+    else:
+        brand_image_relative = ""
 
     try:
-        with open(markdown_path, 'r', encoding='utf-8') as file:
+        with open(markdown_path, "r", encoding="utf-8") as file:
             md_content = file.read()
-        
+
         md_content = copy_local_media(md_content, media_dir)
-        md_extensions = ['extra', 'fenced_code', 'tables']
+        md_extensions = ["extra", "fenced_code", "tables"]
         html_content = markdown.markdown(md_content, extensions=md_extensions)
         template = read_template(TEMPLATE)
-        # Подставляем содержимое, title и header (например, использовать base_name для обоих)
-        html = (template.replace('{{ content }}', html_content)
-                        .replace('{title}', base_name)
-                        .replace('{header}', base_name))
-        html_path = os.path.join(target_dir, base_name + '.html')
+        # Подставляем содержимое, title, header и бренд (обложку)
+        html = (
+            template.replace("{{ content }}", html_content)
+            .replace("{title}", base_name)
+            .replace("{header}", base_name)
+            .replace("{brand}", brand_image_relative)
+        )
+        html_path = os.path.join(target_dir, base_name + ".html")
 
-        with open(html_path, 'w', encoding='utf-8') as file:
+        with open(html_path, "w", encoding="utf-8") as file:
             file.write(html)
 
         print(f"HTML файл успешно сохранен как {html_path}")
     except FileNotFoundError as e:
-        print(f"Файл не найден: {e.filename}. Проверьте путь к файлу и попробуйте снова.")
+        print(
+            f"Файл не найден: {e.filename}. Проверьте путь к файлу и попробуйте снова."
+        )
     except Exception as e:
         print(f"Произошла ошибка: {e}")
-
 
 
 # Запрос пути к файлу от пользователя

@@ -1,20 +1,15 @@
 window.addEventListener("load", function () {
-  // =========================
-  // Параметры и настройки эффекта
-  // =========================
-
-  
-  const NUM_SHAPES_MIN = 40;
-  const NUM_SHAPES_MAX = 60;
-  const MIN_SIZE = 4;
-  const MAX_SIZE = 10;
+  const NUM_SHAPES_MIN = 30;
+  const NUM_SHAPES_MAX = 50;
+  const MIN_SIZE = 7;
+  const MAX_SIZE = 16;
   const MIN_BLUR = 3;
   const MAX_BLUR = 5;
   const EXTRA_BLUR = 2;
   const BASE_SPEED_RANGE = 40;
   const FRICTION = 0.99;
   const SCROLL_ACCEL_FACTOR = 0.003;
-  const MAX_SPEED = 100;
+  const MAX_SPEED = 50;
   const REPEL_THRESHOLD = 100;
   const REPEL_FACTOR = 300;
   const WALL_MARGIN = 50;
@@ -42,7 +37,9 @@ window.addEventListener("load", function () {
     viewportWidth = window.innerWidth;
     viewportHeight = window.innerHeight;
     documentHeight = document.documentElement.scrollHeight;
+    parallaxContainer.style.height = documentHeight + "px";
   }
+
   window.addEventListener("resize", updateDimensions);
 
   const shapesCount =
@@ -51,7 +48,7 @@ window.addEventListener("load", function () {
 
   const parallaxContainer = document.createElement("div");
   parallaxContainer.classList.add("parallax-bg");
-  // Здесь не нужно принудительно задавать высоту – элемент теперь в position: absolute
+  parallaxContainer.style.height = documentHeight + "px";
   document.body.insertBefore(parallaxContainer, document.body.firstChild);
 
   const shapes = [];
@@ -65,9 +62,7 @@ window.addEventListener("load", function () {
       "parallax-shape"
     );
 
-    // Используем полную высоту документа для top
-    const topPercent =
-      Math.random() * ((documentHeight / viewportHeight) * 100);
+    const topPercent = Math.random() * 100;
     const leftPercent = Math.random() * 100;
     shapeElement.style.top = topPercent + "%";
     shapeElement.style.left = leftPercent + "%";
@@ -120,35 +115,13 @@ window.addEventListener("load", function () {
       ? contentArea.getBoundingClientRect()
       : null;
 
-    for (let i = 0; i < shapes.length; i++) {
-      for (let j = i + 1; j < shapes.length; j++) {
-        const dx =
-          shapes[j].initX + shapes[j].posX - (shapes[i].initX + shapes[i].posX);
-        const dy =
-          shapes[j].initY + shapes[j].posY - (shapes[i].initY + shapes[i].posY);
-        const distance = Math.hypot(dx, dy);
-        if (distance < REPEL_THRESHOLD && distance > 0) {
-          const force =
-            (REPEL_FACTOR * (REPEL_THRESHOLD - distance)) / REPEL_THRESHOLD;
-          const nx = dx / distance;
-          const ny = dy / distance;
-          shapes[i].speedX -= nx * force * dt;
-          shapes[i].speedY -= ny * force * dt;
-          shapes[j].speedX += nx * force * dt;
-          shapes[j].speedY += ny * force * dt;
-        }
-      }
-    }
-
-    if (scrollDelta > 0) {
-      const accel = 1 + scrollDelta * SCROLL_ACCEL_FACTOR;
-      shapes.forEach((shape) => {
+    shapes.forEach((shape) => {
+      if (scrollDelta > 0) {
+        const accel = 1 + scrollDelta * SCROLL_ACCEL_FACTOR;
         shape.speedX *= accel;
         shape.speedY *= accel;
-      });
-    }
+      }
 
-    shapes.forEach((shape) => {
       shape.speedX *= FRICTION;
       shape.speedY *= FRICTION;
 
@@ -167,17 +140,18 @@ window.addEventListener("load", function () {
 
       if (currentX < WALL_MARGIN) {
         shape.posX = WALL_MARGIN - shape.initX;
-        shape.speedX = -shape.speedX;
+        shape.speedX = Math.abs(shape.speedX);
       } else if (currentX > viewportWidth - WALL_MARGIN) {
         shape.posX = viewportWidth - WALL_MARGIN - shape.initX;
-        shape.speedX = -shape.speedX;
+        shape.speedX = -Math.abs(shape.speedX);
       }
+
       if (currentY < WALL_MARGIN) {
         shape.posY = WALL_MARGIN - shape.initY;
-        shape.speedY = -shape.speedY;
+        shape.speedY = Math.abs(shape.speedY);
       } else if (currentY > documentHeight - WALL_MARGIN) {
         shape.posY = documentHeight - WALL_MARGIN - shape.initY;
-        shape.speedY = -shape.speedY;
+        shape.speedY = -Math.abs(shape.speedY);
       }
 
       let currentBlur = shape.baseBlur;
@@ -192,6 +166,7 @@ window.addEventListener("load", function () {
           currentBlur = shape.baseBlur + EXTRA_BLUR;
         }
       }
+
       shape.element.style.filter = `blur(${currentBlur}px)`;
       shape.element.style.transform = `translate(${shape.posX}px, ${shape.posY}px) rotate(${shape.rotation}deg)`;
     });

@@ -53,6 +53,19 @@ function generateTableOfContents() {
 
       if (scrollPosition >= headerTop - 100 && scrollPosition < headerBottom) {
         link.classList.add("active");
+
+        // Проверяем, виден ли активный пункт в контейнере оглавления
+        const linkRect = link.getBoundingClientRect();
+        const tocRect = toc.getBoundingClientRect();
+
+        // Если нижняя граница active-пункта ниже видимой области, прокручиваем вниз
+        if (linkRect.bottom > tocRect.bottom) {
+          toc.scrollTop += linkRect.bottom - tocRect.bottom;
+        }
+        // Если верхняя граница active-пункта выше видимой области, прокручиваем вверх
+        else if (linkRect.top < tocRect.top) {
+          toc.scrollTop -= tocRect.top - linkRect.top;
+        }
       } else {
         link.classList.remove("active");
       }

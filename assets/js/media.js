@@ -20,7 +20,22 @@ function createFullscreenContainer() {
 }
 
 function showFullscreenImage(container, src) {
-  container.innerHTML = `<img src="${src}" alt="Полноэкранное изображение" />`;
+  const img = new Image();
+  img.src = src;
+  img.onload = function () {
+    const screenRatio = window.innerWidth / window.innerHeight;
+    const imageRatio = this.width / this.height;
+
+    if (imageRatio > screenRatio) {
+      img.style.width = "100vw";
+      img.style.height = "auto";
+    } else {
+      img.style.width = "auto";
+      img.style.height = "100vh";
+    }
+  };
+  container.innerHTML = "";
+  container.appendChild(img);
   container.classList.add("active");
 }
 

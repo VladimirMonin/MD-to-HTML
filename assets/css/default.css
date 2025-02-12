@@ -281,6 +281,12 @@ blockquote:not(.alert) footer {
   white-space: pre-wrap;
   word-break: break-word;
   margin: 2rem 0;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.pre-container:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
 .code-block {
@@ -361,9 +367,11 @@ code:not(pre code) {
 }
 
 .fullscreen-img-container img {
-  max-width: 90%;
-  max-height: 90%;
+  min-width: 100px;
+  min-height: 100px;
+  object-fit: contain;
   cursor: zoom-out;
+  animation: none !important;
 }
 
 img {
@@ -372,6 +380,27 @@ img {
   margin: 2rem auto;
   border-radius: 0.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out;
+}
+
+img:hover {
+  animation: gentle-swing 1s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes gentle-swing {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(1deg);
+  }
+  75% {
+    transform: rotate(-1deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
 }
 
 /* Видео */

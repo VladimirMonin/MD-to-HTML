@@ -23,17 +23,17 @@ body {
 /*  стили для блока брендирования */
 .branding-header {
   width: 100%;
-  max-height: 30vh;
-  /* Используем padding для создания соотношения сторон, например 54% (600/1112 ≈ 0.54) */
   padding-top: 54%;
-  background-image: inherit; /* будет подставлено инлайн-стилем из шаблона */
+  background-image: inherit;
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
   filter: blur(4px);
   position: relative;
-  /* Можно добавить оверлей для затемнения */
+  max-height: 50vh; /* ограничиваем высоту до 50% от высоты окна */
+  overflow: hidden; /* скрываем излишки */
 }
+
 .branding-header::after {
   content: "";
   position: absolute;
@@ -434,5 +434,13 @@ hr::after {
   .branding-header {
     height: 100px;
     margin-bottom: -50px;
+  }
+}
+@media (min-width: 1200px) {
+  .branding-header {
+    padding-top: 0; /* убираем соотношение сторон */
+    height: 50vh; /* устанавливаем высоту в 50% от высоты окна */
+    background-size: cover; /* оставляем, чтобы изображение покрывало область */
+    background-position: center;
   }
 }

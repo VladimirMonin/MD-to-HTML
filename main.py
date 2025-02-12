@@ -12,7 +12,7 @@ ASSETS_FOLDER = "assets"
 
 # Константа для обложки
 # Если обложка отсутствует, можно оставить пустую строку
-BRAND_IMAGE = r""  # укажите нужный путь к изображению
+BRAND_IMAGE = r"python_cover.webp"  # укажите нужный путь к изображению
 
 
 def copy_assets(target_dir: str):

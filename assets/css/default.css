@@ -374,6 +374,11 @@ code:not(pre code) {
   animation: none !important;
 }
 
+.content-wrapper img {
+  max-height: 50vh;
+  object-fit: contain;
+}
+
 img {
   cursor: zoom-in;
   display: block;

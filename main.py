@@ -128,10 +128,27 @@ def convert_markdown_to_html(markdown_path: str):
         print(f"Произошла ошибка: {e}")
 
 
-# Запрос пути к файлу от пользователя
-markdown_path = (
-    input(r"Введите путь к файлу Markdown: ").replace('"', "").replace("'", "")
-)
-markdown_path = os.path.abspath(markdown_path)
-print(markdown_path)
-convert_markdown_to_html(markdown_path)
+if __name__ == "__main__":
+    input_path = (
+        input(r"Введите путь к файлу или папке с файлами Markdown: ")
+        .replace('"', "")
+        .replace("'", "")
+        .strip()
+    )
+    abs_path = os.path.abspath(input_path)
+    print(f"Обрабатывается: {abs_path}")
+    if os.path.isdir(abs_path):
+        md_files = [
+            os.path.join(abs_path, f)
+            for f in os.listdir(abs_path)
+            if os.path.isfile(os.path.join(abs_path, f)) and f.lower().endswith(".md")
+        ]
+        if md_files:
+            for md_file in md_files:
+                convert_markdown_to_html(md_file)
+        else:
+            print("В указанной папке не найдено md файлов.")
+    elif os.path.isfile(abs_path) and abs_path.lower().endswith(".md"):
+        convert_markdown_to_html(abs_path)
+    else:
+        print("Неверный путь. Укажите корректный файл или папку с файлами Markdown.")

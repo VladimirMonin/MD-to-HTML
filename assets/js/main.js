@@ -33,36 +33,38 @@ function addClassesToElements(tag, classes) {
 }
 
 function processBlockquotes() {
-  const blockquotes = document.querySelectorAll("blockquote");
-  console.log("Найдено blockquotes:", blockquotes.length);
-
-  blockquotes.forEach((blockquote, index) => {
-    console.log(`Обработка blockquote #${index + 1}`);
-
-    const firstP = blockquote.querySelector("p");
-    if (firstP) {
-      const text = firstP.textContent.trim();
-      console.log(`Содержимое первого p: "${text}"`);
-
-      const typeMapping = {
-        "[!info]": "alert-info",
-        "[!warning]": "alert-warning",
-        "[!success]": "alert-success",
-        "[!error]": "alert-error",
-        "[!tip]": "alert-tip",
-        "[!highlight]": "alert-highlight",
-      };
-
-      Object.entries(typeMapping).forEach(([marker, className]) => {
-        if (text === marker) {
-          console.log(
-            `Найдено совпадение: ${marker} -> добавляем класс ${className}`
-          );
-          blockquote.classList.add(className);
-          firstP.remove();
-          console.log("Маркер удален");
-        }
-      });
-    }
-  });
-}
+    const blockquotes = document.querySelectorAll("blockquote");
+    console.log("Найдено blockquotes:", blockquotes.length);
+  
+    blockquotes.forEach((blockquote, index) => {
+      console.log(`Обработка blockquote #${index + 1}`);
+  
+      const firstP = blockquote.querySelector("p");
+      if (firstP) {
+        const text = firstP.textContent.trim();
+        console.log(`Содержимое первого p: "${text}"`);
+  
+        const typeMapping = {
+          "[!info]": "alert-info",
+          "[!warning]": "alert-warning",
+          "[!success]": "alert-success",
+          "[!error]": "alert-error",
+          "[!tip]": "alert-tip",
+          "[!highlight]": "alert-highlight",
+          "[!danger]": "alert-danger" // Добавлено для обработки dangerous-выноски
+        };
+  
+        Object.entries(typeMapping).forEach(([marker, className]) => {
+          if (text === marker) {
+            console.log(
+              `Найдено совпадение: ${marker} -> добавляем класс ${className}`
+            );
+            blockquote.classList.add(className);
+            firstP.remove();
+            console.log("Маркер удален");
+          }
+        });
+      }
+    });
+  }
+  

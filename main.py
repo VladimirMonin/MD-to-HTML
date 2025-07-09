@@ -7,12 +7,13 @@ import mimetypes
 # Основные настройки
 TEMPLATE = "main.html"
 RESULT_FOLDER = "./result"
+# r"C:\Syncthing\База Obsidian\9 файлы"
 FILES_FOLDER = r"C:\Syncthing\База Obsidian\9 файлы"
 ASSETS_FOLDER = "assets"
 
 # Константа для обложки
 # Если обложка отсутствует, можно оставить пустую строку
-BRAND_IMAGE = r"python_cover.webp"  # укажите нужный путь к изображению
+BRAND_IMAGE = r"covers\django_logo.jpg"  # укажите нужный путь к изображению
 
 
 def copy_assets(target_dir: str):
@@ -25,7 +26,7 @@ def copy_assets(target_dir: str):
         print(f"Папка assets не найдена в {os.getcwd()}")
 
 
-def copy_local_media(md_content: str, media_dir: str) -> str:
+def copy_local_media(md_content: str, media_dir: str, markdown_path: str) -> str:
     """Копирует локальные медиафайлы в папку media и обновляет содержимое Markdown"""
     md_content = re.sub(r"!\[\[(.*?)\]\]", r"![\1](\1)", md_content)
     media_paths = re.findall(r"!\[.*?\]\((?!http)(.*?)\)", md_content)
@@ -36,7 +37,19 @@ def copy_local_media(md_content: str, media_dir: str) -> str:
             media_found = True
             os.makedirs(media_dir, exist_ok=True)
             new_path = os.path.join(media_dir, os.path.basename(media_path))
-            abs_media_path = os.path.join(FILES_FOLDER, media_path)
+
+            # Определяем абсолютный путь к медиафайлу
+            if os.path.isabs(media_path):
+                # Это абсолютный путь
+                abs_media_path = media_path
+            elif "/" in media_path or "\\" in media_path:
+                # Это относительный путь из VS Code
+                abs_media_path = os.path.abspath(
+                    os.path.join(os.path.dirname(markdown_path), media_path)
+                )
+            else:
+                # Это имя файла из Obsidian
+                abs_media_path = os.path.join(FILES_FOLDER, media_path)
 
             if os.path.exists(abs_media_path):
                 shutil.copy(abs_media_path, new_path)
@@ -103,9 +116,29 @@ def convert_markdown_to_html(markdown_path: str):
         with open(markdown_path, "r", encoding="utf-8") as file:
             md_content = file.read()
 
-        md_content = copy_local_media(md_content, media_dir)
-        md_extensions = ["extra", "fenced_code", "tables"]
-        html_content = markdown.markdown(md_content, extensions=md_extensions)
+        md_content = copy_local_media(md_content, media_dir, markdown_path)
+        md_extensions = [
+            "extra",
+            "tables",
+            "fenced_code",
+            "pymdownx.superfences",
+        ]
+
+        extension_configs = {
+            "pymdownx.superfences": {
+                "custom_fences": [
+                    {
+                        "name": "mermaid",
+                        "class": "mermaid",
+                        "format": lambda source, language, css_class, options, md, **kwargs: f'<pre class="mermaid">{source}</pre>',
+                    }
+                ]
+            }
+        }
+
+        html_content = markdown.markdown(
+            md_content, extensions=md_extensions, extension_configs=extension_configs
+        )
         template = read_template(TEMPLATE)
         # Подставляем содержимое, title, header и бренд (обложку)
         html = (

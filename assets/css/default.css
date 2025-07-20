@@ -471,6 +471,72 @@ hr::after {
     display: none;
   }
 }
+
+/* Новые стили для блоков сравнения */
+.diff-wrapper {
+  display: flex;
+  gap: 1rem;
+  margin: 2rem 0;
+  background-color: #0d1117; /* GitHub-подобный фон */
+  border-radius: 0.5rem;
+  padding: 1rem;
+  border: 1px solid #30363d;
+  overflow: hidden;
+}
+
+.diff-container {
+  flex: 1;
+  min-width: 0;
+}
+
+.diff-header {
+  font-weight: bold;
+  color: #c9d1d9;
+  background-color: #161b22;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #30363d;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+}
+
+.diff-container pre {
+  margin: 0;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  background-color: #0d1117 !important; /* Переопределяем фон pre */
+  padding: 1rem 0;
+}
+
+.diff-container pre code {
+  display: block;
+  white-space: pre-wrap;
+}
+
+.diff-line {
+  display: block;
+  padding: 0 1rem;
+}
+
+.diff-sub {
+  background-color: rgba(248, 81, 73, 0.15);
+}
+
+.diff-add {
+  background-color: rgba(46, 160, 67, 0.15);
+}
+
+.diff-empty {
+  min-height: 1.5em; /* Высота строки, чтобы сохранить выравнивание */
+}
+
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .diff-wrapper {
+    flex-direction: column;
+  }
+}
+
 /* Адаптив бренда и заголовка */
 @media (max-width: 768px) {
   .branding-header {
@@ -486,3 +552,4 @@ hr::after {
     background-position: center;
   }
 }
+

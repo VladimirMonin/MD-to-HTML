@@ -3,6 +3,10 @@ import os
 import re
 import shutil
 import mimetypes
+import difflib
+import json
+from markdown.extensions import Extension
+from markdown.preprocessors import Preprocessor
 
 # Основные настройки
 TEMPLATE = "main.html"
@@ -14,6 +18,72 @@ ASSETS_FOLDER = "assets"
 # Константа для обложки
 # Если обложка отсутствует, можно оставить пустую строку
 BRAND_IMAGE = r"covers\django_logo.jpg"  # укажите нужный путь к изображению
+
+
+# Расширение для Markdown для обработки diff-блоков
+class DiffPreprocessor(Preprocessor):
+    def run(self, lines):
+        new_lines = []
+        in_diff_block = False
+        diff_block_lines = []
+
+        for line in lines:
+            if line.strip() == '```diff':
+                in_diff_block = True
+                diff_block_lines = []
+                continue
+            elif line.strip() == '```' and in_diff_block:
+                in_diff_block = False
+                
+                from_code = []
+                to_code = []
+                for diff_line in diff_block_lines:
+                    # Убираем один начальный пробел, если он есть
+                    clean_line = diff_line[1:] if diff_line.startswith(' ') else diff_line
+                    if clean_line.startswith('+ '):
+                        to_code.append(clean_line[2:])
+                    elif clean_line.startswith('- '):
+                        from_code.append(clean_line[2:])
+                    else:
+                        from_code.append(clean_line)
+                        to_code.append(clean_line)
+                
+                # Экранируем HTML и вставляем маркеры
+                before_code_escaped = self._escape("\n".join(from_code))
+                after_code_escaped = self._escape("\n".join(to_code))
+
+                # Создаем новую HTML-структуру
+                json_diff_lines = json.dumps(diff_block_lines)
+                html_structure = f'''
+<div class="diff-wrapper" data-diff='{self._escape(json_diff_lines)}'>
+    <div class="diff-container">
+        <div class="diff-header">Было</div>
+        <pre><code class="language-diff">{before_code_escaped}</code></pre>
+    </div>
+    <div class="diff-container">
+        <div class="diff-header">Стало</div>
+        <pre><code class="language-diff">{after_code_escaped}</code></pre>
+    </div>
+</div>
+'''
+                # Защищаем HTML от дальнейшей обработки Markdown
+                placeholder = self.md.htmlStash.store(html_structure)
+                new_lines.append(placeholder)
+            elif in_diff_block:
+                diff_block_lines.append(line)
+            else:
+                new_lines.append(line)
+        
+        return new_lines
+
+    def _escape(self, text):
+        if isinstance(text, list):
+            text = "\n".join(text)
+        return text.replace('&', '&').replace('<', '<').replace('>', '>').replace("'", "'").replace('"', '"')
+
+class DiffExtension(Extension):
+    def extendMarkdown(self, md):
+        md.preprocessors.register(DiffPreprocessor(md), 'diff', 26)
 
 
 def copy_assets(target_dir: str):
@@ -122,6 +192,7 @@ def convert_markdown_to_html(markdown_path: str):
             "tables",
             "fenced_code",
             "pymdownx.superfences",
+            DiffExtension(),
         ]
 
         extension_configs = {

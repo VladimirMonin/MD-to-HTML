@@ -18,6 +18,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Обработка блоков цитат
   processBlockquotes();
+
+  // Вызов подсветки diff после основной подсветки синтаксиса
+  if (typeof window.applyDiffHighlight === 'function') {
+    // Небольшая задержка, чтобы убедиться, что highlight.js точно отработал
+    setTimeout(window.applyDiffHighlight, 100);
+  }
 });
 
 function centerElements(elementsToCenter) {
@@ -27,7 +33,12 @@ function centerElements(elementsToCenter) {
 }
 
 function addClassesToElements(tag, classes) {
-  document.querySelectorAll(tag).forEach((el) => {
+  let selector = tag;
+  // Исключаем таблицы с классом .diff из добавления классов Bootstrap
+  if (tag === 'table') {
+    selector = 'table:not(.diff)';
+  }
+  document.querySelectorAll(selector).forEach((el) => {
     classes.forEach((className) => el.classList.add(className));
   });
 }

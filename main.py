@@ -4,87 +4,74 @@ import re
 import shutil
 import mimetypes
 import difflib
-import json
-from markdown.extensions import Extension
-from markdown.preprocessors import Preprocessor
+from pygments import highlight
+from pygments.lexers.special import TextLexer
+from pygments.lexers import get_lexer_by_name
+from pygments.formatters.html import HtmlFormatter
 
 # Основные настройки
 TEMPLATE = "main.html"
 RESULT_FOLDER = "./result"
-# r"C:\Syncthing\База Obsidian\9 файлы"
 FILES_FOLDER = r"C:\Syncthing\База Obsidian\9 файлы"
 ASSETS_FOLDER = "assets"
+BRAND_IMAGE = r"covers\django_logo.jpg"
 
-# Константа для обложки
-# Если обложка отсутствует, можно оставить пустую строку
-BRAND_IMAGE = r"covers\django_logo.jpg"  # укажите нужный путь к изображению
+def custom_diff_formatter(source, language, css_class, options, md, **kwargs):
+    """
+    Кастомный форматер для блоков diff, использующий Pygments и Difflib.
+    """
+    try:
+        lexer = get_lexer_by_name(language)
+    except ValueError:
+        lexer = TextLexer()
 
+    formatter = HtmlFormatter(nobackground=True)
 
-# Расширение для Markdown для обработки diff-блоков
-class DiffPreprocessor(Preprocessor):
-    def run(self, lines):
-        new_lines = []
-        in_diff_block = False
-        diff_block_lines = []
+    before_lines = [line[1:] for line in source.splitlines() if not line.startswith('+')]
+    after_lines = [line[1:] for line in source.splitlines() if not line.startswith('-')]
 
-        for line in lines:
-            if line.strip() == '```diff':
-                in_diff_block = True
-                diff_block_lines = []
-                continue
-            elif line.strip() == '```' and in_diff_block:
-                in_diff_block = False
-                
-                from_code = []
-                to_code = []
-                for diff_line in diff_block_lines:
-                    # Убираем один начальный пробел, если он есть
-                    clean_line = diff_line[1:] if diff_line.startswith(' ') else diff_line
-                    if clean_line.startswith('+ '):
-                        to_code.append(clean_line[2:])
-                    elif clean_line.startswith('- '):
-                        from_code.append(clean_line[2:])
-                    else:
-                        from_code.append(clean_line)
-                        to_code.append(clean_line)
-                
-                # Экранируем HTML и вставляем маркеры
-                before_code_escaped = self._escape("\n".join(from_code))
-                after_code_escaped = self._escape("\n".join(to_code))
+    matcher = difflib.SequenceMatcher(None, before_lines, after_lines)
+    
+    before_html = ''
+    after_html = ''
 
-                # Создаем новую HTML-структуру
-                json_diff_lines = json.dumps(diff_block_lines)
-                html_structure = f'''
-<div class="diff-wrapper" data-diff='{self._escape(json_diff_lines)}'>
+    for tag, i1, i2, j1, j2 in matcher.get_opcodes():
+        if tag == 'replace':
+            for line in before_lines[i1:i2]:
+                highlighted_line = highlight(line, lexer, formatter)
+                before_html += f'<div class="diff-line diff-line-sub">{highlighted_line.strip()}</div>'
+            for line in after_lines[j1:j2]:
+                highlighted_line = highlight(line, lexer, formatter)
+                after_html += f'<div class="diff-line diff-line-add">{highlighted_line.strip()}</div>'
+        elif tag == 'delete':
+            for line in before_lines[i1:i2]:
+                highlighted_line = highlight(line, lexer, formatter)
+                before_html += f'<div class="diff-line diff-line-sub">{highlighted_line.strip()}</div>'
+                after_html += '<div class="diff-line diff-line-empty">&nbsp;</div>'
+        elif tag == 'insert':
+            for line in after_lines[j1:j2]:
+                before_html += '<div class="diff-line diff-line-empty">&nbsp;</div>'
+                highlighted_line = highlight(line, lexer, formatter)
+                after_html += f'<div class="diff-line diff-line-add">{highlighted_line.strip()}</div>'
+        elif tag == 'equal':
+            for line in before_lines[i1:i2]:
+                highlighted_line = highlight(line, lexer, formatter)
+                line_html = f'<div class="diff-line diff-line-equal">{highlighted_line.strip()}</div>'
+                before_html += line_html
+                after_html += line_html
+
+    return f'''
+<div class="diff-wrapper">
     <div class="diff-container">
         <div class="diff-header">Было</div>
-        <pre><code class="language-diff">{before_code_escaped}</code></pre>
+        <pre><code class="{css_class}">{before_html}</code></pre>
     </div>
     <div class="diff-container">
         <div class="diff-header">Стало</div>
-        <pre><code class="language-diff">{after_code_escaped}</code></pre>
+        <pre><code class="{css_class}">{after_html}</code></pre>
     </div>
 </div>
 '''
-                # Защищаем HTML от дальнейшей обработки Markdown
-                placeholder = self.md.htmlStash.store(html_structure)
-                new_lines.append(placeholder)
-            elif in_diff_block:
-                diff_block_lines.append(line)
-            else:
-                new_lines.append(line)
-        
-        return new_lines
-
-    def _escape(self, text):
-        if isinstance(text, list):
-            text = "\n".join(text)
-        return text.replace('&', '&').replace('<', '<').replace('>', '>').replace("'", "'").replace('"', '"')
-
-class DiffExtension(Extension):
-    def extendMarkdown(self, md):
-        md.preprocessors.register(DiffPreprocessor(md), 'diff', 26)
-
 
 def copy_assets(target_dir: str):
     """Копирует assets в папку назначения"""
@@ -108,17 +95,13 @@ def copy_local_media(md_content: str, media_dir: str, markdown_path: str) -> str
             os.makedirs(media_dir, exist_ok=True)
             new_path = os.path.join(media_dir, os.path.basename(media_path))
 
-            # Определяем абсолютный путь к медиафайлу
             if os.path.isabs(media_path):
-                # Это абсолютный путь
                 abs_media_path = media_path
             elif "/" in media_path or "\\" in media_path:
-                # Это относительный путь из VS Code
                 abs_media_path = os.path.abspath(
                     os.path.join(os.path.dirname(markdown_path), media_path)
                 )
             else:
-                # Это имя файла из Obsidian
                 abs_media_path = os.path.join(FILES_FOLDER, media_path)
 
             if os.path.exists(abs_media_path):
@@ -162,19 +145,15 @@ def convert_markdown_to_html(markdown_path: str):
     target_dir = os.path.join(RESULT_FOLDER, base_name)
     os.makedirs(target_dir, exist_ok=True)
 
-    # Копируем assets в папку результата
     copy_assets(target_dir)
-
     media_dir = os.path.join(target_dir, "media")
 
-    # Копируем обложку, если задана
     if BRAND_IMAGE:
         try:
             brand_filename = os.path.basename(BRAND_IMAGE)
             brand_target_path = os.path.join(target_dir, brand_filename)
             shutil.copy(BRAND_IMAGE, brand_target_path)
             print(f"Обложка скопирована в {brand_target_path}")
-            # используем относительный путь к обложке относительно HTML файла
             brand_image_relative = "./" + brand_filename
         except Exception as e:
             print(f"Ошибка копирования обложки: {e}")
@@ -187,12 +166,12 @@ def convert_markdown_to_html(markdown_path: str):
             md_content = file.read()
 
         md_content = copy_local_media(md_content, media_dir, markdown_path)
+        
         md_extensions = [
             "extra",
             "tables",
             "fenced_code",
             "pymdownx.superfences",
-            DiffExtension(),
         ]
 
         extension_configs = {
@@ -202,6 +181,11 @@ def convert_markdown_to_html(markdown_path: str):
                         "name": "mermaid",
                         "class": "mermaid",
                         "format": lambda source, language, css_class, options, md, **kwargs: f'<pre class="mermaid">{source}</pre>',
+                    },
+                    {
+                        "name": "diff",
+                        "class": "diff",
+                        "format": custom_diff_formatter,
                     }
                 ]
             }
@@ -211,7 +195,6 @@ def convert_markdown_to_html(markdown_path: str):
             md_content, extensions=md_extensions, extension_configs=extension_configs
         )
         template = read_template(TEMPLATE)
-        # Подставляем содержимое, title, header и бренд (обложку)
         html = (
             template.replace("{{ content }}", html_content)
             .replace("{title}", base_name)

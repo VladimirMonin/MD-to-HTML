@@ -19,10 +19,10 @@ document.addEventListener("DOMContentLoaded", function () {
   // Обработка блоков цитат
   processBlockquotes();
 
-  // Вызов подсветки diff после основной подсветки синтаксиса
-  if (typeof window.applyDiffHighlight === 'function') {
-    // Небольшая задержка, чтобы убедиться, что highlight.js точно отработал
-    setTimeout(window.applyDiffHighlight, 100);
+  // Синхронизируем высоту diff-блоков после того, как все будет отрисовано
+  if (typeof window.syncDiffBlockHeights === 'function') {
+    // Небольшая задержка, чтобы все точно отрисовалось
+    setTimeout(window.syncDiffBlockHeights, 100);
   }
 });
 

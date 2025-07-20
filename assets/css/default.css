@@ -513,20 +513,21 @@ hr::after {
 }
 
 .diff-line {
-  display: block;
-  padding: 0 1rem;
+    display: block;
+    padding: 0.1em 1rem;
+    min-height: 1.5em; /* Гарантирует, что пустые строки имеют высоту */
 }
 
-.diff-sub {
-  background-color: rgba(248, 81, 73, 0.15);
+.diff-line-sub {
+    background-color: rgba(248, 81, 73, 0.15);
 }
 
-.diff-add {
-  background-color: rgba(46, 160, 67, 0.15);
+.diff-line-add {
+    background-color: rgba(46, 160, 67, 0.15);
 }
 
-.diff-empty {
-  min-height: 1.5em; /* Высота строки, чтобы сохранить выравнивание */
+.diff-line-empty {
+    background-color: transparent;
 }
 
 

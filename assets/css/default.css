@@ -503,7 +503,7 @@ hr::after {
   margin: 0;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
-  background-color: #0d1117 !important; /* Переопределяем фон pre */
+  background-color: transparent !important; /* Фон должен быть прозрачным, чтобы были видны цвета строк */
   padding: 1rem 0;
 }
 
@@ -513,23 +513,18 @@ hr::after {
 }
 
 .diff-line {
-    display: block;
-    padding: 0.1em 1rem;
-    min-height: 1.5em; /* Гарантирует, что пустые строки имеют высоту */
+  display: block;
+  padding: 0.1em 1rem;
+  min-height: 1.5em; /* Гарантирует, что пустые строки имеют высоту */
 }
 
-.diff-line-sub {
-    background-color: rgba(248, 81, 73, 0.15);
+.diff-sub {
+  background-color: rgba(248, 82, 73, 0.4);
 }
 
-.diff-line-add {
-    background-color: rgba(46, 160, 67, 0.15);
+.diff-add {
+  background-color: rgba(46, 160, 67, 0.4);
 }
-
-.diff-line-empty {
-    background-color: transparent;
-}
-
 
 /* Адаптивность */
 @media (max-width: 768px) {
@@ -553,4 +548,3 @@ hr::after {
     background-position: center;
   }
 }
-

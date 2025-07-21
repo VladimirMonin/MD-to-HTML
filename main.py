@@ -3,11 +3,9 @@ import os
 import re
 import shutil
 import mimetypes
-import difflib
-from pygments import highlight
-from pygments.lexers.special import TextLexer
-from pygments.lexers import get_lexer_by_name
-from pygments.formatters.html import HtmlFormatter
+import json
+from markdown.extensions import Extension
+from markdown.preprocessors import Preprocessor
 
 # Основные настройки
 TEMPLATE = "main.html"
@@ -16,62 +14,63 @@ FILES_FOLDER = r"C:\Syncthing\База Obsidian\9 файлы"
 ASSETS_FOLDER = "assets"
 BRAND_IMAGE = r"covers\django_logo.jpg"
 
-def custom_diff_formatter(source, language, css_class, options, md, **kwargs):
-    """
-    Кастомный форматер для блоков diff, использующий Pygments и Difflib.
-    """
-    try:
-        lexer = get_lexer_by_name(language)
-    except ValueError:
-        lexer = TextLexer()
+class DiffPreprocessor(Preprocessor):
+    def run(self, lines):
+        new_lines = []
+        in_diff_block = False
+        diff_block_lines = []
+        lang = ''
 
-    formatter = HtmlFormatter(nobackground=True)
+        for line in lines:
+            if line.strip().startswith('```diff'):
+                in_diff_block = True
+                diff_block_lines = []
+                # Извлекаем язык, если он указан (например, ```diff-python)
+                match = re.match(r'```diff-?(\w+)', line.strip())
+                lang = match.group(1) if match else ''
+                continue
+            elif line.strip() == '```' and in_diff_block:
+                in_diff_block = False
+                
+                before_code = "\n".join([l[1:] for l in diff_block_lines if not l.startswith('+')])
+                after_code = "\n".join([l[1:] for l in diff_block_lines if not l.startswith('-')])
 
-    before_lines = [line[1:] for line in source.splitlines() if not line.startswith('+')]
-    after_lines = [line[1:] for line in source.splitlines() if not line.startswith('-')]
+                # Экранируем HTML, чтобы он отображался как текст
+                before_code_escaped = self._escape(before_code)
+                after_code_escaped = self._escape(after_code)
+                
+                # Передаем язык в класс для highlight.js
+                css_class = f'language-{lang}' if lang else ''
 
-    matcher = difflib.SequenceMatcher(None, before_lines, after_lines)
-    
-    before_html = ''
-    after_html = ''
-
-    for tag, i1, i2, j1, j2 in matcher.get_opcodes():
-        if tag == 'replace':
-            for line in before_lines[i1:i2]:
-                highlighted_line = highlight(line, lexer, formatter)
-                before_html += f'<div class="diff-line diff-line-sub">{highlighted_line.strip()}</div>'
-            for line in after_lines[j1:j2]:
-                highlighted_line = highlight(line, lexer, formatter)
-                after_html += f'<div class="diff-line diff-line-add">{highlighted_line.strip()}</div>'
-        elif tag == 'delete':
-            for line in before_lines[i1:i2]:
-                highlighted_line = highlight(line, lexer, formatter)
-                before_html += f'<div class="diff-line diff-line-sub">{highlighted_line.strip()}</div>'
-                after_html += '<div class="diff-line diff-line-empty">&nbsp;</div>'
-        elif tag == 'insert':
-            for line in after_lines[j1:j2]:
-                before_html += '<div class="diff-line diff-line-empty">&nbsp;</div>'
-                highlighted_line = highlight(line, lexer, formatter)
-                after_html += f'<div class="diff-line diff-line-add">{highlighted_line.strip()}</div>'
-        elif tag == 'equal':
-            for line in before_lines[i1:i2]:
-                highlighted_line = highlight(line, lexer, formatter)
-                line_html = f'<div class="diff-line diff-line-equal">{highlighted_line.strip()}</div>'
-                before_html += line_html
-                after_html += line_html
-
-    return f'''
+                html_structure = f'''
 <div class="diff-wrapper">
     <div class="diff-container">
         <div class="diff-header">Было</div>
-        <pre><code class="{css_class}">{before_html}</code></pre>
+        <pre><code class="{css_class}">{before_code_escaped}</code></pre>
     </div>
     <div class="diff-container">
         <div class="diff-header">Стало</div>
-        <pre><code class="{css_class}">{after_html}</code></pre>
+        <pre><code class="{css_class}">{after_code_escaped}</code></pre>
     </div>
 </div>
 '''
+                placeholder = self.md.htmlStash.store(html_structure)
+                new_lines.append(placeholder)
+            elif in_diff_block:
+                diff_block_lines.append(line)
+            else:
+                new_lines.append(line)
+        
+        return new_lines
+
+    def _escape(self, text):
+        """Экранирует специальные HTML-символы."""
+        return text.replace('&', '&').replace('<', '<').replace('>', '>').replace('"', '"')
+
+class DiffExtension(Extension):
+    def extendMarkdown(self, md):
+        md.preprocessors.register(DiffPreprocessor(md), 'diff', 27)
+
 
 def copy_assets(target_dir: str):
     """Копирует assets в папку назначения"""
@@ -172,6 +171,7 @@ def convert_markdown_to_html(markdown_path: str):
             "tables",
             "fenced_code",
             "pymdownx.superfences",
+            DiffExtension(),
         ]
 
         extension_configs = {
@@ -181,11 +181,6 @@ def convert_markdown_to_html(markdown_path: str):
                         "name": "mermaid",
                         "class": "mermaid",
                         "format": lambda source, language, css_class, options, md, **kwargs: f'<pre class="mermaid">{source}</pre>',
-                    },
-                    {
-                        "name": "diff",
-                        "class": "diff",
-                        "format": custom_diff_formatter,
                     }
                 ]
             }

@@ -501,16 +501,16 @@ hr::after {
   border-top-right-radius: 0.5rem;
 }
 
-.diff-container pre,
-.diff-container pre code.hljs { /* Максимально специфичный селектор для переопределения highlight.js */
+.diff-container pre {
   margin: 0;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
-  background-color: #0d1117 !important; /* Фон как у родителя, чтобы скрыть разницу в высоте */
-  padding: 0.5rem 0; /* Уменьшаем вертикальные отступы */
+  background-color: #0d1117; /* Базовый фон для всего блока <pre> */
+  padding: 0.5rem 0;
 }
 
-.diff-container pre code {
+.diff-container pre code.hljs {
+  background-color: transparent; /* Убираем фон у <code>, чтобы был виден фон <pre> */
   display: block;
   white-space: pre-wrap;
 }
@@ -521,12 +521,13 @@ hr::after {
   min-height: 1.5em; /* Гарантирует, что пустые строки имеют высоту */
 }
 
-.diff-sub {
-  background-color: rgba(248, 82, 73, 0.4);
+/* Более специфичные селекторы для подсветки, чтобы перебить стили highlight.js */
+.diff-container pre code .diff-sub {
+  background-color: #4d1212; /* Более темный, но насыщенный красный */
 }
 
-.diff-add {
-  background-color: rgba(46, 160, 67, 0.4);
+.diff-container pre code .diff-add {
+  background-color: #113c11; /* Более темный, но насыщенный зеленый */
 }
 
 /* Адаптивность */

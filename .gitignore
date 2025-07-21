@@ -1,7 +1,4 @@
 .venv
 .idea
 result/
-*.webp
-*.jpg
-*.png
-*.jpeg
+covers/

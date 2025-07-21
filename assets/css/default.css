@@ -243,10 +243,11 @@ blockquote:not(.alert) footer {
 /* Код */
 .code-copy-btn {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 2.5rem;
-  height: 2.5rem;
+  top: 4px;
+  right: 4px;
+  width: 1.5rem;
+  height: 1.5rem;
+  font-size: 0.8rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -476,10 +477,10 @@ hr::after {
 .diff-wrapper {
   display: flex;
   gap: 1rem;
-  margin: 2rem 0;
+  margin: 1rem 0; /* Уменьшаем вертикальные отступы */
   background-color: #0d1117; /* GitHub-подобный фон */
   border-radius: 0.5rem;
-  padding: 1rem;
+  padding: 0.5rem; /* Уменьшаем внутренние отступы */
   border: 1px solid #30363d;
   overflow: hidden;
 }
@@ -491,20 +492,22 @@ hr::after {
 
 .diff-header {
   font-weight: bold;
+  font-size: 0.8em; /* Уменьшаем шрифт */
   color: #c9d1d9;
   background-color: #161b22;
-  padding: 0.5rem 1rem;
+  padding: 0.25rem 0.75rem; /* Уменьшаем паддинги */
   border-bottom: 1px solid #30363d;
   border-top-left-radius: 0.5rem;
   border-top-right-radius: 0.5rem;
 }
 
-.diff-container pre {
+.diff-container pre,
+.diff-container pre code.hljs { /* Максимально специфичный селектор для переопределения highlight.js */
   margin: 0;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
-  background-color: transparent !important; /* Фон должен быть прозрачным, чтобы были видны цвета строк */
-  padding: 1rem 0;
+  background-color: #0d1117 !important; /* Фон как у родителя, чтобы скрыть разницу в высоте */
+  padding: 0.5rem 0; /* Уменьшаем вертикальные отступы */
 }
 
 .diff-container pre code {

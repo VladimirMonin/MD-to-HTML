@@ -10,39 +10,44 @@ from markdown.preprocessors import Preprocessor
 # Основные настройки
 TEMPLATE = "main.html"
 RESULT_FOLDER = "./result"
-FILES_FOLDER = r"C:\Syncthing\База Obsidian\9 файлы"
+FILES_FOLDER = r"C:\PY\SK_OOP_COURSE\1_LESSONS\lesson_001\media"
 ASSETS_FOLDER = "assets"
 BRAND_IMAGE = r"covers\django_logo.jpg"
+
 
 class DiffPreprocessor(Preprocessor):
     def run(self, lines):
         new_lines = []
         in_diff_block = False
         diff_block_lines = []
-        lang = ''
+        lang = ""
 
         for line in lines:
-            if line.strip().startswith('```diff'):
+            if line.strip().startswith("```diff"):
                 in_diff_block = True
                 diff_block_lines = []
                 # Извлекаем язык, если он указан (например, ```diff-python)
-                match = re.match(r'```diff-?(\w+)', line.strip())
-                lang = match.group(1) if match else ''
+                match = re.match(r"```diff-?(\w+)", line.strip())
+                lang = match.group(1) if match else ""
                 continue
-            elif line.strip() == '```' and in_diff_block:
+            elif line.strip() == "```" and in_diff_block:
                 in_diff_block = False
-                
-                before_code = "\n".join([l[1:] for l in diff_block_lines if not l.startswith('+')])
-                after_code = "\n".join([l[1:] for l in diff_block_lines if not l.startswith('-')])
+
+                before_code = "\n".join(
+                    [l[1:] for l in diff_block_lines if not l.startswith("+")]
+                )
+                after_code = "\n".join(
+                    [l[1:] for l in diff_block_lines if not l.startswith("-")]
+                )
 
                 # Экранируем HTML, чтобы он отображался как текст
                 before_code_escaped = self._escape(before_code)
                 after_code_escaped = self._escape(after_code)
-                
-                # Передаем язык в класс для highlight.js
-                css_class = f'language-{lang}' if lang else ''
 
-                html_structure = f'''
+                # Передаем язык в класс для highlight.js
+                css_class = f"language-{lang}" if lang else ""
+
+                html_structure = f"""
 <div class="diff-wrapper">
     <div class="diff-container">
         <div class="diff-header">Было</div>
@@ -53,23 +58,26 @@ class DiffPreprocessor(Preprocessor):
         <pre><code class="{css_class}">{after_code_escaped}</code></pre>
     </div>
 </div>
-'''
+"""
                 placeholder = self.md.htmlStash.store(html_structure)
                 new_lines.append(placeholder)
             elif in_diff_block:
                 diff_block_lines.append(line)
             else:
                 new_lines.append(line)
-        
+
         return new_lines
 
     def _escape(self, text):
         """Экранирует специальные HTML-символы."""
-        return text.replace('&', '&').replace('<', '<').replace('>', '>').replace('"', '"')
+        return (
+            text.replace("&", "&").replace("<", "<").replace(">", ">").replace('"', '"')
+        )
+
 
 class DiffExtension(Extension):
     def extendMarkdown(self, md):
-        md.preprocessors.register(DiffPreprocessor(md), 'diff', 27)
+        md.preprocessors.register(DiffPreprocessor(md), "diff", 27)
 
 
 def copy_assets(target_dir: str):
@@ -115,12 +123,12 @@ def copy_local_media(md_content: str, media_dir: str, markdown_path: str) -> str
                     elif mime_type.startswith("audio"):
                         md_content = md_content.replace(
                             f"![{media_path}]({media_path})",
-                            f'<audio controls><source src="./media/{os.path.basename(media_path)}" type="{mime_type}">Your browser does not support the audio element.</audio>',
+                            f'<audio class="plyr-audio" controls><source src="./media/{os.path.basename(media_path)}" type="{mime_type}">Your browser does not support the audio element.</audio>',
                         )
                     elif mime_type.startswith("video"):
                         md_content = md_content.replace(
                             f"![{media_path}]({media_path})",
-                            f'<video controls><source src="./media/{os.path.basename(media_path)}" type="{mime_type}">Your browser does not support the video element.</video>',
+                            f'<video class="plyr-video" controls playsinline><source src="./media/{os.path.basename(media_path)}" type="{mime_type}">Your browser does not support the video element.</video>',
                         )
                 print(f"Копируется: {media_path} в {new_path}")
             else:
@@ -165,7 +173,7 @@ def convert_markdown_to_html(markdown_path: str):
             md_content = file.read()
 
         md_content = copy_local_media(md_content, media_dir, markdown_path)
-        
+
         md_extensions = [
             "extra",
             "tables",

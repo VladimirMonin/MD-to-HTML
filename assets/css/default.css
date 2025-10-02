@@ -441,6 +441,166 @@ video {
   height: 100%;
 }
 
+/* Стили для Plyr плееров */
+.plyr {
+  margin: 2rem 0;
+  border-radius: 0.75rem;
+  overflow: visible;
+  background: #f8f9fa;
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.plyr--audio {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  padding: 0.75rem;
+  border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.plyr--audio:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  border-color: rgba(255, 193, 7, 0.5);
+  transform: translateY(-2px);
+}
+
+.plyr--video {
+  background: #000;
+  border: none;
+}
+
+/* Контейнер для аудио плеера */
+audio {
+  width: 100%;
+  margin: 2rem 0;
+}
+
+/* Настройка цветов Plyr под светлую тему */
+.plyr--audio .plyr__controls {
+  background: transparent;
+  color: #333;
+}
+
+.plyr--audio .plyr__control--overlaid {
+  background: var(--primary-color);
+  color: #000;
+}
+
+.plyr--audio .plyr__control:hover {
+  background: var(--primary-color);
+  color: #000;
+}
+
+.plyr--audio .plyr__progress__buffer {
+  color: rgba(255, 193, 7, 0.3);
+}
+
+.plyr--audio .plyr__volume--display {
+  color: #333;
+}
+
+/* Золотой цвет для регулятора громкости */
+.plyr--audio input[type="range"]::-webkit-slider-thumb {
+  background: var(--primary-color);
+}
+
+.plyr--audio input[type="range"]::-moz-range-thumb {
+  background: var(--primary-color);
+}
+
+.plyr--audio input[type="range"]::-ms-thumb {
+  background: var(--primary-color);
+}
+
+.plyr--audio .plyr__volume input[type="range"] {
+  color: var(--primary-color);
+}
+
+/* ЗОЛОТОЙ ПРОГРЕСС БАР */
+.plyr--audio .plyr__progress input[type="range"] {
+  color: var(--primary-color);
+}
+
+.plyr--audio .plyr__progress__played {
+  background: var(--primary-color) !important;
+  color: var(--primary-color) !important;
+}
+
+.plyr--audio input[type="range"]::-webkit-slider-runnable-track {
+  background: transparent;
+}
+
+/* ЗОЛОТАЯ КНОПКА НАСТРОЕК при активации */
+.plyr--audio .plyr__control[aria-expanded="true"] {
+  background: var(--primary-color);
+  color: #000;
+}
+
+.plyr--audio .plyr__control.plyr__tab-focus {
+  background: var(--primary-color);
+  color: #000;
+}
+
+/* МЕНЮ НАСТРОЕК - красивое выпадающее меню */
+.plyr__menu {
+  z-index: 100;
+  right: 0;
+  bottom: 100%;
+  margin-bottom: 5px;
+}
+
+.plyr__menu__container {
+  background: white;
+  color: #333;
+  border: 2px solid var(--primary-color);
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.plyr__menu__container [role="menu"] {
+  padding: 0.5rem 0;
+}
+
+.plyr__menu__container [role="menuitem"],
+.plyr__menu__container [role="menuitemradio"] {
+  color: #333;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.95rem;
+  transition: background 0.2s ease;
+}
+
+.plyr__menu__container [role="menuitem"]:hover,
+.plyr__menu__container [role="menuitemradio"]:hover {
+  background: var(--primary-light);
+}
+
+.plyr__menu__container [role="menuitemradio"][aria-checked="true"] {
+  background: var(--primary-light);
+  font-weight: 600;
+}
+
+.plyr__menu__container [role="menuitemradio"][aria-checked="true"]::before {
+  background: var(--primary-color);
+}
+
+.plyr__menu__value {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
 /* Разделитель */
 hr {
   margin: 3rem 0;

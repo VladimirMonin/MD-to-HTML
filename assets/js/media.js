@@ -41,9 +41,10 @@ function showFullscreenImage(container, src) {
 
 function initVideoPlayer() {
   const videoElements = document.querySelectorAll("video");
+  const audioElements = document.querySelectorAll("audio");
 
-  if (!videoElements.length) {
-    console.log("На странице нет видео элементов");
+  if (!videoElements.length && !audioElements.length) {
+    console.log("На странице нет медиа элементов");
     return;
   }
 
@@ -52,21 +53,51 @@ function initVideoPlayer() {
     return;
   }
 
-  Plyr.setup("video", {
-    controls: [
-      "play-large",
-      "play",
-      "progress",
-      "current-time",
-      "duration",
-      "mute",
-      "volume",
-      "fullscreen",
-    ],
-    settings: ["speed"],
-    speed: {
-      selected: 1,
-      options: [0.5, 1, 1.25, 1.5, 2, 2.25, 2.5],
-    },
-  });
+  // Инициализация для видео
+  if (videoElements.length) {
+    videoElements.forEach((video) => {
+      new Plyr(video, {
+        controls: [
+          "play-large",
+          "play",
+          "progress",
+          "current-time",
+          "duration",
+          "mute",
+          "volume",
+          "settings",
+          "fullscreen",
+        ],
+        settings: ["quality", "speed"],
+        speed: {
+          selected: 1,
+          options: [0.5, 0.75, 1, 1.25, 1.5, 2],
+        },
+      });
+    });
+    console.log(`Инициализировано ${videoElements.length} видео плееров`);
+  }
+
+  // Инициализация для аудио
+  if (audioElements.length) {
+    audioElements.forEach((audio) => {
+      new Plyr(audio, {
+        controls: [
+          "play",
+          "progress",
+          "current-time",
+          "duration",
+          "mute",
+          "volume",
+          "settings",
+        ],
+        settings: ["speed"],
+        speed: {
+          selected: 1,
+          options: [0.5, 0.75, 1, 1.25, 1.5, 2],
+        },
+      });
+    });
+    console.log(`Инициализировано ${audioElements.length} аудио плееров`);
+  }
 }

@@ -9,8 +9,9 @@ code {
   border-radius: 4px;
   color: #d84315;
   border: 1px solid #ffe0b2;
-  white-space: nowrap;
-  word-break: keep-all;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 /* Блоки кода */

@@ -1,0 +1,93 @@
+/* 1. ПОДКЛЮЧЕНИЕ ШРИФТОВ (Скачай их в папку assets/fonts/) */
+
+@font-face {
+  font-family: "Merriweather";
+  font-style: normal;
+  font-weight: 400;
+  src: url("./assets/fonts/Merriweather-Regular.ttf");
+}
+
+@font-face {
+  font-family: "Montserrat";
+  font-style: normal;
+  font-weight: 700;
+  src: url("./assets/fonts/Montserrat-Bold.ttf");
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 400;
+  src: url("./assets/fonts/JetBrainsMono-Regular.ttf");
+}
+
+/* 2. БАЗОВЫЕ НАСТРОЙКИ */
+body {
+  font-family: "Merriweather", serif; /* Основной текст */
+  line-height: 1.6;
+  color: #333;
+  max-width: 800px; /* Для HTML, в EPUB игнорируется ридером */
+  margin: 0 auto;
+  padding: 1em;
+}
+
+/* Заголовки */
+h1,
+h2,
+h3,
+h4 {
+  font-family: "Montserrat", sans-serif;
+  color: #2c3e50;
+  margin-top: 1.5em;
+}
+
+/* Код */
+code,
+pre {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.9em;
+}
+
+pre {
+  background-color: #f4f4f4;
+  padding: 1em;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+/* 3. СТИЛИ ВЫНОСОК (ADMONITIONS) 
+   Pandoc превратит ::: tip в <div class="tip">
+*/
+
+div.note,
+div.info,
+div.tip,
+div.warning,
+div.danger {
+  padding: 1em;
+  margin: 1em 0;
+  border-left: 5px solid;
+  background-color: #f9f9f9;
+  page-break-inside: avoid; /* Чтобы блок не разрывался в книге */
+}
+
+/* Цвета для разных типов */
+div.info {
+  border-color: #3498db; /* Синий */
+  background-color: #eaf2f8;
+}
+
+div.tip {
+  border-color: #2ecc71; /* Зеленый */
+  background-color: #e9f7ef;
+}
+
+div.warning {
+  border-color: #f1c40f; /* Желтый */
+  background-color: #fef9e7;
+}
+
+div.danger {
+  border-color: #e74c3c; /* Красный */
+  background-color: #fadbd8;
+}

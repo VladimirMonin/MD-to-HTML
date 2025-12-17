@@ -1,0 +1,10 @@
+/* Подключение всех CSS модулей */
+@import url("./modules/fonts.css");
+@import url("./modules/base.css");
+@import url("./modules/components.css");
+@import url("./modules/admonitions.css");
+@import url("./modules/toc.css");
+@import url("./modules/breadcrumbs.css");
+@import url("./modules/interactive.css");
+@import url("./modules/diff.css");
+@import url("./modules/responsive.css");

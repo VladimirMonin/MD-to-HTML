@@ -1,243 +1,302 @@
-# 📚 MD-to-HTML Book Builder
+# MD to HTML/EPUB Converter v2.0
 
-Конвертер Markdown в HTML и EPUB с профессиональным оформлением.
-
-## ✨ Основные возможности
-
-### HTML версия
-
-- 🎨 **GitHub Dark подсветка кода** (Highlight.js)
-- 📊 **Mermaid диаграммы** (интерактивные SVG)
-- 📋 **Копирование кода** (кнопки на блоках)
-- 🔍 **Fullscreen режим** (для изображений и диаграмм)
-- 🧭 **Breadcrumbs навигация** (sticky панель с dropdown меню)
-- 🎯 **Красивое оглавление** (градиентный фиолетовый фон)
-- 📄 **Один файл** (всё встроено внутрь)
-
-### EPUB версия
-
-- 🎨 **Кастомная тема подсветки** (github-dark.theme)
-- 📊 **Mermaid диаграммы** (векторные SVG)
-- 🔤 **Вшитые шрифты** (8 шрифтов: Merriweather, Montserrat, JetBrains Mono, FiraCode, CascadiaCode, NotoEmoji)
-- 📱 **Адаптивные стили** (для e-readers)
-- 📖 **Оглавление** (навигация по книге)
+Профессиональный конвертер Markdown → HTML/EPUB с модульной архитектурой.
 
 ## 🚀 Быстрый старт
 
-```powershell
-# 1. Установить зависимости (см. INSTALL.md)
-pandoc --version  # >= 3.0
-npm --version     # >= 9.0
+### Установка зависимостей
 
-# 2. Установить mermaid-filter
-npm install --global mermaid-filter
-
-# 3. Установить Python пакеты
+```bash
 poetry install
-
-# 4. Запустить сборку
-poetry run python build_book.py
 ```
 
-## 📦 Требования
+### Использование
 
-- **Pandoc 3.x** - <https://pandoc.org/>
-- **Node.js 16+** - <https://nodejs.org/>
-- **Python 3.9+** - <https://python.org/>
-- **mermaid-filter** - `npm install -g mermaid-filter`
+**CLI:**
 
-Подробная инструкция: [doc/INSTALL.md](doc/INSTALL.md)
+```bash
+python cli.py <input> [options]
 
-## 📖 Использование
-
-### Интерактивный режим
-
-```powershell
-poetry run python build_book.py
+# Примеры:
+python cli.py doc/README.md -f html
+python cli.py "result/День №1" -f both --title "День 1"
+python cli.py test.md -m copy --no-breadcrumbs
 ```
 
-### Программный вызов
+**Python API:**
+
+```bash
+python convert.py
+```
+
+## 📋 Структура проекта
+
+```
+MD_to_HTML/
+├── cli.py                  # CLI точка входа (argparse)
+├── convert.py              # Python точка входа (YAML)
+├── config.yaml             # Конфигурация по умолчанию
+├── pyproject.toml          # Poetry зависимости
+│
+├── md_converter/           # Основной пакет
+│   ├── __init__.py
+│   ├── config.py           # Dataclass конфигурация
+│   ├── converter.py        # Оркестратор (6-stage pipeline)
+│   │
+│   ├── preprocessors/      # Препроцессоры Markdown
+│   │   ├── base.py         # Абстрактный класс
+│   │   ├── obsidian.py     # ![[]] → ![]()
+│   │   ├── callouts.py     # [!NOTE] → ::: note
+│   │   ├── mermaid.py      # ```mermaid → <pre>
+│   │   └── diff.py         # ```diff-python → HTML
+│   │
+│   ├── processors/         # Процессоры
+│   │   ├── merger.py       # Слияние MD файлов
+│   │   ├── media.py        # Обработка медиа (embed/copy)
+│   │   └── template.py     # Генерация HTML headers
+│   │
+│   ├── backends/           # Бэкенды конвертации
+│   │   └── pandoc.py       # Pandoc wrapper (HTML/EPUB)
+│   │
+│   └── postprocessors/     # Постпроцессоры
+│       ├── mermaid_fix.py  # Исправление символов
+│       └── plyr_wrap.py    # Аудио/видео wrapper
+│
+├── assets/                 # Ресурсы
+│   ├── css/
+│   │   ├── main.css        # Главный CSS (импорты)
+│   │   └── modules/        # CSS модули
+│   │       ├── fonts.css
+│   │       ├── base.css
+│   │       ├── components.css
+│   │       ├── breadcrumbs.css
+│   │       └── ...
+│   │
+│   ├── js/
+│   │   ├── main_modules.js # Главный JS (ES6)
+│   │   └── modules/        # JS модули
+│   │       ├── codeCopy.js
+│   │       ├── fullscreen.js
+│   │       ├── breadcrumbs.js
+│   │       └── ...
+│   │
+│   ├── templates/          # HTML шаблоны
+│   │   ├── book.html       # Книжный вид
+│   │   └── web.html        # Веб вид (Bootstrap)
+│   │
+│   └── fonts/              # Встроенные шрифты
+│
+├── build/                  # Выходные файлы
+├── backup/                 # Старый код
+└── doc/                    # Документация
+```
+
+## ⚙️ Конфигурация
+
+**Полная документация:** [doc/CONFIG.md](doc/CONFIG.md)
+
+Главный файл: `config.yaml` в корне проекта.
+
+Основные параметры:
+
+- `formats` - html, epub или оба
+- `media_mode` - embed (встроить) или copy (в папку media/)
+- `template` - book (минималистичный) или web (Bootstrap)
+- `features` - toc, breadcrumbs, mermaid, code_copy и др.
+
+CLI аргументы переопределяют config.yaml.
+
+## 🔧 CLI
+
+**Полная документация:** [doc/CLI_GUIDE.md](doc/CLI_GUIDE.md)
+
+```bash
+python cli.py <input> [options]
+```
+
+Основные опции:
+
+- `-f, --format` - html | epub | both
+- `-m, --media` - embed | copy
+- `-t, --template` - book | web
+- `--title`, `--author`, `--brand` - метаданные
+- `--no-toc`, `--no-breadcrumbs` - отключение функций
+
+Примеры:
+
+```bash
+# Простая конвертация
+python cli.py doc/README.md
+
+# Книга с обложкой
+python cli.py "День №1" -f both --title "День 1" --brand cover.png
+
+# Веб-документация
+python cli.py docs/ -t web -m copy
+```
+
+## 🏗️ Архитектура
+
+### Pipeline (6 стадий)
+
+```
+1. Merger         → Слияние MD файлов (natsort)
+2. MediaProcessor → Обработка медиа (embed/copy)
+3. Preprocessors  → Obsidian → Callouts → Mermaid → Diff
+4. Template       → Генерация HTML <head> с CSS/JS
+5. PandocBackend  → Конвертация Pandoc (HTML/EPUB)
+6. Postprocessors → MermaidFix, PlyrWrap (только HTML)
+```
+
+### Модули
+
+**Preprocessors** — обрабатывают Markdown до Pandoc:
+
+- `ObsidianPreprocessor`: `![[image]]` → `![](image)`
+- `CalloutPreprocessor`: `[!NOTE]` → `::: note`
+- `MermaidPreprocessor`: ` ```mermaid` → `<pre class="mermaid">`
+- `DiffPreprocessor`: ` ```diff-python` → HTML структура "Было/Стало"
+
+**Processors** — обработка файлов:
+
+- `MergerProcessor`: Слияние нескольких MD в один
+- `MediaProcessor`: Копирование/встраивание медиа
+- `TemplateProcessor`: Генерация HTML headers
+
+**Backends** — конвертация:
+
+- `PandocBackend`: Wrapper для Pandoc с конфигами HTML/EPUB
+
+**Postprocessors** — доработка HTML:
+
+- `MermaidFixPostprocessor`: Исправление `--&gt;` → `-->`
+- `PlyrWrapPostprocessor`: Обертка аудио/видео в Plyr (TODO)
+
+## 📚 Python API
+
+**Полная документация:** [doc/API.md](doc/API.md)
 
 ```python
-from build_book import build_book
+from md_converter import Converter, ConverterConfig
 
-# Сборка HTML
-build_book("input.md", "output_name", "html")
+# Загрузка конфига
+config = ConverterConfig.from_yaml("config.yaml")
 
-# Сборка EPUB
-build_book("input.md", "output_name", "epub")
+# Настройка
+config.formats = ["html"]
+config.metadata.title = "Мой документ"
 
-# Папка с файлами
-build_book("markdown_folder/", "book_name", "html")
+# Конвертация
+converter = Converter(config)
+results = converter.convert("input.md", "output")
+
+for path in results:
+    print(f"Создан: {path}")
 ```
 
-## 📁 Пример структуры Markdown
+## 🎨 CSS Модули
 
-```
-my_book/
-├── 01_introduction.md
-├── 02_chapter_one.md
-├── 03_chapter_two.md
-└── 10_conclusion.md
-```
+CSS разбит на отдельные модули для удобства:
 
-Файлы сортируются естественным образом (1, 2, 10... а не 1, 10, 2...)
+- `fonts.css` — @font-face определения
+- `base.css` — body, заголовки, параграфы
+- `components.css` — код, цитаты, таблицы
+- `admonitions.css` — выноски [!NOTE]
+- `toc.css` — оглавление
+- `breadcrumbs.css` — хлебные крошки
+- `interactive.css` — кнопки копирования, fullscreen
+- `diff.css` — diff блоки
+- `responsive.css` — @media queries
 
-## 🎨 Markdown возможности
+## 🔌 JS ES6 Модули
 
-### Код с подсветкой
+JavaScript разбит на ES6 модули:
 
-```python
-def hello():
-    print("Hello, World!")
-```
+- `codeCopy.js` — кнопки копирования кода
+- `fullscreen.js` — fullscreen изображений/SVG
+- `breadcrumbs.js` — динамические breadcrumbs
+- `smoothScroll.js` — плавная прокрутка TOC
+- `mermaid.js` — инициализация Mermaid
 
-### Mermaid диаграммы
+Главный файл `main_modules.js` импортирует все модули.
 
-```mermaid
-graph LR
-    A[Markdown] --> B[Pandoc]
-    B --> C[HTML]
-    B --> D[EPUB]
-```
+## 📦 Зависимости
 
-### Таблицы
+- **Python**: 3.9+
+- **Poetry**: Управление зависимостями
+- **Pandoc**: 3.7+ (для конвертации)
+- **natsort**: Естественная сортировка файлов
+- **PyYAML**: Парсинг конфигов
+- **mermaid-filter**: npm пакет (для EPUB SVG)
 
-| Заголовок | Описание |
-|-----------|----------|
-| HTML      | Веб-версия |
-| EPUB      | Для читалок |
+### Установка Pandoc
 
-### Цитаты
->
-> Это красивая цитата с золотистой линией слева
+**Windows:**
 
-## 🛠️ Конфигурация
-
-Настройки в [build_book.py](build_book.py):
-
-```python
-# Темы подсветки
-HLJS_THEME = "github-dark"        # HTML
-CUSTOM_THEME_FILE = "assets/github-dark.theme"  # EPUB
-
-# Mermaid
-MERMAID_THEME = "neutral"         # neutral, default, dark, forest
-MERMAID_FORMAT = "svg"            # svg (лучше) или png
-
-# Шрифты
-EMBED_FONTS_IN_EPUB = True        # Вшивать шрифты в EPUB
+```bash
+winget install pandoc
 ```
 
-## 📚 Документация
+**Linux:**
 
-- [doc/INSTALL.md](doc/INSTALL.md) - Подробная установка
-- [doc/JS_ENHANCEMENTS.md](doc/JS_ENHANCEMENTS.md) - JavaScript возможности
-- [doc/FONT_LICENSES.md](doc/FONT_LICENSES.md) - Лицензии на шрифты
-- [doc/dif_logic.md](doc/dif_logic.md) - Логика работы
-
-## 🎯 Примеры
-
-### HTML с интерактивом
-
-- Клик по коду → кнопка копирования
-- Клик по изображению → fullscreen
-- Клик по диаграмме → fullscreen
-- Плавная прокрутка оглавления
-
-### EPUB для читалки
-
-- Векторные диаграммы (четкие на любом zoom)
-- Встроенные шрифты (работают на PocketBook)
-- Правильная навигация
-- Адаптивное оформление
-
-## 🔧 Кастомизация
-
-### Изменить стили
-
-Редактируй [assets/css/book_style.css](assets/css/book_style.css)
-
-### Добавить JS функции
-
-Редактируй [assets/js/pandoc_enhancements.js](assets/js/pandoc_enhancements.js)
-
-### Изменить тему подсветки
-
-```powershell
-# Экспортировать тему Pandoc
-pandoc --print-highlight-style breezedark > my_theme.theme
-
-# Отредактировать JSON файл
-code my_theme.theme
-
-# Использовать в build_book.py
-CUSTOM_THEME_FILE = "my_theme.theme"
+```bash
+sudo apt install pandoc
 ```
 
-## 📊 Результат сборки
+**macOS:**
 
-```
-build/
-├── my_book.html           # HTML версия (один файл, всё встроено)
-└── my_book.epub           # EPUB версия (для e-readers)
+```bash
+brew install pandoc
 ```
 
-### HTML (один файл)
+### Установка mermaid-filter
 
-- CSS встроен
-- JavaScript встроен
-- Изображения встроены (base64)
-- Можно открыть где угодно
+```bash
+npm install -g mermaid-filter
+```
 
-### EPUB (стандартный формат)
+## 🧪 Тестирование
 
-- Совместим с Kindle, PocketBook, Kobo
-- Шрифты внутри
-- SVG диаграммы
-- Навигация по главам
+```bash
+python test_new.py
+```
+
+Тесты проверяют:
+
+- Загрузку YAML конфига
+- Работу всех препроцессоров
+- Базовую конвертацию MD → HTML
+
+## 🔄 Миграция со старой версии
+
+Старые файлы перемещены в `backup/`:
+
+- `backup/build_book.py` — старый Pandoc wrapper
+- `backup/main.py` — Python-markdown конвертер
+- `backup/main.html` — Bootstrap шаблон
+
+Новая архитектура объединяет оба подхода с полной модульностью.
+
+## 📖 Лицензия
+
+MIT License — см. [LICENSE](LICENSE)
 
 ## 🤝 Вклад
 
-Pull requests приветствуются!
+1. Создайте ветку: `git checkout -b feature/new-feature`
+2. Коммит: `git commit -m "Add new feature"`
+3. Commit: `git push origin feature/new-feature`
+4. Pull Request
 
-1. Fork репозитория
-2. Создай feature branch (`git checkout -b feature/amazing`)
-3. Commit изменений (`git commit -m 'Add amazing feature'`)
-4. Push в branch (`git push origin feature/amazing`)
-5. Открой Pull Request
+## � Документация
 
-## 📄 Лицензия
+- 🚀 **[Быстрый старт](doc/QUICKSTART.md)** - установка и первый запуск
+- ⚙️ **[Конфигурация](doc/CONFIG.md)** - настройка config.yaml
+- 🔧 **[CLI Guide](doc/CLI_GUIDE.md)** - примеры использования CLI
+- 📖 **[API](doc/API.md)** - Python API документация
+- 🎨 **[JS Enhancements](doc/JS_ENHANCEMENTS.md)** - интерактивные функции
 
-MIT License - см. [LICENSE](LICENSE)
+## 📞 Поддержка
 
-### Лицензии шрифтов
-
-Все используемые шрифты распространяются под **SIL Open Font License 1.1**:
-
-- ✅ **JetBrains Mono** - для кода
-- ✅ **FiraCode** - для кода
-- ✅ **Cascadia Code** - для кода
-- ✅ **Merriweather** - для текста (serif)
-- ✅ **Montserrat** - для заголовков (sans-serif)
-- ✅ **Noto Emoji** - для emoji
-
-Подробности: [doc/FONT_LICENSES.md](doc/FONT_LICENSES.md)
-
-**SIL OFL 1.1** разрешает:
-- Использование в коммерческих проектах
-- Встраивание в документы (HTML/EPUB/PDF)
-- Модификацию и распространение
-
-## 👤 Автор
-
-**Vladimir Monin**
-
-- GitHub: [@VladimirMonin](https://github.com/VladimirMonin)
-
-## 🙏 Благодарности
-
-- [Pandoc](https://pandoc.org/) - универсальный конвертер
-- [Highlight.js](https://highlightjs.org/) - подсветка синтаксиса
-- [Mermaid](https://mermaid.js.org/) - диаграммы
-- [mermaid-filter](https://github.com/raghur/mermaid-filter) - Pandoc filter для Mermaid
+- **Issues**: [GitHub Issues](https://github.com/VladimirMonin/MD-to-HTML/issues)
+- **Pull Requests**: welcome!

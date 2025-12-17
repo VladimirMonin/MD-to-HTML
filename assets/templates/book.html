@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  $if(title)$<title>$title$</title>$endif$
+  $if(author)$<meta name="author" content="$author$">$endif$
+  
+  <!-- Стили -->
+  <link rel="stylesheet" href="assets/css/main.css">
+  
+  <!-- Highlight.js (если включен) -->
+  $if(highlight)$
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  $endif$
+  
+  <!-- Mermaid (если включен) -->
+  $if(mermaid)$
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  $endif$
+</head>
+<body>
+  <!-- Breadcrumbs (если включен) -->
+  $if(breadcrumbs)$
+  <nav class="breadcrumbs-dynamic" aria-label="Навигация"></nav>
+  $endif$
+  
+  <!-- Основной контент -->
+  $body$
+  
+  <!-- Интерактивные функции -->
+  <script type="module" src="assets/js/main_modules.js"></script>
+</body>
+</html>

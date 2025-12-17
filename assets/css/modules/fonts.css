@@ -1,0 +1,53 @@
+/* ШРИФТЫ */
+
+/* Шрифты для кода */
+@font-face {
+  font-family: "CascadiaCode";
+  font-style: normal;
+  font-weight: 400;
+  src: url("../fonts/CascadiaCode-Regular.ttf");
+}
+
+@font-face {
+  font-family: "FiraCode";
+  font-style: normal;
+  font-weight: 400;
+  src: url("../fonts/FiraCode-Regular.ttf");
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 400;
+  src: url("../fonts/JetBrainsMono-Regular.ttf");
+}
+
+/* Шрифты для текста */
+@font-face {
+  font-family: "Merriweather";
+  font-style: normal;
+  font-weight: 400;
+  src: url("../fonts/Merriweather.ttf");
+}
+
+@font-face {
+  font-family: "Merriweather";
+  font-style: italic;
+  font-weight: 400;
+  src: url("../fonts/Merriweather-Italic.ttf");
+}
+
+/* Шрифты для заголовков */
+@font-face {
+  font-family: "Montserrat";
+  font-style: normal;
+  font-weight: 600;
+  src: url("../fonts/Montserrat.ttf");
+}
+
+@font-face {
+  font-family: "Montserrat";
+  font-style: italic;
+  font-weight: 600;
+  src: url("../fonts/Montserrat-Italic.ttf");
+}

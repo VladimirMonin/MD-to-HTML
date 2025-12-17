@@ -7,14 +7,12 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-Markdown = "^3.6"
-Pygments = "^2.18.0"
-mkdocs = "^1.6.0"
-mkdocs-material = "^9.5.29"
-pymdown-extensions = "^10.8.1"
-Jinja2 = "^3.1.4"
 natsort = "^8.4.0"
+PyYAML = "^6.0"
 
+
+[tool.poetry.group.dev.dependencies]
+pytest = "<9"
 
 [build-system]
 requires = ["poetry-core"]

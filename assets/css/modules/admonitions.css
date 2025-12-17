@@ -1,0 +1,402 @@
+/* ════════════════════════════════════════════════════════════════
+   CALLOUTS / ADMONITIONS (Obsidian-style)
+   ════════════════════════════════════════════════════════════════ */
+
+/* Базовые стили для всех callouts */
+div.note,
+div.info,
+div.tip,
+div.warning,
+div.danger,
+div.success,
+div.check,
+div.done,
+div.question,
+div.help,
+div.faq,
+div.failure,
+div.fail,
+div.missing,
+div.bug,
+div.example,
+div.quote,
+div.cite,
+div.abstract,
+div.summary,
+div.tldr,
+div.todo,
+div.hint,
+div.important,
+div.caution,
+div.attention,
+div.error {
+  position: relative;
+  padding: 1rem 1.2rem;
+  margin: 1.5rem 0;
+  border-radius: 8px;
+  border-left: 4px solid;
+  background-color: var(--callout-bg);
+  page-break-inside: avoid;
+  overflow: visible;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.2s ease;
+}
+
+/* Hover эффект */
+div.note:hover,
+div.info:hover,
+div.tip:hover,
+div.warning:hover,
+div.danger:hover,
+div.success:hover,
+div.check:hover,
+div.done:hover,
+div.question:hover,
+div.help:hover,
+div.faq:hover,
+div.failure:hover,
+div.fail:hover,
+div.missing:hover,
+div.bug:hover,
+div.example:hover,
+div.quote:hover,
+div.cite:hover,
+div.abstract:hover,
+div.summary:hover,
+div.tldr:hover,
+div.todo:hover,
+div.hint:hover,
+div.important:hover,
+div.caution:hover,
+div.attention:hover,
+div.error:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* Заголовки в callouts - ЭМОДЗИ ПЕРЕД ТЕКСТОМ */
+div.note > p:first-child strong:first-child::before,
+div.info > p:first-child strong:first-child::before,
+div.tip > p:first-child strong:first-child::before,
+div.warning > p:first-child strong:first-child::before,
+div.danger > p:first-child strong:first-child::before,
+div.success > p:first-child strong:first-child::before,
+div.check > p:first-child strong:first-child::before,
+div.done > p:first-child strong:first-child::before,
+div.question > p:first-child strong:first-child::before,
+div.help > p:first-child strong:first-child::before,
+div.faq > p:first-child strong:first-child::before,
+div.failure > p:first-child strong:first-child::before,
+div.fail > p:first-child strong:first-child::before,
+div.missing > p:first-child strong:first-child::before,
+div.bug > p:first-child strong:first-child::before,
+div.example > p:first-child strong:first-child::before,
+div.quote > p:first-child strong:first-child::before,
+div.cite > p:first-child strong:first-child::before,
+div.abstract > p:first-child strong:first-child::before,
+div.summary > p:first-child strong:first-child::before,
+div.tldr > p:first-child strong:first-child::before,
+div.todo > p:first-child strong:first-child::before,
+div.hint > p:first-child strong:first-child::before,
+div.important > p:first-child strong:first-child::before,
+div.caution > p:first-child strong:first-child::before,
+div.attention > p:first-child strong:first-child::before,
+div.error > p:first-child strong:first-child::before {
+  content: var(--callout-icon) " ";
+  font-size: 1.2rem;
+  margin-right: 0.3rem;
+}
+
+div.note > p:first-child strong:first-child,
+div.info > p:first-child strong:first-child,
+div.tip > p:first-child strong:first-child,
+div.warning > p:first-child strong:first-child,
+div.danger > p:first-child strong:first-child,
+div.success > p:first-child strong:first-child,
+div.check > p:first-child strong:first-child,
+div.done > p:first-child strong:first-child,
+div.question > p:first-child strong:first-child,
+div.help > p:first-child strong:first-child,
+div.faq > p:first-child strong:first-child,
+div.failure > p:first-child strong:first-child,
+div.fail > p:first-child strong:first-child,
+div.missing > p:first-child strong:first-child,
+div.bug > p:first-child strong:first-child,
+div.example > p:first-child strong:first-child,
+div.quote > p:first-child strong:first-child,
+div.cite > p:first-child strong:first-child,
+div.abstract > p:first-child strong:first-child,
+div.summary > p:first-child strong:first-child,
+div.tldr > p:first-child strong:first-child,
+div.todo > p:first-child strong:first-child,
+div.hint > p:first-child strong:first-child,
+div.important > p:first-child strong:first-child,
+div.caution > p:first-child strong:first-child,
+div.attention > p:first-child strong:first-child,
+div.error > p:first-child strong:first-child {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--callout-title-color);
+}
+
+/* Параграфы внутри callouts */
+div.note > p,
+div.info > p,
+div.tip > p,
+div.warning > p,
+div.danger > p,
+div.success > p,
+div.check > p,
+div.done > p,
+div.question > p,
+div.help > p,
+div.faq > p,
+div.failure > p,
+div.fail > p,
+div.missing > p,
+div.bug > p,
+div.example > p,
+div.quote > p,
+div.cite > p,
+div.abstract > p,
+div.summary > p,
+div.tldr > p,
+div.todo > p,
+div.hint > p,
+div.important > p,
+div.caution > p,
+div.attention > p,
+div.error > p {
+  margin: 0.5rem 0;
+}
+
+div.note > p:last-child,
+div.info > p:last-child,
+div.tip > p:last-child,
+div.warning > p:last-child,
+div.danger > p:last-child,
+div.success > p:last-child,
+div.check > p:last-child,
+div.done > p:last-child,
+div.question > p:last-child,
+div.help > p:last-child,
+div.faq > p:last-child,
+div.failure > p:last-child,
+div.fail > p:last-child,
+div.missing > p:last-child,
+div.bug > p:last-child,
+div.example > p:last-child,
+div.quote > p:last-child,
+div.cite > p:last-child,
+div.abstract > p:last-child,
+div.summary > p:last-child,
+div.tldr > p:last-child,
+div.todo > p:last-child,
+div.hint > p:last-child,
+div.important > p:last-child,
+div.caution > p:last-child,
+div.attention > p:last-child,
+div.error > p:last-child {
+  margin-bottom: 0;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   ТИПЫ CALLOUTS (цвета и иконки)
+   ════════════════════════════════════════════════════════════════ */
+
+/* 📘 NOTE (светлый голубой) */
+div.note {
+  --callout-bg: rgba(33, 150, 243, 0.12);
+  --callout-title-color: #1565c0;
+  --callout-icon: "📘";
+  border-color: #2196f3;
+}
+
+/* 📋 ABSTRACT / SUMMARY / TLDR (светлый бирюзовый) */
+div.abstract,
+div.summary,
+div.tldr {
+  --callout-bg: rgba(3, 169, 244, 0.12);
+  --callout-title-color: #01579b;
+  --callout-icon: "📋";
+  border-color: #03a9f4;
+}
+
+/* ℹ️ INFO (светлый циан) */
+div.info {
+  --callout-bg: rgba(0, 188, 212, 0.12);
+  --callout-title-color: #006064;
+  --callout-icon: "ℹ️";
+  border-color: #00bcd4;
+}
+
+/* ✅ TODO (светлый серый) */
+div.todo {
+  --callout-bg: rgba(158, 158, 158, 0.12);
+  --callout-title-color: #424242;
+  --callout-icon: "✅";
+  border-color: #9e9e9e;
+}
+
+/* 💡 TIP / HINT / IMPORTANT (светлый зеленый) */
+div.tip,
+div.hint,
+div.important {
+  --callout-bg: rgba(76, 175, 80, 0.12);
+  --callout-title-color: #1b5e20;
+  --callout-icon: "💡";
+  border-color: #4caf50;
+}
+
+/* ✅ SUCCESS / CHECK / DONE (светлый мятный) */
+div.success,
+div.check,
+div.done {
+  --callout-bg: rgba(102, 187, 106, 0.12);
+  --callout-title-color: #2e7d32;
+  --callout-icon: "✅";
+  border-color: #66bb6a;
+}
+
+/* ❓ QUESTION / HELP / FAQ (светлый фиолетовый) */
+div.question,
+div.help,
+div.faq {
+  --callout-bg: rgba(156, 39, 176, 0.12);
+  --callout-title-color: #6a1b9a;
+  --callout-icon: "❓";
+  border-color: #9c27b0;
+}
+
+/* ⚠️ WARNING / CAUTION / ATTENTION (светлый желтый) */
+div.warning,
+div.caution,
+div.attention {
+  --callout-bg: rgba(255, 193, 7, 0.12);
+  --callout-title-color: #f57f17;
+  --callout-icon: "⚠️";
+  border-color: #ffc107;
+}
+
+/* ❌ FAILURE / FAIL / MISSING (светлый оранжевый) */
+div.failure,
+div.fail,
+div.missing {
+  --callout-bg: rgba(255, 152, 0, 0.12);
+  --callout-title-color: #e65100;
+  --callout-icon: "❌";
+  border-color: #ff9800;
+}
+
+/* 🚫 DANGER / ERROR (светлый красный) */
+div.danger,
+div.error {
+  --callout-bg: rgba(244, 67, 54, 0.12);
+  --callout-title-color: #c62828;
+  --callout-icon: "🚫";
+  border-color: #f44336;
+}
+
+/* 🐛 BUG (светлый розовый) */
+div.bug {
+  --callout-bg: rgba(233, 30, 99, 0.12);
+  --callout-title-color: #ad1457;
+  --callout-icon: "🐛";
+  border-color: #e91e63;
+}
+
+/* 📝 EXAMPLE (светлый индиго) */
+div.example {
+  --callout-bg: rgba(103, 58, 183, 0.12);
+  --callout-title-color: #4527a0;
+  --callout-icon: "📝";
+  border-color: #673ab7;
+}
+
+/* 💬 QUOTE / CITE (светлый серый) */
+div.quote,
+div.cite {
+  --callout-bg: rgba(96, 125, 139, 0.12);
+  --callout-title-color: #37474f;
+  --callout-icon: "💬";
+  border-color: #607d8b;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   ВЛОЖЕННЫЕ CALLOUTS
+   ════════════════════════════════════════════════════════════════ */
+
+div.note > div.note,
+div.info > div.info,
+div.tip > div.tip,
+div.warning > div.warning,
+div.danger > div.danger {
+  margin: 1rem 0;
+  margin-left: -0.5rem;
+  margin-right: -0.5rem;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   ТЕМНАЯ ТЕМА - ТАКИЕ ЖЕ ПОЛУПРОЗРАЧНЫЕ!
+   ════════════════════════════════════════════════════════════════ */
+
+@media (prefers-color-scheme: dark) {
+  /* Все цвета остаются ТАКИМИ ЖЕ полупрозрачными! */
+  /* Темная тема НЕ МЕНЯЕТ фоны - они полупрозрачные в обоих режимах */
+
+  /* Можно чуть осветлить текст заголовков для темного фона */
+  div.note {
+    --callout-title-color: #64b5f6;
+  }
+  div.abstract,
+  div.summary,
+  div.tldr {
+    --callout-title-color: #4fc3f7;
+  }
+  div.info {
+    --callout-title-color: #4dd0e1;
+  }
+  div.todo {
+    --callout-title-color: #bdbdbd;
+  }
+  div.tip,
+  div.hint,
+  div.important {
+    --callout-title-color: #81c784;
+  }
+  div.success,
+  div.check,
+  div.done {
+    --callout-title-color: #a5d6a7;
+  }
+  div.question,
+  div.help,
+  div.faq {
+    --callout-title-color: #ba68c8;
+  }
+  div.warning,
+  div.caution,
+  div.attention {
+    --callout-title-color: #ffd54f;
+  }
+  div.failure,
+  div.fail,
+  div.missing {
+    --callout-title-color: #ffb74d;
+  }
+  div.danger,
+  div.error {
+    --callout-title-color: #ef5350;
+  }
+  div.bug {
+    --callout-title-color: #f06292;
+  }
+  div.example {
+    --callout-title-color: #9575cd;
+  }
+  div.quote,
+  div.cite {
+    --callout-title-color: #90a4ae;
+  }
+}

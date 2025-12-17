@@ -1,0 +1,52 @@
+/* DIFF БЛОКИ (Было/Стало) */
+
+.diff-block {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1em;
+  margin: 1.5em 0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.diff-column {
+  padding: 1em;
+}
+
+.diff-column h4 {
+  margin-top: 0;
+  margin-bottom: 0.8em;
+  font-size: 1.1em;
+}
+
+.diff-old {
+  background-color: #fff5f5;
+  border-left: 4px solid #e74c3c;
+}
+
+.diff-old h4 {
+  color: #c0392b;
+}
+
+.diff-new {
+  background-color: #f0fff4;
+  border-left: 4px solid #2ecc71;
+}
+
+.diff-new h4 {
+  color: #27ae60;
+}
+
+.diff-column pre {
+  margin: 0;
+  font-size: 0.85em;
+  background-color: #1e1e1e !important;
+}
+
+/* Адаптация для узких экранов */
+@media (max-width: 768px) {
+  .diff-block {
+    grid-template-columns: 1fr;
+  }
+}

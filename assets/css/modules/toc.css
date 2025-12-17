@@ -1,0 +1,63 @@
+/* TABLE OF CONTENTS */
+
+#TOC {
+  background: linear-gradient(
+    135deg,
+    rgba(102, 126, 234, 0.7) 0%,
+    rgba(118, 75, 162, 0.7) 100%
+  );
+  padding: 2em;
+  border-radius: 12px;
+  margin: 2em 0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+#TOC ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+#TOC > ul > li {
+  margin: 0.8em 0;
+}
+
+#TOC li {
+  margin: 0.5em 0 0.5em 1.5em;
+}
+
+#TOC a {
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: inline-block;
+  padding: 0.3em 0;
+}
+
+#TOC a:hover {
+  color: #ffd700;
+  transform: translateX(5px);
+  text-decoration: none;
+}
+
+nav#TOC::before {
+  content: "📚 Содержание";
+  display: block;
+  font-size: 1.8em;
+  font-weight: bold;
+  color: #ffffff;
+  margin-bottom: 1em;
+  text-align: center;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+#TOC ul ul {
+  padding-left: 1.5em;
+  margin-top: 0.5em;
+}
+
+#TOC ul ul a {
+  font-size: 0.95em;
+  opacity: 0.9;
+}

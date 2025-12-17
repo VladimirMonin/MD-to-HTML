@@ -2,9 +2,7 @@ import os
 import subprocess
 
 # Путь к файлу для тестирования
-test_file = (
-    r"C:\PY\django_6_blog\doc\architecture\phase_2\13_html_processors_architecture.md"
-)
+test_file = r"C:\Syncthing\База Obsidian\_inbox\Deploy P2_results.md"
 
 # Проверяем существование файла
 if not os.path.exists(test_file):

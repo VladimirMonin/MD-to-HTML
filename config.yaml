@@ -1,0 +1,51 @@
+# MD-to-HTML Configuration File
+
+# === ОБЩИЕ НАСТРОЙКИ ===
+output_dir: "./build"
+template: "book"              # book | web
+media_mode: "copy"            # embed | copy (ТЕСТ: отдельные файлы)
+
+# === ВХОДНЫЕ ДАННЫЕ ===
+input:
+  path: ""                    # Путь к файлу/папке (можно через CLI)
+  source_type: "obsidian"      # obsidian | standard (формат исходного MD)
+  files_folder: "C:\\Syncthing\\База Obsidian\\9 файлы"  # Папка для поиска медиа
+  
+# === ВЫХОДНЫЕ ФОРМАТЫ ===
+formats:
+  - html                      # html | epub
+
+# === МЕТАДАННЫЕ ===
+metadata:
+  title: ""                   # Авто из имени файла если пусто
+  author: ""
+  lang: "ru"
+  brand_image: ""             # Путь к обложке
+
+# === СТИЛИ ===
+styles:
+  highlight_theme: "github-dark"    # Тема подсветки кода
+  mermaid_theme: "neutral"          # default | dark | forest | neutral
+  
+# === ШРИФТЫ (EPUB) ===
+fonts:
+  embed: true
+  dir: "assets/fonts"
+  
+# === ФИЧИ (вкл/выкл) ===
+features:
+  toc: true
+  toc_depth: 2
+  breadcrumbs: true
+  code_copy: true
+  fullscreen: true
+  diff_blocks: true
+  callouts: true
+  mermaid: true
+  plyr: true                  # Видео/аудио плеер
+
+# === ADVANCED ===
+advanced:
+  pandoc_extra_args: []
+  custom_css: []              # Дополнительные CSS файлы
+  custom_js: []               # Дополнительные JS файлы

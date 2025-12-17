@@ -1,3 +1,6 @@
+/* ПОДКЛЮЧЕНИЕ МОДУЛЕЙ */
+@import url("./modules/admonitions.css");
+
 /* 1. ПОДКЛЮЧЕНИЕ ШРИФТОВ (из папки assets/fonts/) */
 
 /* Шрифты для кода */
@@ -163,41 +166,9 @@ pre.mermaid,
 }
 
 /* 3. СТИЛИ ВЫНОСОК (ADMONITIONS) 
-   Pandoc превратит ::: tip в <div class="tip">
+   ВАЖНО: Подробные стили в modules/admonitions.css
+   Здесь только базовый fallback для старых документов
 */
-
-div.note,
-div.info,
-div.tip,
-div.warning,
-div.danger {
-  padding: 1em;
-  margin: 1em 0;
-  border-left: 5px solid;
-  background-color: #f9f9f9;
-  page-break-inside: avoid; /* Чтобы блок не разрывался в книге */
-}
-
-/* Цвета для разных типов */
-div.info {
-  border-color: #3498db; /* Синий */
-  background-color: #eaf2f8;
-}
-
-div.tip {
-  border-color: #2ecc71; /* Зеленый */
-  background-color: #e9f7ef;
-}
-
-div.warning {
-  border-color: #f1c40f; /* Желтый */
-  background-color: #fef9e7;
-}
-
-div.danger {
-  border-color: #e74c3c; /* Красный */
-  background-color: #fadbd8;
-}
 
 /* 4. ДОПОЛНИТЕЛЬНЫЕ СТИЛИ */
 
@@ -633,7 +604,11 @@ nav#TOC::before {
 }
 
 .breadcrumb-dropdown-menu .breadcrumb-dropdown-item.active {
-  background: linear-gradient(90deg, rgba(102, 126, 234, 0.15) 0%, transparent 100%) !important;
+  background: linear-gradient(
+    90deg,
+    rgba(102, 126, 234, 0.15) 0%,
+    transparent 100%
+  ) !important;
   border-left-color: #764ba2;
   color: #4527a0 !important; /* Темно-фиолетовый */
   font-weight: 700; /* Жирный для активного */

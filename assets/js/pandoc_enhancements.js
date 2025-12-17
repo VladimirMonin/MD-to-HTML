@@ -286,7 +286,7 @@ function initDynamicBreadcrumbs() {
     wrapper.appendChild(dropdown);
 
     let closeTimeout;
-    let isTouchDevice = 'ontouchstart' in window;
+    let isTouchDevice = "ontouchstart" in window;
 
     // Desktop: hover для открытия
     wrapper.addEventListener("mouseenter", () => {
@@ -308,7 +308,7 @@ function initDynamicBreadcrumbs() {
     // Mobile/Touch: клик/тап для toggle меню
     link.addEventListener("click", (e) => {
       e.preventDefault();
-      
+
       if (isTouchDevice || window.innerWidth <= 768) {
         // На мобильных - toggle dropdown
         dropdown.classList.toggle("show");
@@ -317,7 +317,7 @@ function initDynamicBreadcrumbs() {
         currentH2.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     });
-    
+
     // Закрытие dropdown при клике вне его
     document.addEventListener("click", (e) => {
       if (!wrapper.contains(e.target)) {
@@ -336,7 +336,7 @@ function initDynamicBreadcrumbs() {
   function addBreadcrumb(container, text, id, isLast = false, isH3 = false) {
     const item = document.createElement("span");
     item.className = "breadcrumb-item";
-    
+
     // Добавляем класс для h3 элементов (для скрытия на мобильных)
     if (isH3) {
       item.classList.add("breadcrumb-h3");
@@ -362,7 +362,7 @@ function initDynamicBreadcrumbs() {
     }
 
     container.appendChild(item);
-    
+
     // Добавляем разделитель с классом для h3 (для скрытия на мобильных)
     if (isH3 && !isLast) {
       const separator = document.createElement("span");

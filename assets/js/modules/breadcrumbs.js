@@ -6,7 +6,7 @@
 
 export function initDynamicBreadcrumbs() {
   console.log("🔧 [Breadcrumbs] Инициализация...");
-  
+
   const breadcrumbsContainer = document.querySelector(".breadcrumbs-dynamic");
   if (!breadcrumbsContainer) {
     console.warn("⚠️ [Breadcrumbs] Контейнер .breadcrumbs-dynamic не найден");
@@ -19,7 +19,11 @@ export function initDynamicBreadcrumbs() {
     return;
   }
 
-  console.log(`📚 [Breadcrumbs] Найдено заголовков: ${headings.length} (h2: ${headings.filter(h => h.tagName === "H2").length}, h3: ${headings.filter(h => h.tagName === "H3").length})`);
+  console.log(
+    `📚 [Breadcrumbs] Найдено заголовков: ${headings.length} (h2: ${
+      headings.filter((h) => h.tagName === "H2").length
+    }, h3: ${headings.filter((h) => h.tagName === "H3").length})`
+  );
 
   // Добавляем ID к заголовкам (если нет)
   headings.forEach((heading, index) => {
@@ -34,11 +38,13 @@ export function initDynamicBreadcrumbs() {
   });
 
   const allH2 = headings.filter((h) => h.tagName === "H2");
-  
+
   // Определяем устройство
-  const isTouchDevice = 'ontouchstart' in window;
+  const isTouchDevice = "ontouchstart" in window;
   const isMobile = window.innerWidth <= 768;
-  console.log(`📱 [Breadcrumbs] Touch: ${isTouchDevice}, Mobile: ${isMobile}, Width: ${window.innerWidth}px`);
+  console.log(
+    `📱 [Breadcrumbs] Touch: ${isTouchDevice}, Mobile: ${isMobile}, Width: ${window.innerWidth}px`
+  );
 
   function updateBreadcrumbs() {
     const scrollPosition = window.scrollY + 150;
@@ -59,15 +65,24 @@ export function initDynamicBreadcrumbs() {
     }
 
     breadcrumbsContainer.innerHTML = "";
-    
-    console.log(`📍 [Breadcrumbs] Update - H2: ${currentH2 ? currentH2.textContent.substring(0,30) : 'none'}, H3: ${currentH3 ? currentH3.textContent.substring(0,30) : 'none'}`);
+
+    console.log(
+      `📍 [Breadcrumbs] Update - H2: ${
+        currentH2 ? currentH2.textContent.substring(0, 30) : "none"
+      }, H3: ${currentH3 ? currentH3.textContent.substring(0, 30) : "none"}`
+    );
 
     if (currentH2) {
       addBreadcrumbWithDropdown(breadcrumbsContainer, currentH2, allH2);
     }
 
     if (currentH3) {
-      console.log(`➕ [Breadcrumbs] Добавляем H3 элемент: "${currentH3.textContent.substring(0,30)}"`);
+      console.log(
+        `➕ [Breadcrumbs] Добавляем H3 элемент: "${currentH3.textContent.substring(
+          0,
+          30
+        )}"`
+      );
       addBreadcrumb(
         breadcrumbsContainer,
         currentH3.textContent,
@@ -113,11 +128,13 @@ export function initDynamicBreadcrumbs() {
     wrapper.appendChild(dropdown);
 
     let closeTimer;
-    let isTouchDevice = 'ontouchstart' in window;
+    let isTouchDevice = "ontouchstart" in window;
     let isMobile = window.innerWidth <= 768;
-    
-    console.log(`🔘 [Dropdown] Touch=${isTouchDevice}, Mobile=${isMobile}, Width=${window.innerWidth}px`);
-    
+
+    console.log(
+      `🔘 [Dropdown] Touch=${isTouchDevice}, Mobile=${isMobile}, Width=${window.innerWidth}px`
+    );
+
     // Desktop: hover для открытия
     wrapper.addEventListener("mouseenter", () => {
       if (!isTouchDevice) {
@@ -141,19 +158,25 @@ export function initDynamicBreadcrumbs() {
     // Mobile/Touch: клик/тап для toggle меню
     link.addEventListener("click", (e) => {
       e.preventDefault();
-      console.log(`👆 [Dropdown] Click - Touch=${isTouchDevice}, Mobile=${isMobile}`);
-      
+      console.log(
+        `👆 [Dropdown] Click - Touch=${isTouchDevice}, Mobile=${isMobile}`
+      );
+
       if (isTouchDevice || window.innerWidth <= 768) {
         // На мобильных - toggle dropdown
         const isShown = dropdown.classList.toggle("show");
-        console.log(`📲 [Dropdown] Toggle menu - теперь ${isShown ? 'ОТКРЫТО' : 'ЗАКРЫТО'}`);
+        console.log(
+          `📲 [Dropdown] Toggle menu - теперь ${
+            isShown ? "ОТКРЫТО" : "ЗАКРЫТО"
+          }`
+        );
       } else {
         // На desktop - переход к заголовку
         console.log("🖥️ [Dropdown] Desktop - скролл к заголовку");
         currentH2.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     });
-    
+
     // Закрытие dropdown при клике вне его
     document.addEventListener("click", (e) => {
       if (!wrapper.contains(e.target)) {
@@ -175,11 +198,16 @@ export function initDynamicBreadcrumbs() {
   function addBreadcrumb(container, text, id, isLast = false, isH3 = false) {
     const item = document.createElement("span");
     item.className = "breadcrumb-item";
-    
+
     // Добавляем класс для h3 элементов (для скрытия на мобильных)
     if (isH3) {
       item.classList.add("breadcrumb-h3");
-      console.log(`🏷️ [Breadcrumb] Добавлен класс breadcrumb-h3 к: "${text.substring(0,30)}", классы: ${item.className}`);
+      console.log(
+        `🏷️ [Breadcrumb] Добавлен класс breadcrumb-h3 к: "${text.substring(
+          0,
+          30
+        )}", классы: ${item.className}`
+      );
     }
 
     if (isLast) {
@@ -202,7 +230,7 @@ export function initDynamicBreadcrumbs() {
     }
 
     container.appendChild(item);
-    
+
     // Добавляем разделитель с классом для h3 (для скрытия на мобильных)
     if (isH3 && !isLast) {
       const separator = document.createElement("span");

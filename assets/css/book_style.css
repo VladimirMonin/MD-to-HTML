@@ -1,5 +1,6 @@
 /* 1. ПОДКЛЮЧЕНИЕ ШРИФТОВ (из папки assets/fonts/) */
 
+/* Шрифты для кода */
 @font-face {
   font-family: "CascadiaCode";
   font-style: normal;
@@ -21,15 +22,46 @@
   src: url("../fonts/JetBrainsMono-Regular.ttf");
 }
 
+/* Шрифты для текста */
+@font-face {
+  font-family: "Merriweather";
+  font-style: normal;
+  font-weight: 400;
+  src: url("../fonts/Merriweather.ttf");
+}
+
+@font-face {
+  font-family: "Merriweather";
+  font-style: italic;
+  font-weight: 400;
+  src: url("../fonts/Merriweather-Italic.ttf");
+}
+
+/* Шрифты для заголовков */
+@font-face {
+  font-family: "Montserrat";
+  font-style: normal;
+  font-weight: 600;
+  src: url("../fonts/Montserrat.ttf");
+}
+
+@font-face {
+  font-family: "Montserrat";
+  font-style: italic;
+  font-weight: 600;
+  src: url("../fonts/Montserrat-Italic.ttf");
+}
+
 /* 2. БАЗОВЫЕ НАСТРОЙКИ */
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif; /* Читабельные системные шрифты */
-  line-height: 1.6;
+  font-family: "Merriweather", Georgia, serif; /* Красивый serif для чтения */
+  font-size: 18px; /* Увеличен для комфортного чтения */
+  line-height: 1.8; /* Увеличен межстрочный интервал */
   color: #333;
   max-width: 800px; /* Для HTML, в EPUB игнорируется ридером */
   margin: 0 auto;
   padding: 1em;
+  word-spacing: 0.05em; /* Небольшое увеличение расстояния между словами */
 }
 
 /* Заголовки */
@@ -37,40 +69,70 @@ h1,
 h2,
 h3,
 h4 {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif;
+  font-family: "Montserrat", -apple-system, sans-serif; /* Современный sans-serif для заголовков */
   color: #2c3e50;
-  margin-top: 1.5em;
+  margin-top: 1.8em;
+  margin-bottom: 0.6em;
   font-weight: 600;
+  line-height: 1.3; /* Плотнее для заголовков */
+  letter-spacing: -0.02em; /* Немного сжимаем */
+}
+
+h1 {
+  font-size: 2.2em;
+}
+
+h2 {
+  font-size: 1.8em;
+}
+
+h3 {
+  font-size: 1.4em;
+}
+
+h4 {
+  font-size: 1.2em;
+}
+
+/* Параграфы */
+p {
+  margin: 1em 0;
+  text-align: justify; /* Выравнивание по ширине для книжного вида */
+  hyphens: auto; /* Автоматические переносы */
 }
 
 /* Код */
 /* Инлайн код */
 code {
   font-family: "JetBrains Mono", monospace;
-  font-size: 0.85em;
+  font-size: 0.9em; /* Немного увеличен */
   background-color: #fff3e0;
-  padding: 0.2em 0.4em;
-  border-radius: 3px;
+  padding: 0.2em 0.5em;
+  border-radius: 4px;
   color: #d84315;
   border: 1px solid #ffe0b2;
+  white-space: nowrap; /* Запрещаем перенос на новую строку */
+  word-break: keep-all; /* Не разрывать слова */
 }
 
 /* Блоки кода */
 pre {
-  font-family: "JetBrains Mono", monospace;
+  font-family: "JetBrains Mono", monospace !important;
   font-size: 0.85em;
   background-color: #1e1e1e;
   color: #d4d4d4;
   padding: 1.2em;
   border-radius: 8px;
-  overflow-x: auto;
+  overflow: hidden !important; /* Убрать прокрутку */
   border-left: 4px solid #ffa726; /* Золотисто-оранжевая граница */
   margin: 1.5em 0;
   line-height: 1.5;
-  white-space: pre-wrap; /* Перенос строк */
-  word-wrap: break-word;
-  overflow-wrap: break-word;
+  white-space: pre-wrap !important; /* Перенос строк */
+  word-wrap: break-word !important;
+  word-break: break-all !important; /* Разрыв длинных слов */
+  overflow-wrap: break-word !important;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 pre code {
@@ -79,61 +141,25 @@ pre code {
   border: none;
   color: inherit;
   font-size: 1em;
-}
-
-/* Цвета для подсветки синтаксиса */
-pre .hljs-comment {
-  color: #6a9955;
-}
-
-pre .hljs-keyword,
-pre .hljs-selector-tag {
-  color: #569cd6;
-}
-
-pre .hljs-string {
-  color: #ce9178;
-}
-
-pre .hljs-number {
-  color: #b5cea8;
-}
-
-pre .hljs-function {
-  color: #dcdcaa;
-}
-
-pre .hljs-class {
-  color: #4ec9b0;
-}
-
-pre .hljs-built_in {
-  color: #4ec9b0;
-}
-
-pre .hljs-variable {
-  color: #9cdcfe;
-}
-
-pre .hljs-title {
-  color: #dcdcaa;
-}
-
-/* TODO и подобные */
-pre .hljs-doctag,
-pre .hljs-meta {
-  color: #ff9800; /* Оранжевый вместо красного */
+  /* Наследуем перенос строк от pre */
+  white-space: inherit;
+  word-wrap: inherit;
+  word-break: inherit;
+  overflow-wrap: inherit;
 }
 
 /* Mermaid диаграммы */
 pre.mermaid,
 .mermaid {
-  background-color: #f9f9f9;
+  background-color: #ffffff;
   padding: 1.5em;
   border-radius: 8px;
   border: 1px solid #e1e1e8;
   text-align: center;
   margin: 1.5em 0;
+  /* Для mermaid НЕ нужен перенос строк */
+  white-space: pre;
+  overflow-x: auto;
 }
 
 /* 3. СТИЛИ ВЫНОСОК (ADMONITIONS) 
@@ -177,11 +203,14 @@ div.danger {
 
 /* Цитаты */
 blockquote {
-  border-left: 4px solid #ddd;
-  padding-left: 1em;
-  margin: 1em 0;
-  color: #666;
+  border-left: 4px solid #ffa726; /* Золотисто-оранжевая линия */
+  padding: 1em 1.2em;
+  margin: 1.5em 0;
+  color: #2c3e50; /* Насыщенный тёмно-синий текст */
+  background-color: #fffbf5; /* Тёплый кремовый фон */
+  border-radius: 0 8px 8px 0;
   font-style: italic;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 /* Списки */
@@ -246,6 +275,20 @@ hr {
   margin: 2em 0;
 }
 
+/* Скрываем hr в EPUB (создает визуальный мусор) */
+@media only screen {
+  /* Для EPUB ридеров часто игнорируют media queries, но это поможет */
+}
+
+/* Стили для highlight.js (HTML) */
+/* Highlight.js добавляет свой класс .hljs, мы убираем его border (уже есть на pre) */
+pre code.hljs {
+  background: transparent !important; /* Наследуем от pre */
+  padding: 0 !important; /* Наследуем от pre */
+  border-radius: 0 !important;
+  border-left: none !important; /* Убираем дублирующую линию */
+}
+
 /* Ссылки */
 a {
   color: #3498db;
@@ -254,4 +297,351 @@ a {
 
 a:hover {
   text-decoration: underline;
+}
+
+/* 6. ИНТЕРАКТИВНЫЕ ЭЛЕМЕНТЫ (JS enhancements) */
+
+/* Кнопка копирования кода */
+.code-copy-btn {
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  padding: 0.4em 0.8em;
+  cursor: pointer;
+  font-size: 1.2em;
+  transition: all 0.3s ease;
+  color: #ffffff;
+  z-index: 10;
+}
+
+.code-copy-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.code-copy-btn:active {
+  transform: scale(0.95);
+}
+
+/* Fullscreen контейнер для изображений и SVG */
+.fullscreen-container {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.95);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.fullscreen-container.active {
+  display: flex;
+}
+
+.fullscreen-container img,
+.fullscreen-container svg {
+  max-width: 95vw;
+  max-height: 95vh;
+  object-fit: contain;
+  box-shadow: 0 0 50px rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+}
+
+/* Изображения без wrapper - просто на тёмном фоне */
+.fullscreen-container > img {
+  max-width: 95vw;
+  max-height: 95vh;
+  object-fit: contain;
+}
+
+/* Белый фон для SVG диаграмм в fullscreen */
+.fullscreen-svg-wrapper {
+  background: #ffffff;
+  padding: 2em;
+  border-radius: 12px;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+  width: 95vw;
+  height: 95vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.fullscreen-svg-wrapper svg {
+  /* Принудительно растягиваем на весь wrapper */
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.fullscreen-close-btn {
+  position: fixed; /* Фиксируем относительно viewport, а не container */
+  top: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.8); /* Тёмный полупрозрачный фон */
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: 1.5em;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10001; /* Выше всего */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.fullscreen-close-btn:hover {
+  background: rgba(255, 0, 0, 0.9); /* Красный при наведении */
+  transform: scale(1.1);
+  border-color: #ff0000;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Курсор для кликабельных элементов */
+img:not(.no-fullscreen),
+pre.mermaid {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+img:not(.no-fullscreen):hover,
+pre.mermaid:hover {
+  transform: scale(1.02);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* 5. СТИЛИ ДЛЯ NAV МЕНЮ (ОГЛАВЛЕНИЕ) */
+
+#TOC {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2em;
+  border-radius: 12px;
+  margin: 2em 0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+#TOC ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+#TOC > ul > li {
+  margin: 0.8em 0;
+}
+
+#TOC li {
+  margin: 0.5em 0 0.5em 1.5em;
+}
+
+#TOC a {
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: inline-block;
+  padding: 0.3em 0;
+}
+
+#TOC a:hover {
+  color: #ffd700;
+  transform: translateX(5px);
+  text-decoration: none;
+}
+
+/* Заголовок оглавления */
+nav#TOC::before {
+  content: "📚 Содержание";
+  display: block;
+  font-size: 1.8em;
+  font-weight: bold;
+  color: #ffffff;
+  margin-bottom: 1em;
+  text-align: center;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Для вложенных списков */
+#TOC ul ul {
+  padding-left: 1.5em;
+  margin-top: 0.5em;
+}
+
+#TOC ul ul a {
+  font-size: 0.95em;
+  opacity: 0.9;
+}
+
+/* ===== BREADCRUMBS ===== */
+
+.breadcrumbs-dynamic {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 0.8em 1.5em;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  font-family: "Montserrat", -apple-system, sans-serif;
+  font-size: 0.9em;
+  color: white;
+  margin: -1em -1em 1.5em -1em; /* Компенсация body padding */
+  display: none; /* Скрываем по умолчанию */
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5em;
+}
+
+/* Показываем только когда есть контент */
+.breadcrumbs-dynamic:not(:empty) {
+  display: flex;
+}
+
+.breadcrumb-item {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Стили для ссылок в breadcrumbs (НЕ для dropdown) */
+.breadcrumb-item > a:not(.breadcrumb-dropdown-item) {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  padding: 0.3em 0.6em;
+  border-radius: 4px;
+}
+
+.breadcrumb-item > a:not(.breadcrumb-dropdown-item):hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+.breadcrumb-item.active {
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+}
+
+.breadcrumb-separator {
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0 0.3em;
+  font-weight: 300;
+}
+
+/* Dropdown для H2 */
+.breadcrumb-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.breadcrumb-h2-link {
+  color: white !important;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+}
+
+.breadcrumb-h2-link::after {
+  content: "▼";
+  font-size: 0.7em;
+  opacity: 0.7;
+  transition: transform 0.2s ease;
+}
+
+.breadcrumb-dropdown:hover .breadcrumb-h2-link::after {
+  transform: rotate(180deg);
+}
+
+.breadcrumb-dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  min-width: 300px; /* Увеличено для лучшей читабельности */
+  max-width: 500px;
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 1001;
+  margin-top: -2px; /* Перекрываем промежуток */
+  padding-top: 12px; /* Дополнительное перекрытие */
+  padding-bottom: 0.5em;
+}
+
+.breadcrumb-dropdown-menu.show {
+  display: block;
+  animation: fadeInDown 0.2s ease;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.breadcrumb-dropdown-menu .breadcrumb-dropdown-item {
+  display: block;
+  padding: 0.7em 1.2em;
+  color: #1a1a1a !important; /* Очень темный цвет для читаемости */
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+  white-space: nowrap; /* Не переносим текст */
+  overflow: hidden; /* Обрезаем длинный текст */
+  text-overflow: ellipsis; /* Добавляем ... */
+  font-size: 0.95em; /* Увеличен размер */
+  font-weight: 500; /* Делаем жирнее */
+  line-height: 1.4; /* Больше высота строки */
+}
+
+.breadcrumb-dropdown-menu .breadcrumb-dropdown-item:hover {
+  background: #e8eaf6 !important; /* Более заметный фон */
+  border-left-color: #667eea;
+  color: #4527a0 !important; /* Темно-фиолетовый */
+  font-weight: 600; /* Еще жирнее при наведении */
+}
+
+.breadcrumb-dropdown-menu .breadcrumb-dropdown-item.active {
+  background: linear-gradient(90deg, rgba(102, 126, 234, 0.15) 0%, transparent 100%) !important;
+  border-left-color: #764ba2;
+  color: #4527a0 !important; /* Темно-фиолетовый */
+  font-weight: 700; /* Жирный для активного */
+}
+
+/* Адаптация для печати и EPUB */
+@media print {
+  .breadcrumbs-dynamic {
+    display: none;
+  }
 }

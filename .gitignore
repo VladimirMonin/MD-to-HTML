@@ -2,3 +2,5 @@
 .idea
 result/
 covers/
+*__pycache__
+build/

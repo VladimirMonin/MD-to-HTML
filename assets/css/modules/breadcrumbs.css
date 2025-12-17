@@ -149,3 +149,38 @@
   color: #4527a0 !important;
   font-weight: 700;
 }
+
+/* Мобильные устройства - скрыть h3 в breadcrumbs */
+@media (max-width: 768px) {
+  .breadcrumb-item.breadcrumb-h3 {
+    display: none !important;
+  }
+  
+  .breadcrumb-separator.h3-separator {
+    display: none !important;
+  }
+  
+  /* Скрыть разделитель между H2 и H3 */
+  .breadcrumb-separator.h2-h3-separator {
+    display: none !important;
+  }
+  
+  /* Увеличить область клика для dropdown */
+  .breadcrumb-dropdown {
+    min-width: 120px;
+  }
+  
+  .breadcrumb-h2-link {
+    padding: 0.6em 1em;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  /* Упростить взаимодействие - клик открывает меню */
+  .breadcrumb-dropdown-menu {
+    min-width: calc(100vw - 3em);
+    max-width: calc(100vw - 3em);
+  }
+}

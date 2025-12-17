@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест мобильных breadcrumbs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 1em;
+        }
+        
+        /* BREADCRUMBS */
+        .breadcrumbs-dynamic {
+            position: sticky;
+            top: 0;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%);
+            padding: 0.8em 1.5em;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            color: white;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5em;
+            margin-bottom: 1.5em;
+        }
+
+        .breadcrumb-item {
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .breadcrumb-item a {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            padding: 0.3em 0.6em;
+            border-radius: 4px;
+        }
+
+        .breadcrumb-separator {
+            color: rgba(255, 255, 255, 0.5);
+            margin: 0 0.3em;
+        }
+
+        .breadcrumb-h2-link {
+            color: white !important;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.4em;
+        }
+
+        .breadcrumb-h2-link::after {
+            content: "▼";
+            font-size: 0.7em;
+            opacity: 0.7;
+        }
+
+        .breadcrumb-dropdown {
+            position: relative;
+        }
+
+        .breadcrumb-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            min-width: 300px;
+            z-index: 1001;
+            margin-top: 8px;
+        }
+
+        .breadcrumb-dropdown-menu.show {
+            display: block;
+        }
+
+        .breadcrumb-dropdown-item {
+            display: block;
+            padding: 0.7em 1.2em;
+            color: #1a1a1a !important;
+            text-decoration: none;
+        }
+
+        /* МОБИЛЬНАЯ ВЕРСИЯ */
+        @media (max-width: 768px) {
+            .breadcrumb-item.breadcrumb-h3 {
+                display: none !important;
+            }
+            
+            .breadcrumb-separator.h3-separator {
+                display: none !important;
+            }
+            
+            /* Скрыть разделитель между H2 и H3 */
+            .breadcrumb-separator.h2-h3-separator {
+                display: none !important;
+            }
+            
+            .breadcrumb-dropdown {
+                min-width: 120px;
+            }
+            
+            .breadcrumb-h2-link {
+                padding: 0.6em 1em;
+                min-height: 44px;
+            }
+            
+            .breadcrumb-dropdown-menu {
+                min-width: calc(100vw - 3em);
+                max-width: calc(100vw - 3em);
+            }
+        }
+
+        /* Отладка */
+        .debug {
+            background: #f0f0f0;
+            border: 1px solid #ccc;
+            padding: 1em;
+            margin: 1em 0;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+
+        h2, h3 {
+            margin-top: 3em;
+            padding-top: 1em;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="debug" id="deviceInfo">
+        Загрузка информации об устройстве...
+    </div>
+
+    <nav class="breadcrumbs-dynamic">
+        <span class="breadcrumb-item breadcrumb-dropdown">
+            <a href="#h2-1" class="breadcrumb-h2-link">Раздел 1</a>
+            <div class="breadcrumb-dropdown-menu">
+                <a href="#h2-1" class="breadcrumb-dropdown-item active">Раздел 1</a>
+                <a href="#h2-2" class="breadcrumb-dropdown-item">Раздел 2</a>
+                <a href="#h2-3" class="breadcrumb-dropdown-item">Раздел 3</a>
+            </div>
+        </span>
+        <span class="breadcrumb-separator h2-h3-separator">/</span>
+        <span class="breadcrumb-item breadcrumb-h3 active">Подраздел 1.1</span>
+        <span class="breadcrumb-separator h3-separator">/</span>
+    </nav>
+
+    <div class="debug" id="cssTest">
+        CSS тест загружается...
+    </div>
+
+    <h2 id="h2-1">Раздел 1</h2>
+    <h3 id="h3-1">Подраздел 1.1</h3>
+    <p>Контент...</p>
+
+    <h2 id="h2-2">Раздел 2</h2>
+    <h3 id="h3-2">Подраздел 2.1</h3>
+    <p>Контент...</p>
+
+    <h2 id="h2-3">Раздел 3</h2>
+    <h3 id="h3-3">Подраздел 3.1</h3>
+    <p>Контент...</p>
+
+    <script>
+        // Информация об устройстве
+        const isTouchDevice = 'ontouchstart' in window;
+        const screenWidth = window.innerWidth;
+        const isMobile = screenWidth <= 768;
+        
+        document.getElementById('deviceInfo').innerHTML = `
+            <strong>🔧 Информация об устройстве:</strong><br>
+            Touch device: ${isTouchDevice}<br>
+            Screen width: ${screenWidth}px<br>
+            Is mobile: ${isMobile} (<=768px)<br>
+            User agent: ${navigator.userAgent.substring(0, 50)}...
+        `;
+
+        // Проверка CSS
+        const h3Element = document.querySelector('.breadcrumb-h3');
+        const h3Separator = document.querySelector('.h3-separator');
+        const h3Style = window.getComputedStyle(h3Element);
+        const separatorStyle = window.getComputedStyle(h3Separator);
+        
+        document.getElementById('cssTest').innerHTML = `
+            <strong>🎨 CSS тест:</strong><br>
+            H3 element display: ${h3Style.display}<br>
+            H3 separator display: ${separatorStyle.display}<br>
+            H3 element visible: ${h3Style.display !== 'none'}<br>
+            <strong>Ожидается на мобильных (<=768px): display: none</strong><br>
+            <strong>Текущий статус: ${isMobile ? (h3Style.display === 'none' ? '✅ ПРАВИЛЬНО' : '❌ НЕ РАБОТАЕТ') : 'Desktop режим'}</strong>
+        `;
+
+        // Touch обработка dropdown
+        const dropdown = document.querySelector('.breadcrumb-dropdown');
+        const dropdownMenu = document.querySelector('.breadcrumb-dropdown-menu');
+        const h2Link = document.querySelector('.breadcrumb-h2-link');
+
+        h2Link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const isShown = dropdownMenu.classList.toggle('show');
+            console.log(`📱 Клик по dropdown: ${isShown ? 'ОТКРЫТО' : 'ЗАКРЫТО'}`);
+        });
+
+        // Закрытие при клике вне
+        document.addEventListener('click', (e) => {
+            if (!dropdown.contains(e.target)) {
+                if (dropdownMenu.classList.contains('show')) {
+                    dropdownMenu.classList.remove('show');
+                    console.log('❌ Закрыто по клику вне');
+                }
+            }
+        });
+
+        console.log('✅ Тест страница загружена');
+        console.log(`📱 Touch: ${isTouchDevice}, Mobile: ${isMobile}, Width: ${screenWidth}px`);
+    </script>
+</body>
+</html>

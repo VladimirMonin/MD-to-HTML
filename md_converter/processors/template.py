@@ -69,14 +69,20 @@ class TemplateProcessor:
 <script>document.addEventListener('DOMContentLoaded', function() {{ hljs.highlightAll(); }});</script>
 """
 
-        # Mermaid CDN
+        # Mermaid - настройка ДО загрузки библиотеки
         mermaid_html = ""
         if self.features.mermaid:
             mermaid_html = """
-<script type="module">
-    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
-    mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
+<script>
+// Конфигурация Mermaid ДО загрузки библиотеки
+window.mermaidConfig = {
+    startOnLoad: false,
+    theme: 'neutral',
+    securityLevel: 'loose',
+    logLevel: 'debug'
+};
 </script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
 """
 
         return f"""
@@ -96,6 +102,11 @@ document.addEventListener('DOMContentLoaded', function() {{
     if (typeof enableFullscreenMedia === 'function') enableFullscreenMedia();
     if (typeof initDynamicBreadcrumbs === 'function') initDynamicBreadcrumbs();
     if (typeof smoothScrollTOC === 'function') smoothScrollTOC();
+    if (typeof initMermaid === 'function') {{
+        initMermaid();
+    }} else {{
+        console.warn('⚠️ initMermaid function not found');
+    }}
     
     console.log('✅ All features initialized');
 }});
@@ -104,6 +115,9 @@ document.addEventListener('DOMContentLoaded', function() {{
 
     def _get_js_code(self) -> str:
         """Читает и объединяет JS файлы, удаляя export для inline."""
+        # Получаем корень проекта (где находится папка assets)
+        project_root = Path(__file__).parent.parent.parent
+
         js_modules = []
 
         if self.features.code_copy:
@@ -114,11 +128,14 @@ document.addEventListener('DOMContentLoaded', function() {{
             js_modules.append("assets/js/modules/breadcrumbs.js")
         if self.features.toc:
             js_modules.append("assets/js/modules/smoothScroll.js")
+        if self.features.mermaid:
+            js_modules.append("assets/js/modules/mermaid.js")
 
         # Читаем все модули
         js_code = []
         for module_path in js_modules:
-            path = Path(module_path)
+            # Используем абсолютный путь от корня проекта
+            path = project_root / module_path
             if path.exists():
                 code = path.read_text(encoding="utf-8")
                 # ИСПРАВЛЕНИЕ БАГ #1: Удаляем export для inline-скрипта
@@ -126,5 +143,7 @@ document.addEventListener('DOMContentLoaded', function() {{
                 code = code.replace("export const", "const")
                 code = code.replace("export default", "")
                 js_code.append(code)
+            else:
+                print(f"⚠️ Не найден модуль: {path}")
 
         return "\n\n".join(js_code)

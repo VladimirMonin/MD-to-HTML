@@ -25,7 +25,8 @@ class MermaidPreprocessor(Preprocessor):
 
         def replace_mermaid(match):
             diagram_code = match.group(1)
-            return f'<pre class="mermaid">\n{diagram_code}\n</pre>'
+            # Raw HTML block с атрибутом, чтобы Pandoc не трогал содержимое
+            return f'\n<div class="mermaid">\n```text\n{diagram_code}\n```\n</div>\n'
 
         content = re.sub(
             r"```mermaid\n(.*?)\n```", replace_mermaid, content, flags=re.DOTALL

@@ -108,31 +108,8 @@ function enableFullscreenMedia() {
   console.log("✅ Fullscreen media enabled");
 }
 
-function attachMermaidClickHandlers(fullscreenContainer) {
-  // Ищем все Mermaid контейнеры (они могут быть <pre class="mermaid"> или просто содержать SVG)
-  document
-    .querySelectorAll("pre.mermaid, .mermaid")
-    .forEach((mermaidElement) => {
-      // Проверяем есть ли уже обработчик
-      if (mermaidElement.dataset.fullscreenEnabled) return;
-
-      const svg = mermaidElement.querySelector("svg");
-      if (!svg) return;
-
-      // Помечаем что обработали
-      mermaidElement.dataset.fullscreenEnabled = "true";
-      mermaidElement.style.cursor = "zoom-in";
-
-      mermaidElement.addEventListener("click", (e) => {
-        e.stopPropagation();
-        const clonedSvg = svg.cloneNode(true);
-        // НЕ устанавливаем размеры - пусть CSS wrapper их контролирует
-        showFullscreenContent(fullscreenContainer, clonedSvg);
-      });
-
-      console.log("📊 Mermaid diagram clickable:", mermaidElement);
-    });
-}
+// NOTE: attachMermaidClickHandlers удалена - используется версия из modules/fullscreen.js
+// для избежания конфликтов и дублирования обработчиков
 
 function createFullscreenContainer() {
   const container = document.createElement("div");

@@ -64,12 +64,12 @@
   padding: 2em;
   border-radius: 12px;
   box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
-  width: 95vw;
-  height: 95vh;
+  width: 90vw;
+  height: 85vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
+  overflow: auto;
 }
 
 .fullscreen-svg-wrapper svg {
@@ -77,8 +77,25 @@
   height: 100% !important;
   max-width: none !important;
   max-height: none !important;
-  box-shadow: none;
-  border-radius: 0;
+  min-width: 100% !important;
+  min-height: 100% !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Курсор zoom-in для всего контейнера Mermaid */
+.mermaid,
+div.mermaid {
+  cursor: zoom-in;
+  transition: opacity 0.2s ease;
+}
+
+.mermaid:hover,
+div.mermaid:hover {
+  opacity: 0.9;
 }
 
 .fullscreen-close-btn {

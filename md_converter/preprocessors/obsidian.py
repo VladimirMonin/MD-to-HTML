@@ -2,6 +2,7 @@
 
 import re
 from pathlib import Path
+from typing import Optional
 from .base import Preprocessor
 
 
@@ -19,7 +20,7 @@ class ObsidianPreprocessor(Preprocessor):
     - ../attachments/
     """
 
-    def __init__(self, base_path: Path = None):
+    def __init__(self, base_path: Optional[Path] = None):
         """Args: base_path - базовая папка для поиска файлов (папка MD файла)."""
         self.base_path = base_path or Path.cwd()
 

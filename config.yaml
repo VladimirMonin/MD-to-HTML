@@ -1,38 +1,24 @@
-# MD-to-HTML Configuration File
-
-# === ОБЩИЕ НАСТРОЙКИ ===
-output_dir: "./build"
-template: "book"              # book | web
-media_mode: "copy"            # embed | copy (ТЕСТ: отдельные файлы)
-
-# === ВХОДНЫЕ ДАННЫЕ ===
+output_dir: C:\Syncthing\SK_OOP_COURSE\1_PART_MVP\chapter_01\lessons\lesson_001\conspects
+template: web
+media_mode: embed
+theme: light
 input:
-  path: ""                    # Путь к файлу/папке (можно через CLI)
-  source_type: "obsidian"      # obsidian | standard (формат исходного MD)
-  files_folder: "C:\\Syncthing\\База Obsidian\\9 файлы"  # Папка для поиска медиа
-  
-# === ВЫХОДНЫЕ ФОРМАТЫ ===
+  path: C:\Syncthing\SK_OOP_COURSE\1_PART_MVP\chapter_01\lessons\lesson_001\conspects\lesson_001_brief_results.md
+  source_type: standard
+  files_folder: C:\Syncthing\SK_OOP_COURSE\1_PART_MVP\chapter_01\media
 formats:
-  - html                      # html | epub
-
-# === МЕТАДАННЫЕ ===
+- html
 metadata:
-  title: ""                   # Авто из имени файла если пусто
-  author: ""
-  lang: "ru"
-  brand_image: ""             # Путь к обложке
-
-# === СТИЛИ ===
+  title: ''
+  author: ''
+  lang: ru
+  brand_image: ''
 styles:
-  highlight_theme: "github-dark"    # Тема подсветки кода
-  mermaid_theme: "neutral"          # default | dark | forest | neutral
-  
-# === ШРИФТЫ (EPUB) ===
+  highlight_theme: github-dark
+  mermaid_theme: neutral
 fonts:
   embed: true
-  dir: "assets/fonts"
-  
-# === ФИЧИ (вкл/выкл) ===
+  dir: assets/fonts
 features:
   toc: true
   toc_depth: 2
@@ -42,10 +28,8 @@ features:
   diff_blocks: true
   callouts: true
   mermaid: true
-  plyr: true                  # Видео/аудио плеер
-
-# === ADVANCED ===
+  plyr: true
 advanced:
   pandoc_extra_args: []
-  custom_css: []              # Дополнительные CSS файлы
-  custom_js: []               # Дополнительные JS файлы
+  custom_css: []
+  custom_js: []

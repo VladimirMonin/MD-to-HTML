@@ -1,6 +1,7 @@
 """Главный класс конвертера - оркестратор pipeline."""
 
 from pathlib import Path
+from typing import Optional, Union
 from .config import ConverterConfig
 from .preprocessors import (
     ObsidianPreprocessor,
@@ -60,7 +61,9 @@ class Converter:
         if self.config.features.plyr:
             self.postprocessors.append(PlyrWrapPostprocessor())
 
-    def convert(self, input_path: str | Path, output_name: str = None) -> list[Path]:
+    def convert(
+        self, input_path: Union[str, Path], output_name: Optional[str] = None
+    ) -> list[Path]:
         """
         Главный метод конвертации.
 

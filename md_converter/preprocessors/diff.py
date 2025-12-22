@@ -19,7 +19,7 @@ class DiffPreprocessor(Preprocessor):
         lines = content.split("\n")
         new_lines = []
         in_diff_block = False
-        diff_block_lines = []
+        diff_block_lines: list[str] = []
         lang = ""
 
         for line in lines:

@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Literal
+from typing import Literal, Union
 import yaml
 
 
@@ -82,15 +82,15 @@ class ConverterConfig:
     advanced: AdvancedConfig = field(default_factory=AdvancedConfig)
 
     @classmethod
-    def from_yaml(cls, path: str | Path) -> "ConverterConfig":
+    def from_yaml(cls, path: Union[str, Path]) -> "ConverterConfig":
         """Загрузка конфигурации из YAML файла."""
         with open(path, "r", encoding="utf-8") as f:
             data = yaml.safe_load(f)
-        return cls._from_dict(data)
+        return cls.from_dict(data)
 
     @classmethod
-    def _from_dict(cls, data: dict) -> "ConverterConfig":
-        """Создание конфигурации из словаря."""
+    def from_dict(cls, data: dict) -> "ConverterConfig":
+        """Создание конфигурации из словаря (публичный метод)."""
         return cls(
             output_dir=data.get("output_dir", "./build"),
             template=data.get("template", "book"),

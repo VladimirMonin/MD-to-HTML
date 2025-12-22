@@ -84,8 +84,10 @@ class MediaProcessor:
                     print(f"  📎 {abs_path.name} → скопирован в {new_path}")
                 else:
                     # EMBED режим - заменяем на абсолютный путь для Pandoc
-                    content = content.replace(media_path, str(abs_path))
-                    media_map[media_path] = str(abs_path)
+                    # Используем resolve() для нормализации пути (убирает .. и т.д.)
+                    normalized_path = str(abs_path.resolve())
+                    content = content.replace(media_path, normalized_path)
+                    media_map[media_path] = normalized_path
                     print(f"  📎 {abs_path.name} → будет встроен (EMBED)")
             else:
                 print(f"  ⚠️ Не найден: {decoded_path}")

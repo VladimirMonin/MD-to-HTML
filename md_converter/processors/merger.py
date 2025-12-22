@@ -2,13 +2,14 @@
 
 import os
 from pathlib import Path
+from typing import Union
 from natsort import natsorted
 
 
 class MergerProcessor:
     """Склеивает Markdown файлы из папки в один документ."""
 
-    def merge(self, input_path: str | Path) -> str:
+    def merge(self, input_path: Union[str, Path]) -> str:
         """
         Читает и склеивает MD файлы.
 

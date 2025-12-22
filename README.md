@@ -23,6 +23,16 @@ python cli.py "result/День №1" -f both --title "День 1"
 python cli.py test.md -m copy --no-breadcrumbs
 ```
 
+**GUI (рекомендуется):**
+
+```bash
+python gui_app.py
+```
+
+Или двойной клик по файлу `run_gui.bat` в Windows для автоматического запуска через виртуальное окружение.
+
+Удобный графический интерфейс с drag & drop для файлов и папок. Подробнее см. [gui/README.md](gui/README.md)
+
 **Python API:**
 
 ```bash
@@ -287,6 +297,23 @@ MIT License — см. [LICENSE](LICENSE)
 2. Коммит: `git commit -m "Add new feature"`
 3. Commit: `git push origin feature/new-feature`
 4. Pull Request
+
+## 🧪 Разработка
+
+### Проверка типов с MyPy
+
+```bash
+# Проверка всего проекта
+poetry run mypy gui/ md_converter/
+
+# Конфигурация в pyproject.toml секции [tool.mypy]
+```
+
+### Тестирование
+
+```bash
+poetry run pytest tests/
+```
 
 ## � Документация
 

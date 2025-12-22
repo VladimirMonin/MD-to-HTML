@@ -3,6 +3,7 @@
 import os
 import subprocess
 from pathlib import Path
+from typing import Optional
 from ..config import ConverterConfig
 
 
@@ -22,7 +23,7 @@ class PandocBackend:
         output_name: str,
         format_type: str,
         header: str = "",
-        media_map: dict = None,
+        media_map: Optional[dict] = None,
     ) -> Path:
         """
         Конвертирует Markdown в HTML или EPUB через Pandoc.
@@ -70,8 +71,13 @@ class PandocBackend:
         if self.config.metadata.author:
             cmd.extend(["--metadata", f"author={self.config.metadata.author}"])
 
-        # CSS
-        cmd.extend(["--css", "assets/css/book_style.css"])
+        # CSS - используем абсолютный путь от корня проекта
+        # Предполагаем, что скрипт запущен из корня проекта
+        css_path = Path("assets/css/book_style.css").resolve()
+        if css_path.exists():
+            cmd.extend(["--css", str(css_path)])
+        else:
+            print(f"⚠️ CSS файл не найден: {css_path}")
 
         # Формат-специфичные настройки
         if format_type == "html":
@@ -103,7 +109,11 @@ class PandocBackend:
             print(f"❌ Ошибка Pandoc:")
             print(f"STDOUT: {e.stdout}")
             print(f"STDERR: {e.stderr}")
-            raise
+            # Формируем детальное сообщение об ошибке для GUI
+            error_msg = f"Pandoc завершился с ошибкой (код {e.returncode})\n\n"
+            if e.stderr:
+                error_msg += f"Детали:\n{e.stderr}"
+            raise RuntimeError(error_msg) from e
 
     def _configure_html(self, cmd: list, header: str, output_dir: Path):
         """Настройки для HTML."""

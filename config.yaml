@@ -1,9 +1,9 @@
-output_dir: C:\Syncthing\SK_OOP_COURSE\1_PART_MVP\chapter_01\lessons\lesson_001\conspects
+output_dir: C:\Syncthing\SK_OOP_COURSE\1_PART_MVP\chapter_01\lessons\results\results
 template: web
 media_mode: embed
 theme: light
 input:
-  path: C:\Syncthing\SK_OOP_COURSE\1_PART_MVP\chapter_01\lessons\lesson_001\conspects\lesson_001_brief_results.md
+  path: C:\Syncthing\SK_OOP_COURSE\1_PART_MVP\chapter_01\lessons\results\results\lesson_006_brief_results.md
   source_type: standard
   files_folder: C:\Syncthing\SK_OOP_COURSE\1_PART_MVP\chapter_01\media
 formats:

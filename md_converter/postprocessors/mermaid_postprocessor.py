@@ -26,10 +26,11 @@ class MermaidFixPostprocessor:
             # Конвертируем литеральные \n в настоящие переносы строк для multiline notes
             block = block.replace("\\n", "\n")
 
-            # КРИТИЧЕСКИ ВАЖНО: HTML entities для переносов строк
-            block = block.replace("&lt;br /&gt;", "\n")
-            block = block.replace("&lt;br/&gt;", "\n")
-            block = block.replace("&lt;br&gt;", "\n")
+            # КРИТИЧЕСКИ ВАЖНО: Заменяем <br/> на <br> без слэша
+            # Mermaid v10+ поддерживает <br> в Note over для многострочного текста
+            block = block.replace("&lt;br /&gt;", "<br>")
+            block = block.replace("&lt;br/&gt;", "<br>")
+            block = block.replace("&lt;br&gt;", "<br>")
 
             # Pandoc entities для стрелок
             block = block.replace("--&gt;", "-->")

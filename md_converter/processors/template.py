@@ -1,20 +1,30 @@
 """Процессор для работы с HTML шаблонами."""
 
 from pathlib import Path
-from ..config import FeaturesConfig
+from ..config import FeaturesConfig, StylesConfig
 
 
 class TemplateProcessor:
     """Генерирует HTML headers для Pandoc."""
 
-    def __init__(self, template: str, features: FeaturesConfig):
+    def __init__(
+        self,
+        template: str,
+        features: FeaturesConfig,
+        styles: StylesConfig,
+        media_mode: str = "embed",
+    ):
         """
         Args:
             template: "book" или "web"
             features: Конфигурация функций
+            styles: Конфигурация стилей (темы)
+            media_mode: "embed" (inline CSS) или "copy" (ссылки на CSS)
         """
         self.template = template
         self.features = features
+        self.styles = styles
+        self.media_mode = media_mode
 
     def build_header(self, format_type: str) -> str:
         """
@@ -47,10 +57,14 @@ class TemplateProcessor:
 
         css_files.append("assets/css/modules/responsive.css")
 
-        # Генерируем <link> теги
-        css_html = "\n".join(
-            [f'<link rel="stylesheet" href="{css}">' for css in css_files]
-        )
+        # Генерируем CSS (inline или ссылки)
+        if self.media_mode == "embed":
+            css_html = self._get_inline_css(css_files)
+        else:
+            # Режим copy - ссылки на файлы
+            css_html = "\n".join(
+                [f'<link rel="stylesheet" href="{css}">' for css in css_files]
+            )
 
         # Собираем JS
         js_code = self._get_js_code()
@@ -72,15 +86,16 @@ class TemplateProcessor:
         # Mermaid - настройка ДО загрузки библиотеки
         mermaid_html = ""
         if self.features.mermaid:
-            mermaid_html = """
+            mermaid_theme = self.styles.mermaid_theme
+            mermaid_html = f"""
 <script>
 // Конфигурация Mermaid ДО загрузки библиотеки
-window.mermaidConfig = {
+window.mermaidConfig = {{
     startOnLoad: false,
-    theme: 'neutral',
+    theme: '{mermaid_theme}',
     securityLevel: 'loose',
     logLevel: 'debug'
-};
+}};
 </script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
 """
@@ -112,6 +127,32 @@ document.addEventListener('DOMContentLoaded', function() {{
 }});
 </script>
 """
+
+    def _get_inline_css(self, css_files: list[str]) -> str:
+        """
+        Читает CSS файлы и возвращает их как inline <style>.
+
+        Args:
+            css_files: Список путей к CSS файлам
+
+        Returns:
+            HTML с inline стилями
+        """
+        project_root = Path(__file__).parent.parent.parent
+        css_content = []
+
+        for css_file in css_files:
+            path = project_root / css_file
+            if path.exists():
+                content = path.read_text(encoding="utf-8")
+                css_content.append(f"/* {css_file} */\n{content}")
+            else:
+                print(f"⚠️ Не найден CSS файл: {path}")
+
+        if css_content:
+            combined_css = "\n\n".join(css_content)
+            return f'<style type="text/css">\n{combined_css}\n</style>'
+        return ""
 
     def _get_js_code(self) -> str:
         """Читает и объединяет JS файлы, удаляя export для inline."""

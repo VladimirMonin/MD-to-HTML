@@ -6,11 +6,45 @@
 
 ### Установка зависимостей
 
+Рекомендуется использовать `uv` для быстрой установки:
+
+```bash
+uv pip install -e .
+```
+
+Или через Poetry:
+
 ```bash
 poetry install
 ```
 
 ### Использование
+
+**MCP Server (интеграция с AI ассистентами):**
+
+MCP Server позволяет использовать конвертер через Model Context Protocol в VS Code Copilot, Claude Desktop и других AI клиентах.
+
+```bash
+# Конфигурация для VS Code (добавить в mcp.json)
+{
+  "servers": {
+    "md-to-html": {
+      "type": "stdio",
+      "command": "C:\\PY\\MD_to_HTML\\.venv\\Scripts\\python.exe",
+      "args": ["C:\\PY\\MD_to_HTML\\mcp_server.py"],
+      "env": {
+        "PYTHONIOENCODING": "utf-8",
+        "PYTHONUTF8": "1"
+      },
+      "autoApprove": ["convert_markdown_to_html"],
+      "disabled": false,
+      "timeout": 1800
+    }
+  }
+}
+```
+
+Подробнее см. [doc/MCP_SERVER.md](doc/MCP_SERVER.md)
 
 **CLI:**
 

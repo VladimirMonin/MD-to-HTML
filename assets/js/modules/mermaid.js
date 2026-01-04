@@ -9,15 +9,18 @@ export function initMermaid() {
       mermaid.version || "unknown"
     );
 
-    // Настройка Mermaid
-    mermaid.initialize({
-      startOnLoad: false, // Вручную запускаем для лучшего контроля
+    // Получаем конфигурацию из window.mermaidConfig (задается из Python)
+    const config = window.mermaidConfig || {
+      startOnLoad: false,
       theme: "neutral",
       securityLevel: "loose",
-      logLevel: "debug", // Включаем детальное логирование
-    });
+      logLevel: "debug",
+    };
 
-    console.log("✅ Mermaid configured (theme: neutral, securityLevel: loose)");
+    // Настройка Mermaid
+    mermaid.initialize(config);
+
+    console.log(`✅ Mermaid configured (theme: ${config.theme}, securityLevel: ${config.securityLevel})`);
 
     // Поиск всех Mermaid блоков
     const mermaidElements = document.querySelectorAll("div.mermaid, .mermaid");

@@ -52,6 +52,8 @@ class PandocBackend:
 
         cmd = [
             "pandoc",
+            "--from",
+            "markdown-yaml_metadata_block",  # Отключаем YAML парсинг чтобы избежать ошибок с ---
             str(temp_md),
             "-o",
             str(output_file),
@@ -65,8 +67,6 @@ class PandocBackend:
         # Метаданные
         if self.config.metadata.title:
             cmd.extend(["--metadata", f"title={self.config.metadata.title}"])
-        else:
-            cmd.extend(["--metadata", f"title={output_name}"])
 
         if self.config.metadata.author:
             cmd.extend(["--metadata", f"author={self.config.metadata.author}"])
@@ -118,7 +118,7 @@ class PandocBackend:
     def _configure_html(self, cmd: list, header: str, output_dir: Path):
         """Настройки для HTML."""
         # Отключаем встроенную подсветку (используем highlight.js)
-        cmd.append("--no-highlight")
+        cmd.append("--syntax-highlighting=none")
 
         # Встраиваем ресурсы
         if self.config.media_mode == "embed":

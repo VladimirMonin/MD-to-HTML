@@ -1,24 +1,31 @@
-[tool.poetry]
+[project]
 name = "md-to-html"
 version = "0.1.0"
 description = "Markdown to HTML converter with diff support"
-authors = ["Your Name <you@example.com>"]
+authors = [
+    { name = "Your Name", email = "you@example.com" }
+]
 readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "natsort>=8.4.0",
+    "PyYAML>=6.0",
+    "PyQt6>=6.6.0",
+    "mcp>=1.0.0",
+]
 
-[tool.poetry.dependencies]
-python = "^3.9"
-natsort = "^8.4.0"
-PyYAML = "^6.0"
-PyQt6 = "^6.6.0"
+[dependency-groups]
+dev = [
+    "pytest<9",
+    "mypy>=1.8.0",
+]
 
-
-[tool.poetry.group.dev.dependencies]
-pytest = "<9"
-mypy = "^1.8.0"
+[tool.hatch.build.targets.wheel]
+packages = ["md_converter"]
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.mypy]
 python_version = "3.9"

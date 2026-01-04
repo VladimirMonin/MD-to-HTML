@@ -46,9 +46,15 @@ class ConversionWorker(QThread):
 
             # Удаляем лишние ключи которых нет в схеме ConverterConfig
             clean_config = {k: v for k, v in self.config.items() if k != "theme"}
+            
+            # DEBUG: проверяем что styles передается
+            print(f"🔍 DEBUG: styles в конфиге = {clean_config.get('styles', 'ОТСУТСТВУЕТ')}")
 
             # Создание конфигурации
             converter_config = ConverterConfig.from_dict(clean_config)
+            
+            # DEBUG: проверяем что тема применилась
+            print(f"🔍 DEBUG: mermaid_theme в ConverterConfig = {converter_config.styles.mermaid_theme}")
             converter = Converter(converter_config)
 
             self.progress.emit("🔄 Конвертация...")

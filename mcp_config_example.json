@@ -1,0 +1,16 @@
+{
+  "servers": {
+    "md-to-html": {
+      "type": "stdio",
+      "command": "C:\\PY\\MD_to_HTML\\.venv\\Scripts\\python.exe",
+      "args": ["C:\\PY\\MD_to_HTML\\mcp_server.py"],
+      "env": {
+        "PYTHONIOENCODING": "utf-8",
+        "PYTHONUTF8": "1"
+      },
+      "autoApprove": ["convert_markdown_to_html"],
+      "disabled": false,
+      "timeout": 1800
+    }
+  }
+}

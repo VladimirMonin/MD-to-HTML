@@ -96,8 +96,12 @@ class MediaProcessor:
 
     def _copy_assets(self):
         """Копирование assets (CSS/JS/fonts) в output_dir для режима copy."""
-        assets_src = Path("assets")
+        # Получаем абсолютный путь к папке assets от корня проекта
+        project_root = Path(__file__).parent.parent.parent
+        assets_src = project_root / "assets"
+
         if not assets_src.exists():
+            print(f"⚠️ Папка assets не найдена: {assets_src}")
             return
 
         assets_dest = self.output_dir / "assets"

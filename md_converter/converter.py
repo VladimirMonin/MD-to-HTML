@@ -49,6 +49,8 @@ class Converter:
         self.template_processor = TemplateProcessor(
             template=self.config.template,
             features=self.config.features,
+            styles=self.config.styles,
+            media_mode=self.config.media_mode,  # Передаём режим медиа
         )
 
         # Backend

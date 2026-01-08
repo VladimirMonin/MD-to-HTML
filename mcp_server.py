@@ -4,8 +4,10 @@ MCP Server для MD-to-HTML конвертера.
 Предоставляет единый высокоуровневый инструмент для конвертации Markdown в HTML.
 """
 
+import io
 import re
 import sys
+from contextlib import redirect_stdout
 from pathlib import Path
 from typing import Optional
 from urllib.parse import unquote
@@ -451,8 +453,15 @@ def convert_markdown_to_html(
 
         # ===== ЭТАП 4: КОНВЕРТАЦИЯ =====
 
+        # Перехватываем stdout, чтобы print() из конвертера не ломал JSON-RPC протокол MCP
+        captured_output = io.StringIO()
         converter = Converter(config)
-        output_files = converter.convert(input_path)
+
+        with redirect_stdout(captured_output):
+            output_files = converter.convert(input_path)
+
+        # Получаем захваченный вывод (для отладки)
+        console_output = captured_output.getvalue()
 
         # ===== ЭТАП 5: ФОРМИРОВАНИЕ РЕЗУЛЬТАТА =====
 

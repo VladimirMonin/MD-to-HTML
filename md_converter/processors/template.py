@@ -54,6 +54,8 @@ class TemplateProcessor:
             css_files.append("assets/css/modules/interactive.css")
         if self.features.diff_blocks:
             css_files.append("assets/css/modules/diff.css")
+        if self.features.plyr:
+            css_files.append("assets/css/modules/media.css")
 
         css_files.append("assets/css/modules/responsive.css")
 
@@ -100,11 +102,20 @@ window.mermaidConfig = {{
 <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
 """
 
+        # Plyr - медиаплеер для audio/video
+        plyr_html = ""
+        if self.features.plyr:
+            plyr_html = """
+<link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css">
+<script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+"""
+
         return f"""
 {breadcrumbs_html}
 {css_html}
 {hljs_html}
 {mermaid_html}
+{plyr_html}
 <script>
 {js_code}
 
@@ -121,6 +132,19 @@ document.addEventListener('DOMContentLoaded', function() {{
         initMermaid();
     }} else {{
         console.warn('⚠️ initMermaid function not found');
+    }}
+    
+    // Инициализация Plyr медиаплеера
+    if (typeof Plyr !== 'undefined') {{
+        const players = Plyr.setup('.plyr-video, .plyr-audio, video, audio', {{
+            controls: ['play-large', 'play', 'progress', 'current-time', 
+                       'duration', 'mute', 'volume', 'settings', 'fullscreen'],
+            settings: ['quality', 'speed'],
+            speed: {{ selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 2] }}
+        }});
+        console.log('🎬 Initialized ' + players.length + ' Plyr instances');
+    }} else {{
+        console.warn('⚠️ Plyr library not loaded');
     }}
     
     console.log('✅ All features initialized');
@@ -171,6 +195,8 @@ document.addEventListener('DOMContentLoaded', function() {{
             js_modules.append("assets/js/modules/smoothScroll.js")
         if self.features.mermaid:
             js_modules.append("assets/js/modules/mermaid.js")
+        if self.features.plyr:
+            js_modules.append("assets/js/modules/media.js")
 
         # Читаем все модули
         js_code = []

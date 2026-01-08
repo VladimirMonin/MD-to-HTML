@@ -102,8 +102,8 @@ class Converter:
 
         # 2. Обработка медиа
         print("📎 Этап 2: Обработка медиа...")
-        temp_merged_path = Path(self.config.output_dir) / "_temp_merged.md"
-        content, media_map = self.media_processor.process(content, temp_merged_path)
+        # Передаём реальный input_path, чтобы относительные пути к медиа разрешались корректно
+        content, media_map = self.media_processor.process(content, input_path)
         print(f"  ✓ Обработано {len(media_map)} медиа файлов\n")
 
         # 3. Конвертация для каждого формата

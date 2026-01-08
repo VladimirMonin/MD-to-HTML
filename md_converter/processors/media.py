@@ -60,20 +60,46 @@ class MediaProcessor:
 
             decoded_path = unquote(media_path)
 
-            # Определяем абсолютный путь
-            if Path(decoded_path).is_absolute():
-                abs_path = Path(decoded_path)
-            elif "/" in decoded_path or "\\" in decoded_path:
-                # Относительный путь
-                abs_path = input_path.parent / decoded_path
-            else:
-                # Только имя файла — ищем в files_folder
-                if self.files_folder:
-                    abs_path = self.files_folder / decoded_path
-                else:
-                    abs_path = input_path.parent / decoded_path
+            # Определяем абсолютный путь к медиа-файлу
+            abs_path = None
+            search_locations = []  # Для логирования
 
-            if abs_path.exists():
+            if Path(decoded_path).is_absolute():
+                # Абсолютный путь - используем напрямую
+                abs_path = Path(decoded_path)
+                search_locations.append(f"абсолютный путь: {abs_path}")
+            elif "/" in decoded_path or "\\" in decoded_path:
+                # Относительный путь с подпапками (images/pic.png)
+                # Сначала пробуем files_folder (приоритет выше)
+                if self.files_folder:
+                    candidate = self.files_folder / decoded_path
+                    search_locations.append(f"files_folder: {candidate}")
+                    if candidate.exists():
+                        abs_path = candidate
+
+                # Если не нашли, пробуем относительно MD-файла
+                if abs_path is None:
+                    candidate = input_path.parent / decoded_path
+                    search_locations.append(f"input_path.parent: {candidate}")
+                    if candidate.exists():
+                        abs_path = candidate
+            else:
+                # Только имя файла (pic.png) - ищем в files_folder
+                if self.files_folder:
+                    candidate = self.files_folder / decoded_path
+                    search_locations.append(f"files_folder: {candidate}")
+                    if candidate.exists():
+                        abs_path = candidate
+
+                # Fallback: ищем относительно MD-файла
+                if abs_path is None:
+                    candidate = input_path.parent / decoded_path
+                    search_locations.append(f"input_path.parent: {candidate}")
+                    if candidate.exists():
+                        abs_path = candidate
+
+            # Обработка найденного файла
+            if abs_path and abs_path.exists():
                 if self.mode == "copy":
                     # Копируем в media/
                     target_path = media_dir / abs_path.name
@@ -81,16 +107,24 @@ class MediaProcessor:
                     new_path = f"media/{abs_path.name}"
                     content = content.replace(media_path, new_path)
                     media_map[media_path] = new_path
-                    print(f"  📎 {abs_path.name} → скопирован в {new_path}")
+                    print(f"  📎 {abs_path.name}")
+                    print(f"     ├─ источник: {abs_path}")
+                    print(f"     └─ скопирован → {new_path}")
                 else:
                     # EMBED режим - заменяем на абсолютный путь для Pandoc
                     # Используем resolve() для нормализации пути (убирает .. и т.д.)
                     normalized_path = str(abs_path.resolve())
                     content = content.replace(media_path, normalized_path)
                     media_map[media_path] = normalized_path
-                    print(f"  📎 {abs_path.name} → будет встроен (EMBED)")
+                    print(f"  📎 {abs_path.name}")
+                    print(f"     ├─ источник: {abs_path}")
+                    print(f"     └─ будет встроен (EMBED)")
             else:
-                print(f"  ⚠️ Не найден: {decoded_path}")
+                # Файл не найден - выводим все места поиска
+                print(f"  ⚠️ НЕ НАЙДЕН: {decoded_path}")
+                print(f"     Искали в:")
+                for location in search_locations:
+                    print(f"     - {location}")
 
         return content, media_map
 

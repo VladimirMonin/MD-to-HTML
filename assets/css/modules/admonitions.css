@@ -1,35 +1,63 @@
 /* ════════════════════════════════════════════════════════════════
    CALLOUTS / ADMONITIONS (Obsidian-style)
+   Поддержка div и section для совместимости с Pandoc
    ════════════════════════════════════════════════════════════════ */
 
 /* Базовые стили для всех callouts */
 div.note,
+section.note,
 div.info,
+section.info,
 div.tip,
+section.tip,
 div.warning,
+section.warning,
 div.danger,
+section.danger,
 div.success,
+section.success,
 div.check,
+section.check,
 div.done,
+section.done,
 div.question,
+section.question,
 div.help,
+section.help,
 div.faq,
+section.faq,
 div.failure,
+section.failure,
 div.fail,
+section.fail,
 div.missing,
+section.missing,
 div.bug,
+section.bug,
 div.example,
+section.example,
 div.quote,
+section.quote,
 div.cite,
+section.cite,
 div.abstract,
+section.abstract,
 div.summary,
+section.summary,
 div.tldr,
+section.tldr,
 div.todo,
+section.todo,
 div.hint,
+section.hint,
 div.important,
+section.important,
 div.caution,
+section.caution,
 div.attention,
-div.error {
+section.attention,
+div.error,
+section.error {
   position: relative;
   padding: 1rem 1.2rem;
   margin: 1.5rem 0;
@@ -44,95 +72,284 @@ div.error {
 
 /* Hover эффект */
 div.note:hover,
+section.note:hover,
 div.info:hover,
+section.info:hover,
 div.tip:hover,
+section.tip:hover,
 div.warning:hover,
+section.warning:hover,
 div.danger:hover,
+section.danger:hover,
 div.success:hover,
+section.success:hover,
 div.check:hover,
+section.check:hover,
 div.done:hover,
+section.done:hover,
 div.question:hover,
+section.question:hover,
 div.help:hover,
+section.help:hover,
 div.faq:hover,
+section.faq:hover,
 div.failure:hover,
+section.failure:hover,
 div.fail:hover,
+section.fail:hover,
 div.missing:hover,
+section.missing:hover,
 div.bug:hover,
+section.bug:hover,
 div.example:hover,
+section.example:hover,
 div.quote:hover,
+section.quote:hover,
 div.cite:hover,
+section.cite:hover,
 div.abstract:hover,
+section.abstract:hover,
 div.summary:hover,
+section.summary:hover,
 div.tldr:hover,
+section.tldr:hover,
 div.todo:hover,
+section.todo:hover,
 div.hint:hover,
+section.hint:hover,
 div.important:hover,
+section.important:hover,
 div.caution:hover,
+section.caution:hover,
 div.attention:hover,
-div.error:hover {
+section.attention:hover,
+div.error:hover,
+section.error:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
 /* Заголовки в callouts - ЭМОДЗИ ПЕРЕД ТЕКСТОМ */
 div.note > p:first-child strong:first-child::before,
+section.note > p:first-child strong:first-child::before,
+div.note > h4:first-child::before,
+section.note > h4:first-child::before,
 div.info > p:first-child strong:first-child::before,
+section.info > p:first-child strong:first-child::before,
+div.info > h4:first-child::before,
+section.info > h4:first-child::before,
 div.tip > p:first-child strong:first-child::before,
+section.tip > p:first-child strong:first-child::before,
+div.tip > h4:first-child::before,
+section.tip > h4:first-child::before,
 div.warning > p:first-child strong:first-child::before,
+section.warning > p:first-child strong:first-child::before,
+div.warning > h4:first-child::before,
+section.warning > h4:first-child::before,
 div.danger > p:first-child strong:first-child::before,
+section.danger > p:first-child strong:first-child::before,
+div.danger > h4:first-child::before,
+section.danger > h4:first-child::before,
 div.success > p:first-child strong:first-child::before,
+section.success > p:first-child strong:first-child::before,
+div.success > h4:first-child::before,
+section.success > h4:first-child::before,
 div.check > p:first-child strong:first-child::before,
+section.check > p:first-child strong:first-child::before,
+div.check > h4:first-child::before,
+section.check > h4:first-child::before,
 div.done > p:first-child strong:first-child::before,
+section.done > p:first-child strong:first-child::before,
+div.done > h4:first-child::before,
+section.done > h4:first-child::before,
 div.question > p:first-child strong:first-child::before,
+section.question > p:first-child strong:first-child::before,
+div.question > h4:first-child::before,
+section.question > h4:first-child::before,
 div.help > p:first-child strong:first-child::before,
+section.help > p:first-child strong:first-child::before,
+div.help > h4:first-child::before,
+section.help > h4:first-child::before,
 div.faq > p:first-child strong:first-child::before,
+section.faq > p:first-child strong:first-child::before,
+div.faq > h4:first-child::before,
+section.faq > h4:first-child::before,
 div.failure > p:first-child strong:first-child::before,
+section.failure > p:first-child strong:first-child::before,
+div.failure > h4:first-child::before,
+section.failure > h4:first-child::before,
 div.fail > p:first-child strong:first-child::before,
+section.fail > p:first-child strong:first-child::before,
+div.fail > h4:first-child::before,
+section.fail > h4:first-child::before,
 div.missing > p:first-child strong:first-child::before,
+section.missing > p:first-child strong:first-child::before,
+div.missing > h4:first-child::before,
+section.missing > h4:first-child::before,
 div.bug > p:first-child strong:first-child::before,
+section.bug > p:first-child strong:first-child::before,
+div.bug > h4:first-child::before,
+section.bug > h4:first-child::before,
 div.example > p:first-child strong:first-child::before,
+section.example > p:first-child strong:first-child::before,
+div.example > h4:first-child::before,
+section.example > h4:first-child::before,
 div.quote > p:first-child strong:first-child::before,
+section.quote > p:first-child strong:first-child::before,
+div.quote > h4:first-child::before,
+section.quote > h4:first-child::before,
 div.cite > p:first-child strong:first-child::before,
+section.cite > p:first-child strong:first-child::before,
+div.cite > h4:first-child::before,
+section.cite > h4:first-child::before,
 div.abstract > p:first-child strong:first-child::before,
+section.abstract > p:first-child strong:first-child::before,
+div.abstract > h4:first-child::before,
+section.abstract > h4:first-child::before,
 div.summary > p:first-child strong:first-child::before,
+section.summary > p:first-child strong:first-child::before,
+div.summary > h4:first-child::before,
+section.summary > h4:first-child::before,
 div.tldr > p:first-child strong:first-child::before,
+section.tldr > p:first-child strong:first-child::before,
+div.tldr > h4:first-child::before,
+section.tldr > h4:first-child::before,
 div.todo > p:first-child strong:first-child::before,
+section.todo > p:first-child strong:first-child::before,
+div.todo > h4:first-child::before,
+section.todo > h4:first-child::before,
 div.hint > p:first-child strong:first-child::before,
+section.hint > p:first-child strong:first-child::before,
+div.hint > h4:first-child::before,
+section.hint > h4:first-child::before,
 div.important > p:first-child strong:first-child::before,
+section.important > p:first-child strong:first-child::before,
+div.important > h4:first-child::before,
+section.important > h4:first-child::before,
 div.caution > p:first-child strong:first-child::before,
+section.caution > p:first-child strong:first-child::before,
+div.caution > h4:first-child::before,
+section.caution > h4:first-child::before,
 div.attention > p:first-child strong:first-child::before,
-div.error > p:first-child strong:first-child::before {
+section.attention > p:first-child strong:first-child::before,
+div.attention > h4:first-child::before,
+section.attention > h4:first-child::before,
+div.error > p:first-child strong:first-child::before,
+section.error > p:first-child strong:first-child::before,
+div.error > h4:first-child::before,
+section.error > h4:first-child::before {
   content: var(--callout-icon) " ";
   font-size: 1.2rem;
   margin-right: 0.3rem;
 }
 
 div.note > p:first-child strong:first-child,
+section.note > p:first-child strong:first-child,
+div.note > h4:first-child,
+section.note > h4:first-child,
 div.info > p:first-child strong:first-child,
+section.info > p:first-child strong:first-child,
+div.info > h4:first-child,
+section.info > h4:first-child,
 div.tip > p:first-child strong:first-child,
+section.tip > p:first-child strong:first-child,
+div.tip > h4:first-child,
+section.tip > h4:first-child,
 div.warning > p:first-child strong:first-child,
+section.warning > p:first-child strong:first-child,
+div.warning > h4:first-child,
+section.warning > h4:first-child,
 div.danger > p:first-child strong:first-child,
+section.danger > p:first-child strong:first-child,
+div.danger > h4:first-child,
+section.danger > h4:first-child,
 div.success > p:first-child strong:first-child,
+section.success > p:first-child strong:first-child,
+div.success > h4:first-child,
+section.success > h4:first-child,
 div.check > p:first-child strong:first-child,
+section.check > p:first-child strong:first-child,
+div.check > h4:first-child,
+section.check > h4:first-child,
 div.done > p:first-child strong:first-child,
+section.done > p:first-child strong:first-child,
+div.done > h4:first-child,
+section.done > h4:first-child,
 div.question > p:first-child strong:first-child,
+section.question > p:first-child strong:first-child,
+div.question > h4:first-child,
+section.question > h4:first-child,
 div.help > p:first-child strong:first-child,
+section.help > p:first-child strong:first-child,
+div.help > h4:first-child,
+section.help > h4:first-child,
 div.faq > p:first-child strong:first-child,
+section.faq > p:first-child strong:first-child,
+div.faq > h4:first-child,
+section.faq > h4:first-child,
 div.failure > p:first-child strong:first-child,
+section.failure > p:first-child strong:first-child,
+div.failure > h4:first-child,
+section.failure > h4:first-child,
 div.fail > p:first-child strong:first-child,
+section.fail > p:first-child strong:first-child,
+div.fail > h4:first-child,
+section.fail > h4:first-child,
 div.missing > p:first-child strong:first-child,
+section.missing > p:first-child strong:first-child,
+div.missing > h4:first-child,
+section.missing > h4:first-child,
 div.bug > p:first-child strong:first-child,
+section.bug > p:first-child strong:first-child,
+div.bug > h4:first-child,
+section.bug > h4:first-child,
 div.example > p:first-child strong:first-child,
+section.example > p:first-child strong:first-child,
+div.example > h4:first-child,
+section.example > h4:first-child,
 div.quote > p:first-child strong:first-child,
+section.quote > p:first-child strong:first-child,
+div.quote > h4:first-child,
+section.quote > h4:first-child,
 div.cite > p:first-child strong:first-child,
+section.cite > p:first-child strong:first-child,
+div.cite > h4:first-child,
+section.cite > h4:first-child,
 div.abstract > p:first-child strong:first-child,
+section.abstract > p:first-child strong:first-child,
+div.abstract > h4:first-child,
+section.abstract > h4:first-child,
 div.summary > p:first-child strong:first-child,
+section.summary > p:first-child strong:first-child,
+div.summary > h4:first-child,
+section.summary > h4:first-child,
 div.tldr > p:first-child strong:first-child,
+section.tldr > p:first-child strong:first-child,
+div.tldr > h4:first-child,
+section.tldr > h4:first-child,
 div.todo > p:first-child strong:first-child,
+section.todo > p:first-child strong:first-child,
+div.todo > h4:first-child,
+section.todo > h4:first-child,
 div.hint > p:first-child strong:first-child,
+section.hint > p:first-child strong:first-child,
+div.hint > h4:first-child,
+section.hint > h4:first-child,
 div.important > p:first-child strong:first-child,
+section.important > p:first-child strong:first-child,
+div.important > h4:first-child,
+section.important > h4:first-child,
 div.caution > p:first-child strong:first-child,
+section.caution > p:first-child strong:first-child,
+div.caution > h4:first-child,
+section.caution > h4:first-child,
 div.attention > p:first-child strong:first-child,
-div.error > p:first-child strong:first-child {
+section.attention > p:first-child strong:first-child,
+div.attention > h4:first-child,
+section.attention > h4:first-child,
+div.error > p:first-child strong:first-child,
+section.error > p:first-child strong:first-child,
+div.error > h4:first-child,
+section.error > h4:first-child {
   display: block;
   font-size: 1.1rem;
   font-weight: 600;
@@ -142,62 +359,116 @@ div.error > p:first-child strong:first-child {
 
 /* Параграфы внутри callouts */
 div.note > p,
+section.note > p,
 div.info > p,
+section.info > p,
 div.tip > p,
+section.tip > p,
 div.warning > p,
+section.warning > p,
 div.danger > p,
+section.danger > p,
 div.success > p,
+section.success > p,
 div.check > p,
+section.check > p,
 div.done > p,
+section.done > p,
 div.question > p,
+section.question > p,
 div.help > p,
+section.help > p,
 div.faq > p,
+section.faq > p,
 div.failure > p,
+section.failure > p,
 div.fail > p,
+section.fail > p,
 div.missing > p,
+section.missing > p,
 div.bug > p,
+section.bug > p,
 div.example > p,
+section.example > p,
 div.quote > p,
+section.quote > p,
 div.cite > p,
+section.cite > p,
 div.abstract > p,
+section.abstract > p,
 div.summary > p,
+section.summary > p,
 div.tldr > p,
+section.tldr > p,
 div.todo > p,
+section.todo > p,
 div.hint > p,
+section.hint > p,
 div.important > p,
+section.important > p,
 div.caution > p,
+section.caution > p,
 div.attention > p,
-div.error > p {
+section.attention > p,
+div.error > p,
+section.error > p {
   margin: 0.5rem 0;
 }
 
 div.note > p:last-child,
+section.note > p:last-child,
 div.info > p:last-child,
+section.info > p:last-child,
 div.tip > p:last-child,
+section.tip > p:last-child,
 div.warning > p:last-child,
+section.warning > p:last-child,
 div.danger > p:last-child,
+section.danger > p:last-child,
 div.success > p:last-child,
+section.success > p:last-child,
 div.check > p:last-child,
+section.check > p:last-child,
 div.done > p:last-child,
+section.done > p:last-child,
 div.question > p:last-child,
+section.question > p:last-child,
 div.help > p:last-child,
+section.help > p:last-child,
 div.faq > p:last-child,
+section.faq > p:last-child,
 div.failure > p:last-child,
+section.failure > p:last-child,
 div.fail > p:last-child,
+section.fail > p:last-child,
 div.missing > p:last-child,
+section.missing > p:last-child,
 div.bug > p:last-child,
+section.bug > p:last-child,
 div.example > p:last-child,
+section.example > p:last-child,
 div.quote > p:last-child,
+section.quote > p:last-child,
 div.cite > p:last-child,
+section.cite > p:last-child,
 div.abstract > p:last-child,
+section.abstract > p:last-child,
 div.summary > p:last-child,
+section.summary > p:last-child,
 div.tldr > p:last-child,
+section.tldr > p:last-child,
 div.todo > p:last-child,
+section.todo > p:last-child,
 div.hint > p:last-child,
+section.hint > p:last-child,
 div.important > p:last-child,
+section.important > p:last-child,
 div.caution > p:last-child,
+section.caution > p:last-child,
 div.attention > p:last-child,
-div.error > p:last-child {
+section.attention > p:last-child,
+div.error > p:last-child,
+section.error > p:last-child {
   margin-bottom: 0;
 }
 
@@ -206,7 +477,8 @@ div.error > p:last-child {
    ════════════════════════════════════════════════════════════════ */
 
 /* 📘 NOTE (светлый голубой) */
-div.note {
+div.note,
+section.note {
   --callout-bg: rgba(33, 150, 243, 0.12);
   --callout-title-color: #1565c0;
   --callout-icon: "📘";
@@ -215,8 +487,11 @@ div.note {
 
 /* 📋 ABSTRACT / SUMMARY / TLDR (светлый бирюзовый) */
 div.abstract,
+section.abstract,
 div.summary,
-div.tldr {
+section.summary,
+div.tldr,
+section.tldr {
   --callout-bg: rgba(3, 169, 244, 0.12);
   --callout-title-color: #01579b;
   --callout-icon: "📋";
@@ -224,7 +499,8 @@ div.tldr {
 }
 
 /* ℹ️ INFO (светлый циан) */
-div.info {
+div.info,
+section.info {
   --callout-bg: rgba(0, 188, 212, 0.12);
   --callout-title-color: #006064;
   --callout-icon: "ℹ️";
@@ -232,7 +508,8 @@ div.info {
 }
 
 /* ✅ TODO (светлый серый) */
-div.todo {
+div.todo,
+section.todo {
   --callout-bg: rgba(158, 158, 158, 0.12);
   --callout-title-color: #424242;
   --callout-icon: "✅";
@@ -241,8 +518,11 @@ div.todo {
 
 /* 💡 TIP / HINT / IMPORTANT (светлый зеленый) */
 div.tip,
+section.tip,
 div.hint,
-div.important {
+section.hint,
+div.important,
+section.important {
   --callout-bg: rgba(76, 175, 80, 0.12);
   --callout-title-color: #1b5e20;
   --callout-icon: "💡";
@@ -251,8 +531,11 @@ div.important {
 
 /* ✅ SUCCESS / CHECK / DONE (светлый мятный) */
 div.success,
+section.success,
 div.check,
-div.done {
+section.check,
+div.done,
+section.done {
   --callout-bg: rgba(102, 187, 106, 0.12);
   --callout-title-color: #2e7d32;
   --callout-icon: "✅";
@@ -261,8 +544,11 @@ div.done {
 
 /* ❓ QUESTION / HELP / FAQ (светлый фиолетовый) */
 div.question,
+section.question,
 div.help,
-div.faq {
+section.help,
+div.faq,
+section.faq {
   --callout-bg: rgba(156, 39, 176, 0.12);
   --callout-title-color: #6a1b9a;
   --callout-icon: "❓";
@@ -271,8 +557,11 @@ div.faq {
 
 /* ⚠️ WARNING / CAUTION / ATTENTION (светлый желтый) */
 div.warning,
+section.warning,
 div.caution,
-div.attention {
+section.caution,
+div.attention,
+section.attention {
   --callout-bg: rgba(255, 193, 7, 0.12);
   --callout-title-color: #f57f17;
   --callout-icon: "⚠️";
@@ -281,8 +570,11 @@ div.attention {
 
 /* ❌ FAILURE / FAIL / MISSING (светлый оранжевый) */
 div.failure,
+section.failure,
 div.fail,
-div.missing {
+section.fail,
+div.missing,
+section.missing {
   --callout-bg: rgba(255, 152, 0, 0.12);
   --callout-title-color: #e65100;
   --callout-icon: "❌";
@@ -291,7 +583,9 @@ div.missing {
 
 /* 🚫 DANGER / ERROR (светлый красный) */
 div.danger,
-div.error {
+section.danger,
+div.error,
+section.error {
   --callout-bg: rgba(244, 67, 54, 0.12);
   --callout-title-color: #c62828;
   --callout-icon: "🚫";
@@ -299,7 +593,8 @@ div.error {
 }
 
 /* 🐛 BUG (светлый розовый) */
-div.bug {
+div.bug,
+section.bug {
   --callout-bg: rgba(233, 30, 99, 0.12);
   --callout-title-color: #ad1457;
   --callout-icon: "🐛";
@@ -307,7 +602,8 @@ div.bug {
 }
 
 /* 📝 EXAMPLE (светлый индиго) */
-div.example {
+div.example,
+section.example {
   --callout-bg: rgba(103, 58, 183, 0.12);
   --callout-title-color: #4527a0;
   --callout-icon: "📝";
@@ -316,7 +612,9 @@ div.example {
 
 /* 💬 QUOTE / CITE (светлый серый) */
 div.quote,
-div.cite {
+section.quote,
+div.cite,
+section.cite {
   --callout-bg: rgba(96, 125, 139, 0.12);
   --callout-title-color: #37474f;
   --callout-icon: "💬";
@@ -328,10 +626,15 @@ div.cite {
    ════════════════════════════════════════════════════════════════ */
 
 div.note > div.note,
+section.note > section.note,
 div.info > div.info,
+section.info > section.info,
 div.tip > div.tip,
+section.tip > section.tip,
 div.warning > div.warning,
-div.danger > div.danger {
+section.warning > section.warning,
+div.danger > div.danger,
+section.danger > section.danger {
   margin: 1rem 0;
   margin-left: -0.5rem;
   margin-right: -0.5rem;
@@ -346,57 +649,84 @@ div.danger > div.danger {
   /* Темная тема НЕ МЕНЯЕТ фоны - они полупрозрачные в обоих режимах */
 
   /* Можно чуть осветлить текст заголовков для темного фона */
-  div.note {
+  div.note,
+  section.note {
     --callout-title-color: #64b5f6;
   }
   div.abstract,
+  section.abstract,
   div.summary,
-  div.tldr {
+  section.summary,
+  div.tldr,
+  section.tldr {
     --callout-title-color: #4fc3f7;
   }
-  div.info {
+  div.info,
+  section.info {
     --callout-title-color: #4dd0e1;
   }
-  div.todo {
+  div.todo,
+  section.todo {
     --callout-title-color: #bdbdbd;
   }
   div.tip,
+  section.tip,
   div.hint,
-  div.important {
+  section.hint,
+  div.important,
+  section.important {
     --callout-title-color: #81c784;
   }
   div.success,
+  section.success,
   div.check,
-  div.done {
+  section.check,
+  div.done,
+  section.done {
     --callout-title-color: #a5d6a7;
   }
   div.question,
+  section.question,
   div.help,
-  div.faq {
+  section.help,
+  div.faq,
+  section.faq {
     --callout-title-color: #ba68c8;
   }
   div.warning,
+  section.warning,
   div.caution,
-  div.attention {
+  section.caution,
+  div.attention,
+  section.attention {
     --callout-title-color: #ffd54f;
   }
   div.failure,
+  section.failure,
   div.fail,
-  div.missing {
+  section.fail,
+  div.missing,
+  section.missing {
     --callout-title-color: #ffb74d;
   }
   div.danger,
-  div.error {
+  section.danger,
+  div.error,
+  section.error {
     --callout-title-color: #ef5350;
   }
-  div.bug {
+  div.bug,
+  section.bug {
     --callout-title-color: #f06292;
   }
-  div.example {
+  div.example,
+  section.example {
     --callout-title-color: #9575cd;
   }
   div.quote,
-  div.cite {
+  section.quote,
+  div.cite,
+  section.cite {
     --callout-title-color: #90a4ae;
   }
 }

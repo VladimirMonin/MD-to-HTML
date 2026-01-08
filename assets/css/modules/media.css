@@ -1,0 +1,239 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   MEDIA PLAYER STYLES
+   Красивое оформление для audio/video элементов с Plyr
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   БАЗОВЫЕ СТИЛИ ДЛЯ FIGURE С МЕДИА
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+figure.media-player {
+  max-width: 900px;
+  margin: 2.5em auto;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+figure.media-player:hover {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16), 0 4px 16px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transform: translateY(-3px);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   AUDIO КОНТЕЙНЕР
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+figure.media-audio {
+  background: linear-gradient(145deg, #ffffff 0%, #f5f7fa 100%);
+  border: 1px solid rgba(255, 193, 7, 0.2);
+}
+
+figure.media-audio::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #ffc107, #ff9800, #ffc107);
+  z-index: 10;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   VIDEO КОНТЕЙНЕР
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+figure.media-video {
+  background: #1a1a2e;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+figure.media-video video {
+  width: 100%;
+  display: block;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FIGCAPTION - ПОДПИСЬ К МЕДИА
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+figure.media-player figcaption {
+  padding: 16px 24px;
+  background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%);
+  color: #2c3e50;
+  font-size: 0.95em;
+  font-weight: 600;
+  text-align: center;
+  letter-spacing: 0.3px;
+  position: relative;
+  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.3);
+}
+
+figure.media-audio figcaption::before {
+  content: "🎵";
+  margin-right: 10px;
+  font-size: 1.2em;
+}
+
+figure.media-video figcaption::before {
+  content: "🎬";
+  margin-right: 10px;
+  font-size: 1.2em;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PLYR КАСТОМИЗАЦИЯ
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Общий стиль контролов Plyr */
+.plyr {
+  --plyr-color-main: #ffc107;
+  --plyr-audio-control-color: #2c3e50;
+  --plyr-audio-control-color-hover: #ffffff;
+  --plyr-audio-controls-background: linear-gradient(
+    135deg,
+    #f8f9fa 0%,
+    #e9ecef 100%
+  );
+}
+
+/* Аудио плеер */
+.plyr--audio .plyr__controls {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.98),
+    rgba(248, 249, 250, 0.98)
+  );
+  border-radius: 0;
+  padding: 12px 16px;
+  box-shadow: none;
+}
+
+/* Видео плеер */
+.plyr--video .plyr__controls {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.85), transparent);
+}
+
+/* Кнопки при наведении */
+.plyr__control:hover {
+  background: rgba(255, 193, 7, 0.9) !important;
+  color: #2c3e50 !important;
+}
+
+/* Активная кнопка */
+.plyr__control[aria-expanded="true"] {
+  background: rgba(255, 193, 7, 0.95) !important;
+  color: #2c3e50 !important;
+}
+
+/* Прогресс бар */
+.plyr--full-ui input[type="range"] {
+  color: #ffc107;
+}
+
+/* Большая кнопка воспроизведения (overlay) */
+.plyr__control--overlaid {
+  background: rgba(255, 193, 7, 0.92) !important;
+  border: 3px solid rgba(44, 62, 80, 0.2);
+  color: #2c3e50 !important;
+  box-shadow: 0 4px 20px rgba(255, 193, 7, 0.4);
+}
+
+.plyr__control--overlaid:hover {
+  background: rgba(255, 179, 0, 0.98) !important;
+  transform: scale(1.08);
+  box-shadow: 0 6px 28px rgba(255, 193, 7, 0.5);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   АДАПТИВНОСТЬ
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  figure.media-player {
+    margin: 1.5em 0;
+    border-radius: 12px;
+  }
+
+  figure.media-player figcaption {
+    padding: 12px 16px;
+    font-size: 0.88em;
+  }
+}
+
+@media (max-width: 480px) {
+  figure.media-player {
+    margin: 1em 0;
+    border-radius: 10px;
+  }
+
+  figure.media-player figcaption {
+    padding: 10px 12px;
+    font-size: 0.85em;
+  }
+
+  figure.media-audio figcaption::before,
+  figure.media-video figcaption::before {
+    display: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ТЁМНАЯ ТЕМА
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (prefers-color-scheme: dark) {
+  figure.media-player {
+    background: linear-gradient(145deg, #1e1e2e 0%, #2d2d44 100%);
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  figure.media-audio {
+    background: linear-gradient(145deg, #252538 0%, #1e1e2e 100%);
+    border-color: rgba(255, 193, 7, 0.15);
+  }
+
+  figure.media-player figcaption {
+    background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+    color: #1a1a1a;
+  }
+
+  .plyr--audio .plyr__controls {
+    background: linear-gradient(
+      135deg,
+      rgba(45, 45, 68, 0.98),
+      rgba(37, 37, 56, 0.98)
+    );
+  }
+
+  .plyr--audio .plyr__controls button {
+    color: #e0e0e0;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   АНИМАЦИЯ ПОЯВЛЕНИЯ
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@keyframes mediaFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+figure.media-player {
+  animation: mediaFadeIn 0.5s ease-out;
+}

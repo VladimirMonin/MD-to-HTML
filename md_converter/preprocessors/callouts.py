@@ -60,7 +60,7 @@ class CalloutsPreprocessor(Preprocessor):
         while i < len(lines):
             line = lines[i]
 
-            # Проверяем начало callout: > [!TYPE] Title
+            # Проверяем начало callout: > [!TYPE] Title или > [!TYPE]
             match = re.match(r"^>\s*\[!([a-zA-Z-]+)\]\s*(.*)", line)
             if match:
                 callout_type = match.group(1).lower()
@@ -72,17 +72,34 @@ class CalloutsPreprocessor(Preprocessor):
 
                 # Начало div блока
                 result.append(f"\n::: {callout_type}")
-                if title:
-                    result.append(f"**{title}**\n")
 
                 # Собираем содержимое (все строки начинающиеся с >)
                 i += 1
                 content_lines = []
+                first_line = True
+
                 while i < len(lines) and lines[i].startswith(">"):
                     # Убираем > и пробел
                     clean_line = re.sub(r"^>\s?", "", lines[i])
+
+                    # Если заголовок не был на первой строке, проверяем первую строку контента
+                    if first_line and not title and clean_line.strip():
+                        # Проверяем, это **Bold** заголовок?
+                        bold_match = re.match(r"^\*\*(.+)\*\*\s*$", clean_line.strip())
+                        if bold_match:
+                            # Это заголовок, используем его
+                            title = bold_match.group(1)
+                            first_line = False
+                            i += 1
+                            continue
+
+                    first_line = False
                     content_lines.append(clean_line)
                     i += 1
+
+                # Добавляем заголовок если есть
+                if title:
+                    result.append(f"**{title}**\n")
 
                 # Добавляем содержимое
                 result.extend(content_lines)

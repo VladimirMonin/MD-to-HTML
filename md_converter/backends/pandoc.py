@@ -53,7 +53,7 @@ class PandocBackend:
         cmd = [
             "pandoc",
             "--from",
-            "markdown-yaml_metadata_block",  # Отключаем YAML парсинг чтобы избежать ошибок с ---
+            "markdown-yaml_metadata_block+fenced_divs",  # Добавляем fenced_divs для callouts
             str(temp_md),
             "-o",
             str(output_file),

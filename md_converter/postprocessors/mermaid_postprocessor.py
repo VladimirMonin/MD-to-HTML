@@ -1,23 +1,27 @@
 """Постпроцессор для исправления Mermaid символов."""
 
+import html
 import re
 
 
 class MermaidFixPostprocessor:
     """Исправляет экранированные символы в Mermaid блоках."""
 
-    def process(self, html: str) -> str:
+    def process(self, html_content: str) -> str:
         """
-        Восстанавливает символы которые Pandoc экранировал:
-        --&gt; → -->
+        Восстанавливает символы которые Pandoc экранировал.
+        Использует html.unescape() для универсального декодирования всех HTML entities.
         """
 
         def fix_mermaid_block(match):
             block = match.group(1)
 
-            # Убираем <pre><code class="language-text"> которые Pandoc добавил
+            # Убираем <pre><code> обёртки которые Pandoc добавил
+            # Вариант 1: <pre class="text"><code>...</code></pre>
+            # Вариант 2: <pre><code class="language-text">...</code></pre>
+            # Вариант 3: <pre class="text"><code>...</code> (без закрывающего </pre>)
             block = re.sub(
-                r"<pre[^>]*><code[^>]*>(.*?)</code></pre>",
+                r"<pre[^>]*>\s*<code[^>]*>(.*?)</code>(?:\s*</pre>)?",
                 r"\1",
                 block,
                 flags=re.DOTALL,
@@ -26,30 +30,27 @@ class MermaidFixPostprocessor:
             # Конвертируем литеральные \n в настоящие переносы строк для multiline notes
             block = block.replace("\\n", "\n")
 
-            # КРИТИЧЕСКИ ВАЖНО: Заменяем <br/> на <br> без слэша
-            # Mermaid v10+ поддерживает <br> в Note over для многострочного текста
-            block = block.replace("&lt;br /&gt;", "<br>")
-            block = block.replace("&lt;br/&gt;", "<br>")
-            block = block.replace("&lt;br&gt;", "<br>")
-
-            # Pandoc entities для стрелок
-            block = block.replace("--&gt;", "-->")
-            block = block.replace("-&gt;", "->")
-            block = block.replace("=&gt;", "=>")
-            block = block.replace("&lt;|--", "<|--")
-            block = block.replace("|&gt;", "|>")
-
             # Убираем лишние <p> теги если остались
             block = block.replace("<p>", "").replace("</p>", "")
 
+            # УНИВЕРСАЛЬНОЕ РЕШЕНИЕ: декодируем ВСЕ HTML entities
+            # Это восстановит: &quot; → ", &amp; → &, &lt; → <, &gt; → >,
+            # &apos; → ', числовые коды (&#39;, &#34; и т.д.)
+            block = html.unescape(block)
+
+            # Нормализуем варианты переноса строк в <br/> — Mermaid 11 ожидает слэш
+            block = block.replace("<br />", "<br/>")
+            block = block.replace("<br>", "<br/>")
+
             return f'<div class="mermaid">{block.strip()}</div>'
 
-        html = re.sub(
-            r'<div class="mermaid">(.*?)</div>',
+        # Ищем как <div>, так и <pre> — Pandoc может преобразовать div в pre
+        html_content = re.sub(
+            r'<(?:div|pre) class="mermaid">(.*?)</(?:div|pre)>',
             fix_mermaid_block,
-            html,
+            html_content,
             flags=re.DOTALL,
         )
 
-        print("✓ Mermaid символы исправлены")
-        return html
+        print("✓ Mermaid символы исправлены (html.unescape)")
+        return html_content

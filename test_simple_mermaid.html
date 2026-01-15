@@ -1,0 +1,22 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+</head>
+<body>
+<h1>Mermaid Test</h1>
+<div class="mermaid">
+flowchart TD
+    Start[Попытка записи] --> CallSetter[@value.setter]
+    CallSetter --> Validate{Валидация<br>пройдена?}
+    Validate -- "Да " --> Save[self._value = x]
+    Validate -- "Нет " --> RaiseErr[raise ValueError]
+    Save --> End((Готово))
+    RaiseErr --> End
+    Note[" Сеттер работает как фильтр"]
+    CallSetter -.- Note
+</div>
+<script>mermaid.initialize({startOnLoad: true});</script>
+</body>
+</html>

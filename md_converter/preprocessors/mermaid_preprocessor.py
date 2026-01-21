@@ -2,6 +2,7 @@
 
 import re
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 from .base import Preprocessor
@@ -133,22 +134,37 @@ class MermaidPreprocessor(Preprocessor):
             ]
 
             # Запускаем рендеринг в PNG
-            subprocess.run(cmd, capture_output=True, text=True, timeout=30, check=True)
+            subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=30,
+                check=True,
+                stdin=subprocess.DEVNULL,  # Не блокировать MCP stdio
+            )
 
             # Читаем PNG в память
             png_bytes = png_path.read_bytes()
 
             # Конвертируем PNG -> WebP в памяти
-            png_image = Image.open(io.BytesIO(png_bytes))
-            webp_buffer = io.BytesIO()
-            png_image.save(webp_buffer, "WEBP", quality=self.quality, method=6)
+            with Image.open(io.BytesIO(png_bytes)) as png_image:
+                webp_buffer = io.BytesIO()
+                png_image.save(webp_buffer, "WEBP", quality=self.quality, method=6)
 
             return webp_buffer.getvalue()
 
         finally:
-            # Удаляем временные файлы
-            tmp_path.unlink(missing_ok=True)
-            png_path.unlink(missing_ok=True)
+            # Удаляем временные файлы (с небольшой задержкой для Windows)
+            import time
+
+            time.sleep(0.05)  # 50ms для освобождения файлов
+
+            for path in [tmp_path, png_path]:
+                try:
+                    if path.exists():
+                        path.unlink()
+                except PermissionError:
+                    pass  # Игнорируем, система удалит позже
 
     def process(self, content: str) -> str:
         """
@@ -161,6 +177,12 @@ class MermaidPreprocessor(Preprocessor):
             # Для EPUB оставляем как есть
             return content
 
+        # Считаем общее количество диаграмм для прогресса
+        all_matches = list(re.finditer(r"```mermaid\s*\n(.*?)```", content, re.DOTALL))
+        total_diagrams = len(all_matches)
+        if total_diagrams > 0:
+            print(f"  📊 Найдено {total_diagrams} Mermaid диаграмм", file=sys.stderr)
+
         # Счётчик диаграмм для уникальных имён файлов
         diagram_counter = [0]  # Используем список для замыкания
 
@@ -168,44 +190,49 @@ class MermaidPreprocessor(Preprocessor):
             """Замена блока Mermaid на ссылку на изображение."""
             diagram_code = match.group(1).strip()
             diagram_counter[0] += 1
+            current = diagram_counter[0]
+
+            # Логируем прогресс
+            print(
+                f"  📊 Рендеринг диаграммы {current}/{total_diagrams}...",
+                file=sys.stderr,
+            )
 
             try:
                 # Рендерим в память
-                webp_bytes = self._render_diagram(diagram_code, diagram_counter[0])
+                webp_bytes = self._render_diagram(diagram_code, current)
 
                 if self.media_mode == "copy":
                     # COPY: сохраняем в output_dir/media/
                     media_dir = self.output_dir / "media"
                     media_dir.mkdir(parents=True, exist_ok=True)
 
-                    filename = f"diagram_{diagram_counter[0]}.webp"
+                    filename = f"diagram_{current}.webp"
                     filepath = media_dir / filename
                     filepath.write_bytes(webp_bytes)
 
                     # Ссылка на файл
-                    return (
-                        f"\n![Mermaid Diagram {diagram_counter[0]}](media/{filename})\n"
-                    )
+                    return f"\n![Mermaid Diagram {current}](media/{filename})\n"
                 else:
                     # EMBED: base64 напрямую в Markdown
                     import base64
 
                     b64_data = base64.b64encode(webp_bytes).decode("ascii")
                     data_uri = f"data:image/webp;base64,{b64_data}"
-                    return f"\n![Mermaid Diagram {diagram_counter[0]}]({data_uri})\n"
+                    return f"\n![Mermaid Diagram {current}]({data_uri})\n"
 
             except subprocess.CalledProcessError as e:
                 # Если рендеринг не удался - оставляем исходный блок с предупреждением
                 error_msg = e.stderr if e.stderr else "Unknown error"
                 return (
-                    f"\n> **⚠️ Ошибка рендеринга Mermaid диаграммы #{diagram_counter[0]}**\n"
+                    f"\n> **⚠️ Ошибка рендеринга Mermaid диаграммы #{current}**\n"
                     f"> {error_msg[:200]}\n"
                     f"\n```mermaid\n{diagram_code}\n```\n"
                 )
             except Exception as e:
                 # Любые другие ошибки
                 return (
-                    f"\n> **⚠️ Неожиданная ошибка при обработке диаграммы #{diagram_counter[0]}**\n"
+                    f"\n> **⚠️ Неожиданная ошибка при обработке диаграммы #{current}**\n"
                     f"> {str(e)[:200]}\n"
                     f"\n```mermaid\n{diagram_code}\n```\n"
                 )

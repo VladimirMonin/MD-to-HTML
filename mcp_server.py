@@ -5,12 +5,33 @@ MCP Server для MD-to-HTML конвертера.
 """
 
 import io
+import logging
 import re
+import subprocess
 import sys
 from contextlib import redirect_stdout
+from datetime import datetime
 from pathlib import Path
 from typing import Literal, Optional
 from urllib.parse import unquote
+
+# Настройка файлового логирования для диагностики
+LOG_FILE = Path(__file__).parent / "mcp_debug.log"
+file_handler = logging.FileHandler(LOG_FILE, mode="a", encoding="utf-8")
+file_handler.setFormatter(
+    logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+)
+logger = logging.getLogger("mcp_server")
+logger.setLevel(logging.DEBUG)
+logger.addHandler(file_handler)
+logger.propagate = False  # Не передавать в root logger
+
+
+def log_debug(message: str):
+    """Логирование в файл и stderr."""
+    logger.debug(message)
+    print(f"[MCP] {message}", file=sys.stderr)
+
 
 # Импорт FastMCP для создания MCP сервера
 from mcp.server.fastmcp import FastMCP
@@ -233,8 +254,12 @@ def validate_mermaid_blocks(markdown_content: str) -> list[dict]:
     if not matches:
         return []  # Нет диаграмм - нет проблем
 
+    total = len(matches)
+    log_debug(f"Валидация {total} Mermaid диаграмм...")
+
     # Проверяем каждую диаграмму
     for idx, match in enumerate(matches, start=1):
+        log_debug(f"Валидация диаграммы {idx}/{total}...")
         diagram_code = match.group(1).strip()
 
         # Определяем номер строки в документе
@@ -264,6 +289,7 @@ def validate_mermaid_blocks(markdown_content: str) -> list[dict]:
                 capture_output=True,
                 text=True,
                 timeout=10,  # 10 секунд на диаграмму
+                stdin=subprocess.DEVNULL,  # Не блокировать MCP stdio
             )
 
             # Если процесс завершился с ошибкой
@@ -333,7 +359,7 @@ def convert_markdown_to_html(
     template: str = "web",
     media_mode: str = "embed",
     validate_media: bool = True,
-    validate_mermaid: bool = True,
+    validate_mermaid: bool = False,  # ОТКЛЮЧЕНО - двойная обработка Mermaid
     mermaid_theme: str = "forest",
 ) -> dict:
     """
@@ -665,10 +691,8 @@ def convert_markdown_to_html(
 
         # ===== ЭТАП 4: КОНВЕРТАЦИЯ =====
 
-        print(f"[MCP] Начинаю конвертацию: {input_path}", file=sys.stderr)
-        print(
-            f"[MCP] Режим медиа: {media_mode}, Формат: {output_format}", file=sys.stderr
-        )
+        log_debug(f"Начинаю конвертацию: {input_path}")
+        log_debug(f"Режим медиа: {media_mode}, Формат: {output_format}")
 
         # Создаём конвертер
         converter = Converter(config)
@@ -677,10 +701,7 @@ def convert_markdown_to_html(
         # и потенциально опасен для MCP stdio транспорта
         output_files = converter.convert(input_path)
 
-        print(
-            f"[MCP] Конвертация завершена, создано файлов: {len(output_files)}",
-            file=sys.stderr,
-        )
+        log_debug(f"Конвертация завершена, создано файлов: {len(output_files)}")
 
         # ===== ЭТАП 5: ФОРМИРОВАНИЕ РЕЗУЛЬТАТА =====
 
@@ -697,15 +718,11 @@ def convert_markdown_to_html(
             "message": "Конвертация успешно завершена",
         }
 
-        # Логирование для отладки (без эмодзи для совместимости с Windows cp1252)
-        print(f"[MCP] OK Завершено успешно", file=sys.stderr)
-        print(
-            f"[MCP] FILES Создано файлов: {len(result['output_files'])}",
-            file=sys.stderr,
-        )
-        print(
-            f"[MCP] MEDIA {result['stats']['media_files_found']} найдено, {result['stats']['media_files_missing']} отсутствует",
-            file=sys.stderr,
+        # Логирование для отладки
+        log_debug(f"OK Завершено успешно")
+        log_debug(f"FILES Создано файлов: {len(result['output_files'])}")
+        log_debug(
+            f"MEDIA {result['stats']['media_files_found']} найдено, {result['stats']['media_files_missing']} отсутствует"
         )
 
         return result
@@ -753,15 +770,15 @@ def convert_markdown_to_html(
         }
 
     except Exception as e:
+        import traceback
+
+        tb_str = traceback.format_exc()
+        log_debug(f"ОШИБКА: {type(e).__name__}: {e}\n{tb_str}")
         return {
             "status": "error",
             "error_type": type(e).__name__,
             "message": str(e),
-            "details": {
-                "traceback": str(e.__traceback__)
-                if hasattr(e, "__traceback__")
-                else None
-            },
+            "details": {"traceback": tb_str},
         }
 
 

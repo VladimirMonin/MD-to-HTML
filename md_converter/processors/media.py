@@ -109,13 +109,21 @@ class MediaProcessor:
                 if self.mode == "copy":
                     # Копируем в media/
                     target_path = media_dir / abs_path.name
-                    shutil.copy2(abs_path, target_path)
-                    new_path = f"media/{abs_path.name}"
-                    content = content.replace(media_path, new_path)
-                    media_map[media_path] = new_path
-                    print(f"  📎 {abs_path.name}", file=sys.stderr)
-                    print(f"     ├─ источник: {abs_path}", file=sys.stderr)
-                    print(f"     └─ скопирован → {new_path}", file=sys.stderr)
+
+                    # Пропускаем если файл уже в целевой директории (созданный MermaidPreprocessor)
+                    if abs_path.resolve() == target_path.resolve():
+                        print(f"  📎 {abs_path.name} (уже в media/)", file=sys.stderr)
+                        new_path = f"media/{abs_path.name}"
+                        content = content.replace(media_path, new_path)
+                        media_map[media_path] = new_path
+                    else:
+                        shutil.copy2(abs_path, target_path)
+                        new_path = f"media/{abs_path.name}"
+                        content = content.replace(media_path, new_path)
+                        media_map[media_path] = new_path
+                        print(f"  📎 {abs_path.name}", file=sys.stderr)
+                        print(f"     ├─ источник: {abs_path}", file=sys.stderr)
+                        print(f"     └─ скопирован → {new_path}", file=sys.stderr)
                 else:
                     # EMBED режим - заменяем на абсолютный путь для Pandoc
                     # Используем resolve() для нормализации пути (убирает .. и т.д.)

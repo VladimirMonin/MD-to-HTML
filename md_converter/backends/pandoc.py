@@ -2,6 +2,7 @@
 
 import os
 import subprocess
+import sys
 from pathlib import Path
 from typing import Optional
 from ..config import ConverterConfig
@@ -77,7 +78,7 @@ class PandocBackend:
         if css_path.exists():
             cmd.extend(["--css", str(css_path)])
         else:
-            print(f"⚠️ CSS файл не найден: {css_path}")
+            print(f"⚠️ CSS файл не найден: {css_path}", file=sys.stderr)
 
         # Формат-специфичные настройки
         if format_type == "html":
@@ -88,8 +89,8 @@ class PandocBackend:
         # Дополнительные аргументы
         cmd.extend(self.config.advanced.pandoc_extra_args)
 
-        print(f"\n🚀 Запуск Pandoc для {format_type.upper()}...")
-        print(f"Команда: {' '.join(cmd)}")
+        print(f"\n🚀 Запуск Pandoc для {format_type.upper()}...", file=sys.stderr)
+        print(f"Команда: {' '.join(cmd)}", file=sys.stderr)
 
         # Окружение для mermaid-filter
         env = os.environ.copy()
@@ -100,15 +101,26 @@ class PandocBackend:
 
         try:
             result = subprocess.run(
-                cmd, check=True, capture_output=True, text=True, env=env
+                cmd,
+                check=True,
+                capture_output=True,
+                text=True,
+                env=env,
+                timeout=300,  # 5 минут максимум для Pandoc
+                stdin=subprocess.DEVNULL,  # Закрыть stdin чтобы не блокировать MCP stdio
             )
-            print(f"✅ Готово! Файл: {output_file}")
+            print(f"✅ Готово! Файл: {output_file}", file=sys.stderr)
             return output_file
 
+        except subprocess.TimeoutExpired:
+            raise RuntimeError(
+                f"Pandoc превысил таймаут (5 минут). Возможно документ слишком большой или есть проблемы с медиа файлами."
+            )
+
         except subprocess.CalledProcessError as e:
-            print(f"❌ Ошибка Pandoc:")
-            print(f"STDOUT: {e.stdout}")
-            print(f"STDERR: {e.stderr}")
+            print(f"❌ Ошибка Pandoc:", file=sys.stderr)
+            print(f"STDOUT: {e.stdout}", file=sys.stderr)
+            print(f"STDERR: {e.stderr}", file=sys.stderr)
             # Формируем детальное сообщение об ошибке для GUI
             error_msg = f"Pandoc завершился с ошибкой (код {e.returncode})\n\n"
             if e.stderr:
@@ -145,10 +157,10 @@ class PandocBackend:
         if self.config.fonts.embed:
             fonts_dir = Path(self.config.fonts.dir)
             if fonts_dir.exists():
-                print(f"📎 Вшиваем шрифты из {fonts_dir}...")
+                print(f"📎 Вшиваем шрифты из {fonts_dir}...", file=sys.stderr)
                 for font_file in fonts_dir.glob("*.ttf"):
                     cmd.extend(["--epub-embed-font", str(font_file)])
-                    print(f"  • {font_file.name}")
+                    print(f"  • {font_file.name}", file=sys.stderr)
 
         # Mermaid filter
         if self.config.features.mermaid:
@@ -157,6 +169,6 @@ class PandocBackend:
                 "mermaid-filter.cmd" if os.name == "nt" else "mermaid-filter"
             )
             cmd.extend(["-F", mermaid_filter])
-            print("🎨 Mermaid: format=svg, theme=neutral")
+            print("🎨 Mermaid: format=svg, theme=neutral", file=sys.stderr)
 
         cmd.append("--to=epub3")

@@ -1,5 +1,6 @@
 """Главный класс конвертера - оркестратор pipeline."""
 
+import sys
 from pathlib import Path
 from typing import Optional, Union
 from .config import ConverterConfig
@@ -11,7 +12,7 @@ from .preprocessors import (
 )
 from .processors import MediaProcessor, MergerProcessor, TemplateProcessor
 from .backends import PandocBackend
-from .postprocessors import MermaidFixPostprocessor, PlyrWrapPostprocessor
+from .postprocessors import PlyrWrapPostprocessor
 
 
 class Converter:
@@ -58,8 +59,6 @@ class Converter:
 
         # Постпроцессоры
         self.postprocessors = []
-        if self.config.features.mermaid:
-            self.postprocessors.append(MermaidFixPostprocessor())
         if self.config.features.plyr:
             self.postprocessors.append(PlyrWrapPostprocessor())
 
@@ -80,9 +79,9 @@ class Converter:
         output_name = output_name or input_path.stem
         results = []
 
-        print(f"\n{'=' * 60}")
-        print(f"📚 MD-to-HTML Converter v2.0")
-        print(f"{'=' * 60}\n")
+        print(f"\n{'=' * 60}", file=sys.stderr)
+        print(f"📚 MD-to-HTML Converter v2.0", file=sys.stderr)
+        print(f"{'=' * 60}\n", file=sys.stderr)
 
         # ИСПРАВЛЕНИЕ БАГ #12: Правильный base_path (папка с MD файлом)
         # Для файла: его parent, для папки: сама папка
@@ -90,30 +89,39 @@ class Converter:
         self.obsidian_preprocessor = ObsidianPreprocessor(base_path=base_path)
 
         # 1. Склейка файлов
-        print("🔗 Этап 1: Склейка файлов...")
+        print("🔗 Этап 1: Склейка файлов...", file=sys.stderr)
         content = self.merger.merge(input_path)
-        print(f"  ✓ Получено {len(content)} символов\n")
+        print(f"  ✓ Получено {len(content)} символов\n", file=sys.stderr)
 
         # 1.5. Obsidian препроцессинг (ПЕРЕД обработкой медиа)
         if self.config.input.source_type == "obsidian":
-            print("🔄 Obsidian → Markdown...")
+            print("🔄 Obsidian → Markdown...", file=sys.stderr)
             content = self.obsidian_preprocessor.process(content)
-            print("  ✓ Синтаксис преобразован\n")
+            print("  ✓ Синтаксис преобразован\n", file=sys.stderr)
+
+        # 1.7. Mermaid препроцессинг (ДО MediaProcessor!)
+        # Важно: сначала конвертируем диаграммы в картинки,
+        # затем MediaProcessor обработает их как обычные изображения
+        if self.config.features.mermaid:
+            print("📊 Mermaid → WebP...", file=sys.stderr)
+            mermaid_pp = MermaidPreprocessor(self.config, format_type="html")
+            content = mermaid_pp.process(content)
+            print("  ✓ Диаграммы конвертированы\n", file=sys.stderr)
 
         # 2. Обработка медиа
-        print("📎 Этап 2: Обработка медиа...")
+        print("📎 Этап 2: Обработка медиа...", file=sys.stderr)
         # Передаём реальный input_path, чтобы относительные пути к медиа разрешались корректно
         content, media_map = self.media_processor.process(content, input_path)
-        print(f"  ✓ Обработано {len(media_map)} медиа файлов\n")
+        print(f"  ✓ Обработано {len(media_map)} медиа файлов\n", file=sys.stderr)
 
         # 3. Конвертация для каждого формата
         for fmt in self.config.formats:
-            print(f"{'=' * 60}")
-            print(f"📝 Формат: {fmt.upper()}")
-            print(f"{'=' * 60}\n")
+            print(f"{'=' * 60}", file=sys.stderr)
+            print(f"📝 Формат: {fmt.upper()}", file=sys.stderr)
+            print(f"{'=' * 60}\n", file=sys.stderr)
 
             # Препроцессинг с учетом формата
-            print("⚙️ Этап 3: Препроцессинг Markdown...")
+            print("⚙️ Этап 3: Препроцессинг Markdown...", file=sys.stderr)
             processed_content = content
 
             # Базовые препроцессоры
@@ -121,30 +129,19 @@ class Converter:
                 processed_content = preprocessor.process(processed_content)
 
             # Формат-специфичные препроцессоры
-            if self.config.features.mermaid:
-                # Сначала автоисправление типичных ошибок AI
-                from .preprocessors import MermaidAutoFixPreprocessor
-
-                autofix_pp = MermaidAutoFixPreprocessor(format_type=fmt)
-                processed_content = autofix_pp.process(processed_content)
-
-                # Затем основная обработка
-                mermaid_pp = MermaidPreprocessor(format_type=fmt)
-                processed_content = mermaid_pp.process(processed_content)
-
             if self.config.features.diff_blocks:
                 diff_pp = DiffPreprocessor()
                 processed_content = diff_pp.process(processed_content)
 
-            print("  ✓ Препроцессинг завершен\n")
+            print("  ✓ Препроцессинг завершен\n", file=sys.stderr)
 
             # Подготовка header
-            print("🎨 Этап 4: Генерация шаблона...")
+            print("🎨 Этап 4: Генерация шаблона...", file=sys.stderr)
             header = self.template_processor.build_header(fmt)
-            print("  ✓ Шаблон готов\n")
+            print("  ✓ Шаблон готов\n", file=sys.stderr)
 
             # Конвертация через Pandoc
-            print("🔄 Этап 5: Pandoc конвертация...")
+            print("🔄 Этап 5: Pandoc конвертация...", file=sys.stderr)
             output_path = self.backend.convert(
                 content=processed_content,
                 output_name=output_name,
@@ -152,16 +149,16 @@ class Converter:
                 header=header,
                 media_map=media_map,
             )
-            print()
+            print(file=sys.stderr)
 
             # Постобработка (только HTML)
             if fmt == "html" and self.postprocessors:
-                print("🔧 Этап 6: Постобработка HTML...")
+                print("🔧 Этап 6: Постобработка HTML...", file=sys.stderr)
                 html = output_path.read_text(encoding="utf-8")
                 for postprocessor in self.postprocessors:
                     html = postprocessor.process(html)
                 output_path.write_text(html, encoding="utf-8")
-                print("  ✓ Постобработка завершена\n")
+                print("  ✓ Постобработка завершена\n", file=sys.stderr)
 
             results.append(output_path)
 

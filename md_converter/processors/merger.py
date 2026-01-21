@@ -1,6 +1,7 @@
 """Процессор для склейки MD файлов из папки."""
 
 import os
+import sys
 from pathlib import Path
 from typing import Union
 from natsort import natsorted
@@ -23,7 +24,7 @@ class MergerProcessor:
 
         if input_path.is_file():
             # Один файл
-            print(f"--- Обрабатываем файл: {input_path.name} ---")
+            print(f"--- Обрабатываем файл: {input_path.name} ---", file=sys.stderr)
             return input_path.read_text(encoding="utf-8")
 
         elif input_path.is_dir():
@@ -31,11 +32,11 @@ class MergerProcessor:
             md_files = [f for f in input_path.glob("*.md")]
             sorted_files = natsorted(md_files, key=lambda f: f.name)
 
-            print(f"--- Сшиваем файлы ({len(sorted_files)} шт) ---")
+            print(f"--- Сшиваем файлы ({len(sorted_files)} шт) ---", file=sys.stderr)
             merged_content = []
 
             for file_path in sorted_files:
-                print(f"  • {file_path.name}")
+                print(f"  • {file_path.name}", file=sys.stderr)
                 content = file_path.read_text(encoding="utf-8")
                 merged_content.append(content)
 

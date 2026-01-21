@@ -1,10 +1,15 @@
+/**
+ * Медиа модуль - полноэкранный режим и Plyr плеер
+ * Перенесено из assets/js/media.js
+ */
+
 function enableFullscreenImages() {
   const fullscreenContainer = createFullscreenContainer();
   document.body.appendChild(fullscreenContainer);
 
   document.querySelectorAll("img").forEach((img) => {
     img.addEventListener("click", () =>
-      showFullscreenImage(fullscreenContainer, img.src)
+      showFullscreenImage(fullscreenContainer, img.src),
     );
   });
 

@@ -85,9 +85,11 @@ class MermaidAutoFixPreprocessor:
         for line in lines:
             # Удаляем строки с <<interface>>, <<abstract>> и другими стереотипами
             if re.search(r"^\s*<<\w+>>\s*$", line):
-                stereotype = re.search(r"<<(\w+)>>", line).group(1)
-                if stereotype not in removed_stereotypes:
-                    removed_stereotypes.append(stereotype)
+                match = re.search(r"<<(\w+)>>", line)
+                if match:
+                    stereotype = match.group(1)
+                    if stereotype not in removed_stereotypes:
+                        removed_stereotypes.append(stereotype)
                 continue  # Пропускаем эту строку
 
             fixed_lines.append(line)

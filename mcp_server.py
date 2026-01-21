@@ -9,7 +9,7 @@ import re
 import sys
 from contextlib import redirect_stdout
 from pathlib import Path
-from typing import Optional
+from typing import Literal, Optional
 from urllib.parse import unquote
 
 # Импорт FastMCP для создания MCP сервера
@@ -61,6 +61,24 @@ class MediaFilesNotFoundError(ValidationError):
             f"Следующие медиа файлы не найдены ({len(missing_files)}): "
             f"{', '.join(missing_files[:5])}"
             + (f" и еще {len(missing_files) - 5}" if len(missing_files) > 5 else "")
+        )
+
+
+class MermaidValidationError(ValidationError):
+    """Ошибки валидации Mermaid диаграмм."""
+
+    def __init__(self, errors: list[dict]):
+        self.errors = errors
+        error_details = "\n".join(
+            [
+                f"  • Диаграмма #{err['index']}: {err['error']}\n"
+                f"    Код:\n{err['code'][:100]}..."
+                for err in errors[:3]
+            ]
+        )
+        super().__init__(
+            f"Обнаружены ошибки в {len(errors)} Mermaid диаграммах:\n{error_details}"
+            + (f"\n  ... и еще {len(errors) - 3} ошибок" if len(errors) > 3 else "")
         )
 
 
@@ -123,6 +141,186 @@ def validate_media_files(
     return missing_files
 
 
+def find_mmdc_executable() -> str:
+    """
+    Найти исполняемый файл mmdc с учетом специфики разных платформ.
+
+    На Windows npm глобальные пакеты устанавливаются в AppData/Roaming/npm,
+    и subprocess может не видеть их через PATH если процесс запущен до установки.
+
+    Returns:
+        Путь к mmdc исполняемому файлу
+
+    Raises:
+        FileNotFoundError: Если mmdc не найден
+    """
+    import shutil
+    import os
+    import sys
+
+    # Попытка 1: Через shutil.which (работает если mmdc в PATH)
+    mmdc = shutil.which("mmdc")
+    if mmdc:
+        return mmdc
+
+    # Попытка 2: Windows - проверяем стандартное расположение npm глобальных пакетов
+    if sys.platform == "win32":
+        npm_global = os.path.expanduser(r"~\AppData\Roaming\npm")
+
+        # Windows использует .cmd обертку для Node.js скриптов
+        for variant in ["mmdc.cmd", "mmdc"]:
+            mmdc_path = os.path.join(npm_global, variant)
+            if os.path.exists(mmdc_path):
+                return mmdc_path
+
+    # Попытка 3: Unix - проверяем стандартные npm пути
+    else:
+        for npm_prefix in [
+            "/usr/local/bin",
+            os.path.expanduser("~/.npm-global/bin"),
+            "/usr/bin",
+        ]:
+            mmdc_path = os.path.join(npm_prefix, "mmdc")
+            if os.path.exists(mmdc_path):
+                return mmdc_path
+
+    # Не найден нигде
+    raise FileNotFoundError(
+        "Mermaid CLI (mmdc) не найден. Установите: npm install -g @mermaid-js/mermaid-cli\n"
+        "После установки может потребоваться перезапуск терминала/IDE для обновления PATH."
+    )
+
+
+def validate_mermaid_blocks(markdown_content: str) -> list[dict]:
+    """
+    Валидация всех Mermaid диаграмм в документе через CLI.
+
+    Проверяет синтаксис каждой диаграммы запуском mmdc в тестовом режиме.
+    Возвращает детальные отчеты об ошибках для каждой проблемной диаграммы.
+
+    Args:
+        markdown_content: Содержимое Markdown файла
+
+    Returns:
+        Список словарей с информацией об ошибках:
+        [
+            {
+                'index': 1,  # Номер диаграммы в документе
+                'code': '...',  # Первые 150 символов кода диаграммы
+                'error': 'Parse error on line 3...',  # Текст ошибки из CLI
+                'line': 45  # Строка в исходном документе (если определена)
+            },
+            ...
+        ]
+    """
+    import subprocess
+    import tempfile
+    from pathlib import Path
+
+    # Находим mmdc с учетом специфики платформы
+    try:
+        mmdc_cmd = find_mmdc_executable()
+    except FileNotFoundError as e:
+        # Возвращаем специальную ошибку если mmdc не установлен
+        return [{"index": 0, "code": "", "error": str(e), "line": 0}]
+
+    errors = []
+
+    # Извлекаем все Mermaid блоки с их позициями
+    pattern = r"```mermaid\s*\n(.*?)```"
+    matches = list(re.finditer(pattern, markdown_content, re.DOTALL))
+
+    if not matches:
+        return []  # Нет диаграмм - нет проблем
+
+    # Проверяем каждую диаграмму
+    for idx, match in enumerate(matches, start=1):
+        diagram_code = match.group(1).strip()
+
+        # Определяем номер строки в документе
+        line_number = markdown_content[: match.start()].count("\n") + 1
+
+        # Создаем временный файл для диаграммы
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".mmd", delete=False, encoding="utf-8"
+        ) as tmp_file:
+            tmp_file.write(diagram_code)
+            tmp_path = Path(tmp_file.name)
+
+        try:
+            # Пытаемся рендерить в SVG (легковесный формат для теста)
+            output_path = tmp_path.with_suffix(".svg")
+
+            result = subprocess.run(
+                [
+                    mmdc_cmd,
+                    "-i",
+                    str(tmp_path),
+                    "-o",
+                    str(output_path),
+                    "-t",
+                    "neutral",  # Базовая тема для теста
+                ],
+                capture_output=True,
+                text=True,
+                timeout=10,  # 10 секунд на диаграмму
+            )
+
+            # Если процесс завершился с ошибкой
+            if result.returncode != 0:
+                # Извлекаем суть ошибки из stderr
+                error_msg = result.stderr.strip()
+
+                # Упрощаем сообщение (убираем технические детали CLI)
+                if "Parse error" in error_msg:
+                    # Оставляем только суть синтаксической ошибки
+                    error_lines = [
+                        l
+                        for l in error_msg.split("\n")
+                        if "Parse error" in l or "Expecting" in l
+                    ]
+                    error_msg = " ".join(error_lines[:2]) if error_lines else error_msg
+                elif "Error" in error_msg:
+                    # Берем первую строку с "Error"
+                    error_lines = [l for l in error_msg.split("\n") if "Error" in l]
+                    error_msg = error_lines[0] if error_lines else error_msg
+
+                # Обрезаем слишком длинные сообщения
+                if len(error_msg) > 200:
+                    error_msg = error_msg[:197] + "..."
+
+                errors.append(
+                    {
+                        "index": idx,
+                        "code": diagram_code[:150]
+                        + ("..." if len(diagram_code) > 150 else ""),
+                        "error": error_msg or "Неизвестная ошибка синтаксиса",
+                        "line": line_number,
+                    }
+                )
+
+            # Удаляем временные файлы
+            if output_path.exists():
+                output_path.unlink()
+
+        except subprocess.TimeoutExpired:
+            errors.append(
+                {
+                    "index": idx,
+                    "code": diagram_code[:150]
+                    + ("..." if len(diagram_code) > 150 else ""),
+                    "error": "Timeout: диаграмма слишком сложная или зациклена",
+                    "line": line_number,
+                }
+            )
+        finally:
+            # Удаляем входной временный файл
+            if tmp_path.exists():
+                tmp_path.unlink()
+
+    return errors
+
+
 @mcp.tool()
 def convert_markdown_to_html(
     input_file: str,
@@ -135,6 +333,7 @@ def convert_markdown_to_html(
     template: str = "web",
     media_mode: str = "embed",
     validate_media: bool = True,
+    validate_mermaid: bool = True,
     mermaid_theme: str = "forest",
 ) -> dict:
     """
@@ -207,6 +406,11 @@ def convert_markdown_to_html(
     validate_media (bool): Проверять наличие всех медиа файлов перед конвертацией.
         По умолчанию: True
         Если True, конвертация не начнется, если какие-то медиа файлы отсутствуют.
+
+    validate_mermaid (bool): Проверять синтаксис Mermaid диаграмм через CLI перед конвертацией.
+        По умолчанию: True
+        Если True, конвертация не начнется при наличии синтаксических ошибок в диаграммах.
+        Требует установленного Mermaid CLI (mmdc).
 
     mermaid_theme (str): Тема для Mermaid диаграмм.
         По умолчанию: "forest" (зелёная)
@@ -420,12 +624,20 @@ def convert_markdown_to_html(
             if missing_files:
                 raise MediaFilesNotFoundError(missing_files)
 
+        # ===== ЭТАП 2.5: ВАЛИДАЦИЯ MERMAID ДИАГРАММ =====
+
+        if validate_mermaid:
+            mermaid_errors = validate_mermaid_blocks(markdown_content)
+
+            if mermaid_errors:
+                raise MermaidValidationError(mermaid_errors)
+
         # ===== ЭТАП 3: ПОДГОТОВКА КОНФИГУРАЦИИ =====
 
         config = ConverterConfig(
             output_dir=str(output_dir),
-            template=template,
-            media_mode=media_mode,
+            template=template if template in ("book", "web") else "web",  # type: ignore[arg-type]
+            media_mode=media_mode if media_mode in ("embed", "copy") else "embed",  # type: ignore[arg-type]
             formats=[output_format],
             input=InputConfig(
                 path=str(input_path),
@@ -453,19 +665,26 @@ def convert_markdown_to_html(
 
         # ===== ЭТАП 4: КОНВЕРТАЦИЯ =====
 
-        # Перехватываем stdout, чтобы print() из конвертера не ломал JSON-RPC протокол MCP
-        captured_output = io.StringIO()
+        print(f"[MCP] Начинаю конвертацию: {input_path}", file=sys.stderr)
+        print(
+            f"[MCP] Режим медиа: {media_mode}, Формат: {output_format}", file=sys.stderr
+        )
+
+        # Создаём конвертер
         converter = Converter(config)
 
-        with redirect_stdout(captured_output):
-            output_files = converter.convert(input_path)
+        # redirect_stdout УДАЛЁН - он не ловит subprocess (Pandoc/mmdc)
+        # и потенциально опасен для MCP stdio транспорта
+        output_files = converter.convert(input_path)
 
-        # Получаем захваченный вывод (для отладки)
-        console_output = captured_output.getvalue()
+        print(
+            f"[MCP] Конвертация завершена, создано файлов: {len(output_files)}",
+            file=sys.stderr,
+        )
 
         # ===== ЭТАП 5: ФОРМИРОВАНИЕ РЕЗУЛЬТАТА =====
 
-        return {
+        result = {
             "status": "success",
             "output_files": [str(f) for f in output_files],
             "stats": {
@@ -477,6 +696,19 @@ def convert_markdown_to_html(
             },
             "message": "Конвертация успешно завершена",
         }
+
+        # Логирование для отладки (без эмодзи для совместимости с Windows cp1252)
+        print(f"[MCP] OK Завершено успешно", file=sys.stderr)
+        print(
+            f"[MCP] FILES Создано файлов: {len(result['output_files'])}",
+            file=sys.stderr,
+        )
+        print(
+            f"[MCP] MEDIA {result['stats']['media_files_found']} найдено, {result['stats']['media_files_missing']} отсутствует",
+            file=sys.stderr,
+        )
+
+        return result
 
     except InputFileNotFoundError as e:
         return {

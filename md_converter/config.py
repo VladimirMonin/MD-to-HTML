@@ -30,7 +30,11 @@ class StylesConfig:
     """Настройки стилей."""
 
     highlight_theme: str = "github-dark"
-    mermaid_theme: str = "neutral"
+    mermaid_theme: str = "forest"  # forest, dark, default, neutral, base
+    mermaid_scale: int = 3  # Масштаб рендера для HiDPI/Retina (2, 3, 4)
+    mermaid_format: str = "webp"  # Формат вывода диаграмм
+    mermaid_quality: int = 85  # Качество сжатия WebP (1-100)
+    mermaid_background: str = "white"  # Цвет фона: "transparent", "white", "#RRGGBB"
 
 
 @dataclass

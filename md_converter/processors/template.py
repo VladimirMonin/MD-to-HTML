@@ -1,5 +1,6 @@
 """Процессор для работы с HTML шаблонами."""
 
+import sys
 from pathlib import Path
 from ..config import FeaturesConfig, StylesConfig
 
@@ -85,23 +86,6 @@ class TemplateProcessor:
 <script>document.addEventListener('DOMContentLoaded', function() {{ hljs.highlightAll(); }});</script>
 """
 
-        # Mermaid - настройка ДО загрузки библиотеки
-        mermaid_html = ""
-        if self.features.mermaid:
-            mermaid_theme = self.styles.mermaid_theme
-            mermaid_html = f"""
-<script>
-// Конфигурация Mermaid ДО загрузки библиотеки
-window.mermaidConfig = {{
-    startOnLoad: false,
-    theme: '{mermaid_theme}',
-    securityLevel: 'loose',
-    logLevel: 'debug'
-}};
-</script>
-<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
-"""
-
         # Plyr - медиаплеер для audio/video
         plyr_html = ""
         if self.features.plyr:
@@ -114,7 +98,6 @@ window.mermaidConfig = {{
 {breadcrumbs_html}
 {css_html}
 {hljs_html}
-{mermaid_html}
 {plyr_html}
 <script>
 {js_code}
@@ -128,11 +111,6 @@ document.addEventListener('DOMContentLoaded', function() {{
     if (typeof enableFullscreenMedia === 'function') enableFullscreenMedia();
     if (typeof initDynamicBreadcrumbs === 'function') initDynamicBreadcrumbs();
     if (typeof smoothScrollTOC === 'function') smoothScrollTOC();
-    if (typeof initMermaid === 'function') {{
-        initMermaid();
-    }} else {{
-        console.warn('⚠️ initMermaid function not found');
-    }}
     
     // Инициализация Plyr медиаплеера
     if (typeof Plyr !== 'undefined') {{
@@ -171,7 +149,7 @@ document.addEventListener('DOMContentLoaded', function() {{
                 content = path.read_text(encoding="utf-8")
                 css_content.append(f"/* {css_file} */\n{content}")
             else:
-                print(f"⚠️ Не найден CSS файл: {path}")
+                print(f"⚠️ Не найден CSS файл: {path}", file=sys.stderr)
 
         if css_content:
             combined_css = "\n\n".join(css_content)
@@ -193,8 +171,6 @@ document.addEventListener('DOMContentLoaded', function() {{
             js_modules.append("assets/js/modules/breadcrumbs.js")
         if self.features.toc:
             js_modules.append("assets/js/modules/smoothScroll.js")
-        if self.features.mermaid:
-            js_modules.append("assets/js/modules/mermaid.js")
         if self.features.plyr:
             js_modules.append("assets/js/modules/media.js")
 
@@ -211,6 +187,6 @@ document.addEventListener('DOMContentLoaded', function() {{
                 code = code.replace("export default", "")
                 js_code.append(code)
             else:
-                print(f"⚠️ Не найден модуль: {path}")
+                print(f"⚠️ Не найден модуль: {path}", file=sys.stderr)
 
         return "\n\n".join(js_code)

@@ -3,6 +3,7 @@
 import os
 import re
 import shutil
+import sys
 from pathlib import Path
 from typing import Tuple
 
@@ -38,12 +39,12 @@ class MediaProcessor:
         media_paths = re.findall(r"!\[.*?\]\((?!http)(.*?)\)", content)
 
         if not media_paths:
-            print("  ℹ️ Медиафайлы не найдены в MD")
+            print("  ℹ️ Медиафайлы не найдены в MD", file=sys.stderr)
             if self.mode == "copy":
                 self._copy_assets()
             return content, {}
 
-        print(f"  🔍 Найдено {len(media_paths)} ссылок на медиа")
+        print(f"  🔍 Найдено {len(media_paths)} ссылок на медиа", file=sys.stderr)
 
         # Для COPY режима создаём папку media
         if self.mode == "copy":
@@ -59,6 +60,11 @@ class MediaProcessor:
             from urllib.parse import unquote
 
             decoded_path = unquote(media_path)
+
+            # Пропускаем data URI (base64 встроенные изображения/шрифты)
+            # Эти ресурсы уже встроены, искать файл не нужно
+            if decoded_path.startswith("data:"):
+                continue
 
             # Определяем абсолютный путь к медиа-файлу
             abs_path = None
@@ -107,24 +113,24 @@ class MediaProcessor:
                     new_path = f"media/{abs_path.name}"
                     content = content.replace(media_path, new_path)
                     media_map[media_path] = new_path
-                    print(f"  📎 {abs_path.name}")
-                    print(f"     ├─ источник: {abs_path}")
-                    print(f"     └─ скопирован → {new_path}")
+                    print(f"  📎 {abs_path.name}", file=sys.stderr)
+                    print(f"     ├─ источник: {abs_path}", file=sys.stderr)
+                    print(f"     └─ скопирован → {new_path}", file=sys.stderr)
                 else:
                     # EMBED режим - заменяем на абсолютный путь для Pandoc
                     # Используем resolve() для нормализации пути (убирает .. и т.д.)
                     normalized_path = str(abs_path.resolve())
                     content = content.replace(media_path, normalized_path)
                     media_map[media_path] = normalized_path
-                    print(f"  📎 {abs_path.name}")
-                    print(f"     ├─ источник: {abs_path}")
-                    print(f"     └─ будет встроен (EMBED)")
+                    print(f"  📎 {abs_path.name}", file=sys.stderr)
+                    print(f"     ├─ источник: {abs_path}", file=sys.stderr)
+                    print(f"     └─ будет встроен (EMBED)", file=sys.stderr)
             else:
                 # Файл не найден - выводим все места поиска
-                print(f"  ⚠️ НЕ НАЙДЕН: {decoded_path}")
-                print(f"     Искали в:")
+                print(f"  ⚠️ НЕ НАЙДЕН: {decoded_path}", file=sys.stderr)
+                print(f"     Искали в:", file=sys.stderr)
                 for location in search_locations:
-                    print(f"     - {location}")
+                    print(f"     - {location}", file=sys.stderr)
 
         return content, media_map
 
@@ -135,7 +141,7 @@ class MediaProcessor:
         assets_src = project_root / "assets"
 
         if not assets_src.exists():
-            print(f"⚠️ Папка assets не найдена: {assets_src}")
+            print(f"⚠️ Папка assets не найдена: {assets_src}", file=sys.stderr)
             return
 
         assets_dest = self.output_dir / "assets"
@@ -150,7 +156,7 @@ class MediaProcessor:
                 dest_file = css_dest / rel_path
                 dest_file.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(css_file, dest_file)
-            print("  📁 Скопированы CSS файлы (включая модули)")
+            print("  📁 Скопированы CSS файлы (включая модули)", file=sys.stderr)
 
         # Копируем JS
         js_src = assets_src / "js"
@@ -162,7 +168,7 @@ class MediaProcessor:
                 dest_file = js_dest / rel_path
                 dest_file.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(js_file, dest_file)
-            print(f"  📁 Скопированы JS файлы")
+            print(f"  📁 Скопированы JS файлы", file=sys.stderr)
 
         # Копируем шрифты
         fonts_src = assets_src / "fonts"
@@ -172,7 +178,7 @@ class MediaProcessor:
             for font_file in fonts_src.glob("*"):
                 if font_file.is_file():
                     shutil.copy2(font_file, fonts_dest / font_file.name)
-            print(f"  📁 Скопированы шрифты")
+            print(f"  📁 Скопированы шрифты", file=sys.stderr)
 
         # Копируем templates (если нужны)
         templates_src = assets_src / "templates"
@@ -181,4 +187,4 @@ class MediaProcessor:
             templates_dest.mkdir(parents=True, exist_ok=True)
             for template_file in templates_src.glob("*.html"):
                 shutil.copy2(template_file, templates_dest / template_file.name)
-            print(f"  📁 Скопированы HTML шаблоны")
+            print(f"  📁 Скопированы HTML шаблоны", file=sys.stderr)

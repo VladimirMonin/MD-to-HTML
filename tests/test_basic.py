@@ -48,7 +48,7 @@ def test_mermaid_preprocessor_html():
     test_md = "```mermaid\ngraph TD\n  A-->B\n```"
     result = prep.process(test_md)
 
-    assert '<pre class="mermaid">' in result
+    assert '<div class="mermaid">' in result
 
 
 def test_diff_preprocessor():

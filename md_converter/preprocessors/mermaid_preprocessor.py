@@ -33,9 +33,10 @@ class MermaidPreprocessor(Preprocessor):
     NEEDS_QUOTES_PATTERN = re.compile(r"[^\x00-\x7F]|@")
 
     # Типы узлов: (open_bracket, close_bracket, name, is_double)
-    # is_double = True для [[ ]] и (( ))
+    # is_double = True для [[ ]], (( )) и [( )]
     NODE_TYPES = [
         ("[[", "]]", "подпроцесс", True),
+        ("[(", ")]", "база данных", True),
         ("((", "))", "круг", True),
         ("{", "}", "ромб", False),
         ("[", "]", "прямоугольник", False),
@@ -149,16 +150,51 @@ class MermaidPreprocessor(Preprocessor):
 
         Ключевая логика: ищем узлы вручную, учитывая кавычки,
         чтобы не обрабатывать содержимое внутри кавычек.
+
+        ВАЖНО: Пропускаем содержимое внутри строковых литералов (в кавычках),
+        чтобы не путать текст в note директивах с узлами диаграммы.
         """
         self._current_diagram = diagram_code
         result = []
         pos = 0
+        in_quotes = False
+        quote_char = None
 
         # Паттерн для ID узла (буква/подчёркивание + буквы/цифры/подчёркивания)
         id_pattern = re.compile(r"\b([A-Za-z_]\w*)")
 
         while pos < len(diagram_code):
-            # Ищем ID узла
+            char = diagram_code[pos]
+
+            # Обработка кавычек - пропускаем содержимое строковых литералов
+            if char in "\"'":
+                if not in_quotes:
+                    # Входим в строковый литерал
+                    in_quotes = True
+                    quote_char = char
+                    result.append(char)
+                    pos += 1
+                    continue
+                elif char == quote_char and (pos == 0 or diagram_code[pos - 1] != "\\"):
+                    # Выходим из строкового литерала
+                    in_quotes = False
+                    quote_char = None
+                    result.append(char)
+                    pos += 1
+                    continue
+                else:
+                    # Другая кавычка внутри строки - просто добавляем
+                    result.append(char)
+                    pos += 1
+                    continue
+
+            # Если мы внутри кавычек - просто копируем символы
+            if in_quotes:
+                result.append(char)
+                pos += 1
+                continue
+
+            # Вне кавычек - ищем ID узла
             match = id_pattern.match(diagram_code, pos)
             if not match:
                 result.append(diagram_code[pos])
@@ -214,15 +250,66 @@ class MermaidPreprocessor(Preprocessor):
 
         return "".join(result)
 
+    def _escape_quotes_in_strings(self, text: str) -> str:
+        """
+        Экранирует одинарные кавычки внутри строк в двойных кавычках.
+        Для classDiagram note директив типа: note for X "Text with 'quotes'"
+        Заменяет ' на временный маркер ___APOS___, который будет заменен на &#39;
+        в постпроцессоре (после html.unescape).
+        """
+        result = []
+        i = 0
+        while i < len(text):
+            if text[i] == '"':
+                # Нашли начало строки в двойных кавычках
+                result.append('"')
+                i += 1
+                # Ищем закрывающую кавычку
+                while i < len(text) and text[i] != '"':
+                    if text[i] == "'":
+                        # Заменяем одинарную кавычку на временный маркер
+                        result.append("___APOS___")
+                    else:
+                        result.append(text[i])
+                    i += 1
+                if i < len(text):
+                    result.append('"')
+                    i += 1
+            else:
+                result.append(text[i])
+                i += 1
+        return "".join(result)
+
     def process(self, content: str) -> str:
         """Обработка Mermaid блоков."""
         if self.format_type != "html":
             return content
 
+        # Импортируем автоисправление
+        from .mermaid_autofix import MermaidAutoFixPreprocessor
+
+        autofix = MermaidAutoFixPreprocessor(format_type=self.format_type)
+
+        # Сначала применяем автоисправление типичных ошибок AI
+        content = autofix.process(content)
+
         def replace_mermaid(match):
             diagram_code = match.group(1)
-            # Фиксим кавычки для Unicode текста
-            diagram_code = self._fix_node_quotes(diagram_code)
+            diagram_type = (
+                diagram_code.strip().split()[0] if diagram_code.strip() else ""
+            )
+
+            # Для classDiagram экранируем одинарные кавычки внутри строк
+            if diagram_type == "classDiagram":
+                # Заменяем одинарные кавычки на #39; внутри двойных кавычек
+                diagram_code = self._escape_quotes_in_strings(diagram_code)
+
+            # _fix_node_quotes должен работать ТОЛЬКО для flowchart (graph)
+            # Для sequenceDiagram, classDiagram, stateDiagram и т.д. НЕ применяем
+            if diagram_type in ("graph", "flowchart"):
+                # Фиксим кавычки для Unicode текста только в flowchart
+                diagram_code = self._fix_node_quotes(diagram_code)
+
             # Используем raw HTML block, чтобы Pandoc передал содержимое as-is
             return (
                 f'\n```{{=html}}\n<div class="mermaid">\n{diagram_code}\n</div>\n```\n'

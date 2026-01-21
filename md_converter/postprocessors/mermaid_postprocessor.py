@@ -27,8 +27,8 @@ class MermaidFixPostprocessor:
                 flags=re.DOTALL,
             )
 
-            # Конвертируем литеральные \n в настоящие переносы строк для multiline notes
-            block = block.replace("\\n", "\n")
+            # НЕ конвертируем литеральные \n - Mermaid note использует \n как символ переноса
+            # block.replace("\\n", "\n") - удалено, так как ломает note for X "line1\nline2"
 
             # Убираем лишние <p> теги если остались
             block = block.replace("<p>", "").replace("</p>", "")
@@ -37,6 +37,10 @@ class MermaidFixPostprocessor:
             # Это восстановит: &quot; → ", &amp; → &, &lt; → <, &gt; → >,
             # &apos; → ', числовые коды (&#39;, &#34; и т.д.)
             block = html.unescape(block)
+
+            # После unescape заменяем временные маркеры на entity codes
+            # (они были добавлены в препроцессоре для экранирования кавычек в note)
+            block = block.replace("___APOS___", "&#39;")
 
             # Нормализуем варианты переноса строк в <br/> — Mermaid 11 ожидает слэш
             block = block.replace("<br />", "<br/>")

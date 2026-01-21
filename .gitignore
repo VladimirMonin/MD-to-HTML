@@ -4,3 +4,4 @@ result/
 covers/
 *__pycache__
 build/
+test_output/

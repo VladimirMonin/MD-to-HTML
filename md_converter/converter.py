@@ -122,6 +122,13 @@ class Converter:
 
             # Формат-специфичные препроцессоры
             if self.config.features.mermaid:
+                # Сначала автоисправление типичных ошибок AI
+                from .preprocessors import MermaidAutoFixPreprocessor
+
+                autofix_pp = MermaidAutoFixPreprocessor(format_type=fmt)
+                processed_content = autofix_pp.process(processed_content)
+
+                # Затем основная обработка
                 mermaid_pp = MermaidPreprocessor(format_type=fmt)
                 processed_content = mermaid_pp.process(processed_content)
 

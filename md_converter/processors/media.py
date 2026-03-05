@@ -36,7 +36,11 @@ class MediaProcessor:
             (обработанный_контент, media_map)
         """
         media_map = {}
+        # Стандартный Markdown: ![alt](path)
         media_paths = re.findall(r"!\[.*?\]\((?!http)(.*?)\)", content)
+        # HTML img теги (от ObsidianPreprocessor с |size): <img src="path" ...>
+        img_tag_paths = re.findall(r'<img\s+src="(?!http)(.*?)"', content)
+        media_paths.extend(img_tag_paths)
 
         if not media_paths:
             print("  ℹ️ Медиафайлы не найдены в MD", file=sys.stderr)
@@ -64,6 +68,12 @@ class MediaProcessor:
             # Пропускаем data URI (base64 встроенные изображения/шрифты)
             # Эти ресурсы уже встроены, искать файл не нужно
             if decoded_path.startswith("data:"):
+                continue
+
+            # Пропускаем уже обработанные пути (один файл упомянут несколько раз).
+            # Без этого str.replace во второй итерации попадает в уже подставленный
+            # абсолютный путь и задваивает его: C:/media/C:/media/hb_09.webp
+            if media_path in media_map:
                 continue
 
             # Определяем абсолютный путь к медиа-файлу
@@ -114,25 +124,38 @@ class MediaProcessor:
                     if abs_path.resolve() == target_path.resolve():
                         print(f"  📎 {abs_path.name} (уже в media/)", file=sys.stderr)
                         new_path = f"media/{abs_path.name}"
-                        content = content.replace(media_path, new_path)
+                        content = self._replace_media_path(
+                            content, media_path, new_path
+                        )
                         media_map[media_path] = new_path
                     else:
                         shutil.copy2(abs_path, target_path)
                         new_path = f"media/{abs_path.name}"
-                        content = content.replace(media_path, new_path)
+                        content = self._replace_media_path(
+                            content, media_path, new_path
+                        )
                         media_map[media_path] = new_path
                         print(f"  📎 {abs_path.name}", file=sys.stderr)
                         print(f"     ├─ источник: {abs_path}", file=sys.stderr)
                         print(f"     └─ скопирован → {new_path}", file=sys.stderr)
                 else:
-                    # EMBED режим - заменяем на абсолютный путь для Pandoc
-                    # Используем resolve() для нормализации пути (убирает .. и т.д.)
-                    normalized_path = str(abs_path.resolve())
-                    content = content.replace(media_path, normalized_path)
+                    # EMBED режим - заменяем на file:// URI для Pandoc
+                    # Абсолютный путь Windows (C:\...) Pandoc 3.x трактует как
+                    # относительный и задваивает путь при --embed-resources
+                    resolved = abs_path.resolve()
+                    # Используем путь с прямыми слэшами — Pandoc понимает C:/...
+                    # as_uri() URL-кодирует кириллицу → Pandoc не находит файл
+                    normalized_path = str(resolved).replace("\\", "/")
+                    content = self._replace_media_path(
+                        content, media_path, normalized_path
+                    )
                     media_map[media_path] = normalized_path
                     print(f"  📎 {abs_path.name}", file=sys.stderr)
                     print(f"     ├─ источник: {abs_path}", file=sys.stderr)
-                    print(f"     └─ будет встроен (EMBED)", file=sys.stderr)
+                    print(
+                        f"     └─ будет встроен (EMBED: {normalized_path})",
+                        file=sys.stderr,
+                    )
             else:
                 # Файл не найден - выводим все места поиска
                 print(f"  ⚠️ НЕ НАЙДЕН: {decoded_path}", file=sys.stderr)
@@ -141,6 +164,24 @@ class MediaProcessor:
                     print(f"     - {location}", file=sys.stderr)
 
         return content, media_map
+
+    @staticmethod
+    def _replace_media_path(content: str, old_path: str, new_path: str) -> str:
+        """Заменить путь к медиа файлу в обоих форматах: markdown и HTML img."""
+        escaped = re.escape(old_path)
+        # 1. Стандартный Markdown: ![alt](old_path) → ![alt](new_path)
+        content = re.sub(
+            r"(!\[.*?\]\()" + escaped + r"(\))",
+            lambda m, p=new_path: m.group(1) + p + m.group(2),
+            content,
+        )
+        # 2. HTML img тег: <img src="old_path" → <img src="new_path"
+        content = re.sub(
+            r'(<img\s+src=")' + escaped + r'"',
+            lambda m, p=new_path: m.group(1) + p + '"',
+            content,
+        )
+        return content
 
     def _copy_assets(self):
         """Копирование assets (CSS/JS/fonts) в output_dir для режима copy."""

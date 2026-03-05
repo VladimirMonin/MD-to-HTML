@@ -124,7 +124,11 @@ class PandocBackend:
             # Формируем детальное сообщение об ошибке для GUI
             error_msg = f"Pandoc завершился с ошибкой (код {e.returncode})\n\n"
             if e.stderr:
-                error_msg += f"Детали:\n{e.stderr}"
+                error_msg += f"STDERR:\n{e.stderr}\n\n"
+            if e.stdout:
+                error_msg += f"STDOUT:\n{e.stdout}\n\n"
+            if not e.stderr and not e.stdout:
+                error_msg += "Нет вывода от Pandoc. Возможные причины: кириллица в пути, недоступные ресурсы в --embed-resources, или повреждённый входной файл."
             raise RuntimeError(error_msg) from e
 
     def _configure_html(self, cmd: list, header: str, output_dir: Path):

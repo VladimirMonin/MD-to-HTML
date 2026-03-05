@@ -46,16 +46,16 @@
 
 .fullscreen-container img,
 .fullscreen-container svg {
-  max-width: 95vw;
-  max-height: 95vh;
+  max-width: 95vw !important;
+  max-height: 95vh !important;
   object-fit: contain;
   box-shadow: 0 0 50px rgba(255, 255, 255, 0.3);
   border-radius: 8px;
 }
 
 .fullscreen-container > img {
-  max-width: 95vw;
-  max-height: 95vh;
+  max-width: 95vw !important;
+  max-height: 95vh !important;
   object-fit: contain;
 }
 
@@ -84,6 +84,33 @@
   display: block !important;
   visibility: visible !important;
   opacity: 1 !important;
+}
+
+/* =====================================================
+   Mermaid диаграммы как img (WebP, статический рендер)
+   Селектор по alt-тексту — preprocessor генерирует
+   alt="Mermaid Diagram N"
+   ===================================================== */
+
+img[alt*="Mermaid Diagram"] {
+  max-height: 60vh;
+  width: auto;
+  max-width: 100%;
+  display: block;
+  margin: 1.5em auto;
+  cursor: zoom-in;
+  border-radius: 8px;
+  transition: box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+img[alt*="Mermaid Diagram"]:hover {
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
+  opacity: 0.95;
+}
+
+/* Скрываем figcaption для mermaid (Pandoc implicit_figures) */
+figure:has(img[alt*="Mermaid Diagram"]) > figcaption {
+  display: none;
 }
 
 /* Курсор zoom-in для всего контейнера Mermaid */

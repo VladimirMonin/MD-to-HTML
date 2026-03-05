@@ -31,7 +31,7 @@ function showFullscreenContent(content) {
 
   // Удаляем предыдущий контент
   const existingContent = _fullscreenContainer.querySelector(
-    "img, .fullscreen-svg-wrapper"
+    "img, .fullscreen-svg-wrapper",
   );
   if (existingContent) {
     existingContent.remove();

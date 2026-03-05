@@ -20,7 +20,7 @@ function enableFullscreenImages() {
 
 function createFullscreenContainer() {
   const container = document.createElement("div");
-  container.classList.add("fullscreen-img-container");
+  container.classList.add("fullscreen-container");
   return container;
 }
 

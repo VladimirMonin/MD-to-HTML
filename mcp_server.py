@@ -113,14 +113,26 @@ def extract_media_paths(markdown_content: str) -> list[str]:
     """
     Извлечь все пути к медиа файлам из Markdown контента.
 
+    Поддерживает:
+    - Стандартный Markdown: ![alt](path)
+    - Obsidian embeds: ![[filename]] и ![[filename|size]]
+
     Args:
         markdown_content: Содержимое Markdown файла
 
     Returns:
         Список путей к медиа файлам (без HTTP/HTTPS URL)
     """
-    # Регулярное выражение для поиска ссылок на изображения/медиа
+    # 1. Стандартный Markdown: ![alt](path)
     media_paths = re.findall(r"!\[.*?\]\((?!http)(.*?)\)", markdown_content)
+
+    # 2. Obsidian embeds: ![[filename]] или ![[filename|size]]
+    obsidian_embeds = re.findall(r"!\[\[(.*?)\]\]", markdown_content)
+    for embed in obsidian_embeds:
+        # Отделяем имя файла от |size или |alt
+        filename = embed.rsplit("|", 1)[0].strip() if "|" in embed else embed.strip()
+        if filename:
+            media_paths.append(filename)
 
     # URL-декодирование путей (для "Pasted%20image%20..." и т.д.)
     decoded_paths = [unquote(path) for path in media_paths if path]
@@ -361,6 +373,7 @@ def convert_markdown_to_html(
     validate_media: bool = True,
     validate_mermaid: bool = False,  # ОТКЛЮЧЕНО - двойная обработка Mermaid
     mermaid_theme: str = "forest",
+    source_type: str = "auto",
 ) -> dict:
     """
     Конвертирует Markdown файл в HTML с проверкой всех зависимостей.
@@ -441,6 +454,14 @@ def convert_markdown_to_html(
     mermaid_theme (str): Тема для Mermaid диаграмм.
         По умолчанию: "forest" (зелёная)
         Варианты: "default", "forest", "dark", "neutral", "base"
+
+    source_type (str): Тип источника Markdown документа.
+        По умолчанию: "auto" (автоопределение)
+        Варианты:
+        - "auto": автоматически определяет формат по наличию YAML frontmatter,
+          Obsidian-ссылок ([[link]]) или эмбедов (![[image]])
+        - "obsidian": полная обработка Obsidian-синтаксиса (frontmatter, ![[img|size]], [[links]])
+        - "standard": обычный Markdown без Obsidian-расширений
 
     ПРОВЕРКИ И ВАЛИДАЦИЯ:
 
@@ -658,6 +679,29 @@ def convert_markdown_to_html(
             if mermaid_errors:
                 raise MermaidValidationError(mermaid_errors)
 
+        # ===== ЭТАП 2.7: ОПРЕДЕЛЕНИЕ source_type =====
+
+        if source_type == "auto":
+            # Автодетект: если есть YAML frontmatter или Obsidian-ссылки — это Obsidian
+            _has_frontmatter = markdown_content.startswith("---")
+            _has_obsidian_embeds = (
+                re.search(r"!\[\[.+?\]\]", markdown_content) is not None
+            )
+            _has_obsidian_links = (
+                re.search(r"(?<!!)\[\[[^\]]+\]\]", markdown_content) is not None
+            )
+            _resolved_source_type = (
+                "obsidian"
+                if (_has_frontmatter or _has_obsidian_embeds or _has_obsidian_links)
+                else "standard"
+            )
+            log_debug(
+                f"Auto-detect source_type: {_resolved_source_type} "
+                f"(frontmatter={_has_frontmatter}, embeds={_has_obsidian_embeds}, links={_has_obsidian_links})"
+            )
+        else:
+            _resolved_source_type = source_type
+
         # ===== ЭТАП 3: ПОДГОТОВКА КОНФИГУРАЦИИ =====
 
         config = ConverterConfig(
@@ -667,7 +711,7 @@ def convert_markdown_to_html(
             formats=[output_format],
             input=InputConfig(
                 path=str(input_path),
-                source_type="standard",
+                source_type=_resolved_source_type,
                 files_folder=str(media_path),
             ),
             metadata=MetadataConfig(title="", author="", lang="ru", brand_image=""),

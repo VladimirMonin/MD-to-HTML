@@ -60,15 +60,52 @@ class ObsidianPreprocessor(Preprocessor):
         # Не найден - возвращаем оригинальное имя
         return filename
 
+    def _strip_frontmatter(self, content: str) -> str:
+        """Удаление YAML frontmatter (--- ... ---) из начала документа."""
+        # Frontmatter должен начинаться с самого начала файла
+        frontmatter_pattern = re.compile(
+            r"\A---\s*\n(.*?)\n---\s*\n",
+            re.DOTALL,
+        )
+        return frontmatter_pattern.sub("", content)
+
+    def _normalize_horizontal_rules(self, content: str) -> str:
+        """Замена --- горизонтальных линий на *** для корректной обработки Pandoc.
+
+        Pandoc может интерпретировать '---' как разделитель simple_table,
+        особенно если после --- нет пустой строки. '***' однозначно
+        является thematic break и не вызывает конфликтов.
+        Вызывается ПОСЛЕ удаления frontmatter, так что оставшиеся --- это линии.
+        """
+        return re.sub(r"^---\s*$", "***", content, flags=re.MULTILINE)
+
     def process(self, content: str) -> str:
         """Преобразование Obsidian синтаксиса."""
 
-        # ![[file]] → ![](найденный_путь)
+        # 0. Удаляем YAML frontmatter (метаданные Obsidian)
+        content = self._strip_frontmatter(content)
+
+        # 0.1 Нормализуем горизонтальные линии --- → ***
+        content = self._normalize_horizontal_rules(content)
+
+        # ![[file]] или ![[file|width]] → ![](найденный_путь) с опциональной шириной
         def replace_image(match):
-            filename = match.group(1)
-            found_path = self._find_attachment(filename)
-            # Убираем alt текст, ставим пустой
-            return f"![]({found_path})"
+            raw = match.group(1)
+            # Разделяем имя файла и размер: ![[image.webp|500]]
+            if "|" in raw:
+                filename, size_str = raw.rsplit("|", 1)
+                filename = filename.strip()
+                size_str = size_str.strip()
+                found_path = self._find_attachment(filename)
+                # Если size - число, трактуем как ширину
+                if size_str.isdigit():
+                    return f'<img src="{found_path}" width="{size_str}" />'
+                # Иначе size_str это alt-текст (Obsidian поддерживает |alt)
+                return f"![{size_str}]({found_path})"
+            else:
+                filename = raw.strip()
+                found_path = self._find_attachment(filename)
+                return f"![]({found_path})"
 
         content = re.sub(r"!\[\[(.*?)\]\]", replace_image, content)
 

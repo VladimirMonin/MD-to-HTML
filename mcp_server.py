@@ -12,7 +12,7 @@ import sys
 from contextlib import redirect_stdout
 from datetime import datetime
 from pathlib import Path
-from typing import Literal, Optional
+from typing import Any, Literal, Optional
 from urllib.parse import unquote
 
 # Настройка файлового логирования для диагностики
@@ -749,7 +749,7 @@ def convert_markdown_to_html(
 
         # ===== ЭТАП 5: ФОРМИРОВАНИЕ РЕЗУЛЬТАТА =====
 
-        result = {
+        result: dict[str, Any] = {
             "status": "success",
             "output_files": [str(f) for f in output_files],
             "stats": {

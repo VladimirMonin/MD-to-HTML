@@ -5,11 +5,12 @@ description = "Markdown to HTML converter with diff support"
 authors = [
     { name = "Your Name", email = "you@example.com" }
 ]
-readme = "README.md"
-requires-python = ">=3.9"
+readme = "doc/README.md"
+requires-python = ">=3.10"
 dependencies = [
     "natsort>=8.4.0",
     "PyYAML>=6.0",
+    "Pillow>=10.0.0",
     "PyQt6>=6.6.0",
     "mcp>=1.0.0",
 ]
@@ -18,6 +19,7 @@ dependencies = [
 dev = [
     "pytest<9",
     "mypy>=1.8.0",
+    "types-PyYAML>=6.0.12",
 ]
 
 [tool.hatch.build.targets.wheel]
@@ -28,7 +30,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.mypy]
-python_version = "3.9"
+python_version = "3.10"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = false

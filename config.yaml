@@ -1,4 +1,4 @@
-output_dir: C:\Users\User\Documents\Syncthing\SK_OOP_COURSE\1_PART_MVP\chapter_02\lessons\results
+output_dir: ./build
 template: web
 media_mode: embed
 theme: light

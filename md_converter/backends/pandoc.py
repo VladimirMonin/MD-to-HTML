@@ -54,7 +54,7 @@ class PandocBackend:
         cmd = [
             "pandoc",
             "--from",
-            "markdown-yaml_metadata_block+fenced_divs",  # Добавляем fenced_divs для callouts
+            "markdown-yaml_metadata_block+fenced_divs+raw_html",  # raw_html нужен для скрытого Mermaid source block
             str(temp_md),
             "-o",
             str(output_file),
@@ -72,9 +72,9 @@ class PandocBackend:
         if self.config.metadata.author:
             cmd.extend(["--metadata", f"author={self.config.metadata.author}"])
 
-        # CSS - используем абсолютный путь от корня проекта
-        # Предполагаем, что скрипт запущен из корня проекта
-        css_path = Path("assets/css/book_style.css").resolve()
+        # CSS берём относительно пакета, а не текущей рабочей директории.
+        # Это важно для MCP/GUI-запуска и одинаково работает на Linux/Windows.
+        css_path = Path(__file__).resolve().parents[2] / "assets" / "css" / "book_style.css"
         if css_path.exists():
             cmd.extend(["--css", str(css_path)])
         else:
@@ -133,8 +133,10 @@ class PandocBackend:
 
     def _configure_html(self, cmd: list, header: str, output_dir: Path):
         """Настройки для HTML."""
-        # Отключаем встроенную подсветку (используем highlight.js)
-        cmd.append("--syntax-highlighting=none")
+        # Отключаем встроенную подсветку (используем highlight.js).
+        # Pandoc 3.1.x в Ubuntu поддерживает --no-highlight, а не
+        # --syntax-highlighting=none.
+        cmd.append("--no-highlight")
 
         # Встраиваем ресурсы
         if self.config.media_mode == "embed":

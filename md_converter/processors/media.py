@@ -5,7 +5,7 @@ import re
 import shutil
 import sys
 from pathlib import Path
-from typing import Tuple
+from typing import Match, Tuple
 
 
 class MediaProcessor:
@@ -170,15 +170,21 @@ class MediaProcessor:
         """Заменить путь к медиа файлу в обоих форматах: markdown и HTML img."""
         escaped = re.escape(old_path)
         # 1. Стандартный Markdown: ![alt](old_path) → ![alt](new_path)
+        def replace_markdown_media(match: Match[str]) -> str:
+            return match.group(1) + new_path + match.group(2)
+
         content = re.sub(
             r"(!\[.*?\]\()" + escaped + r"(\))",
-            lambda m, p=new_path: m.group(1) + p + m.group(2),
+            replace_markdown_media,
             content,
         )
         # 2. HTML img тег: <img src="old_path" → <img src="new_path"
+        def replace_html_media(match: Match[str]) -> str:
+            return match.group(1) + new_path + '"'
+
         content = re.sub(
             r'(<img\s+src=")' + escaped + r'"',
-            lambda m, p=new_path: m.group(1) + p + '"',
+            replace_html_media,
             content,
         )
         return content

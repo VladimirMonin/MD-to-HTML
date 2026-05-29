@@ -89,18 +89,54 @@
 /* =====================================================
    Mermaid диаграммы как img (WebP, статический рендер)
    Селектор по alt-тексту — preprocessor генерирует
-   alt="Mermaid Diagram N"
+   alt="Mermaid Diagram N".
+
+   Важно: базовый img-стиль задаёт min-width: 60%. Для высоких
+   портретных диаграмм это конфликтует с max-height и браузер может
+   визуально «сплющить» картинку в превью. Здесь явно сбрасываем
+   min-width и разделяем обычный и вертикальный режимы.
    ===================================================== */
 
-img[alt*="Mermaid Diagram"] {
-  max-height: 60vh;
-  width: auto;
+figure:has(img[alt*="Mermaid Diagram"]) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1.8em auto;
   max-width: 100%;
+  overflow-x: auto;
+}
+
+figure:has(img[alt*="Mermaid Diagram"].mermaid-diagram--portrait) {
+  align-items: flex-start;
+  max-height: min(78vh, 980px);
+  overflow-y: auto;
+  padding: 0.5em 0;
+}
+
+img[alt*="Mermaid Diagram"] {
+  min-width: 0;
+  width: auto;
+  height: auto;
+  max-width: min(100%, 1100px);
+  max-height: min(68vh, 820px);
+  object-fit: contain;
   display: block;
-  margin: 1.5em auto;
+  margin: 0 auto;
   cursor: zoom-in;
   border-radius: 8px;
   transition: box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+img[alt*="Mermaid Diagram"].mermaid-diagram--portrait {
+  width: min(100%, 760px);
+  max-width: min(100%, 760px);
+  max-height: none;
+}
+
+img[alt*="Mermaid Diagram"].mermaid-diagram--wide {
+  width: min(100%, 1200px);
+  max-width: min(100%, 1200px);
+  max-height: none;
 }
 
 img[alt*="Mermaid Diagram"]:hover {

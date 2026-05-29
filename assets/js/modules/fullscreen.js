@@ -57,6 +57,36 @@ function showFullscreenContent(content) {
   _fullscreenContainer.classList.add("active");
 }
 
+function classifyMermaidImage(img) {
+  if (!img || !img.alt || !img.alt.includes("Mermaid Diagram")) {
+    return;
+  }
+
+  const applyClass = () => {
+    const width = img.naturalWidth || img.width;
+    const height = img.naturalHeight || img.height;
+
+    if (!width || !height) {
+      return;
+    }
+
+    img.classList.toggle("mermaid-diagram--portrait", height > width * 1.2);
+    img.classList.toggle("mermaid-diagram--wide", width > height * 1.35);
+  };
+
+  if (img.complete) {
+    applyClass();
+  } else {
+    img.addEventListener("load", applyClass, { once: true });
+  }
+}
+
+function classifyMermaidImages() {
+  document
+    .querySelectorAll('img[alt*="Mermaid Diagram"]')
+    .forEach(classifyMermaidImage);
+}
+
 function attachMermaidClickHandlers() {
   const mermaidContainers = document.querySelectorAll("div.mermaid, .mermaid");
 
@@ -104,6 +134,7 @@ export function enableFullscreenMedia() {
 
   // Обработка изображений
   document.querySelectorAll("img:not(.no-fullscreen)").forEach((img) => {
+    classifyMermaidImage(img);
     img.style.cursor = "zoom-in";
     img.addEventListener("click", () => {
       showFullscreenContent(img.cloneNode(true));
@@ -111,10 +142,12 @@ export function enableFullscreenMedia() {
   });
 
   // Обработка Mermaid диаграмм
+  classifyMermaidImages();
   attachMermaidClickHandlers();
 
   // Observer для асинхронно отрендеренных диаграмм
   const observer = new MutationObserver(() => {
+    classifyMermaidImages();
     attachMermaidClickHandlers();
   });
 

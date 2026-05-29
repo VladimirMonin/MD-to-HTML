@@ -35,10 +35,13 @@ class MermaidAutoFixPreprocessor:
             # 1. Исправляем <<text>> в сообщениях
             # Паттерн: A->>B: <<something>>
             # НЕ трогаем participant X <<stereotype>>
-            if "->>" in line or "-->" in line:
-                # Это сообщение, заменяем << >> на « »
-                if "<<" in line:
-                    line = line.replace("<<", "«").replace(">>", "»")
+            if ("->>" in line or "-->" in line) and ":" in line:
+                # Это сообщение: заменяем << >> только в label после двоеточия.
+                # Нельзя делать replace по всей строке: иначе стрелка A->>B ломается в A-»B.
+                prefix, label = line.split(":", 1)
+                if "<<" in label:
+                    label = label.replace("<<", "«").replace(">>", "»")
+                    line = f"{prefix}:{label}"
 
             # 2. Валидация activate/deactivate
             # ВАЖНО: проверяем, что это отдельная директива, а не часть стрелки A->>Ord:

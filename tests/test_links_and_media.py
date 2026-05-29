@@ -52,6 +52,14 @@ class TestMarkdownLinks:
         assert "[internal-page](internal-page.md)" in result
         assert "[Вложенная](deep/nested.md)" in result
 
+    def test_block_boundaries_before_heading_and_around_rule(self):
+        """Obsidian-заметки без пустых строк не должны склеиваться в Pandoc."""
+        prep = ObsidianPreprocessor()
+        result = prep.process("[[card|Карточка]]\n---\nТекст\n*Подпись*\n## Следующий раздел")
+
+        assert "[Карточка](card.md)\n\n***\n\nТекст" in result
+        assert "*Подпись*\n\n## Следующий раздел" in result
+
 
 class TestObsidianImages:
     """Тесты для обработки Obsidian изображений."""

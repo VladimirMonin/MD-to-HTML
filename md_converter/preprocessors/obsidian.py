@@ -79,6 +79,30 @@ class ObsidianPreprocessor(Preprocessor):
         """
         return re.sub(r"^---\s*$", "***", content, flags=re.MULTILINE)
 
+    def _normalize_block_boundaries(self, content: str) -> str:
+        """Добавить пустые строки вокруг блочных элементов Obsidian-заметки.
+
+        В Obsidian часто пишут подряд embed/caption/heading или wikilink/---/текст.
+        Pandoc без пустой строки может склеить следующий heading или thematic break
+        с предыдущим абзацем, и в HTML появляются буквальные "##" или "***".
+        """
+        normalized: list[str] = []
+
+        for line in content.splitlines():
+            stripped = line.strip()
+            is_rule = stripped == "***"
+            is_heading = bool(re.match(r"#{1,6}\s+", stripped))
+
+            if (is_rule or is_heading) and normalized and normalized[-1].strip():
+                normalized.append("")
+
+            normalized.append(line)
+
+            if is_rule:
+                normalized.append("")
+
+        return "\n".join(normalized) + ("\n" if content.endswith("\n") else "")
+
     def process(self, content: str) -> str:
         """Преобразование Obsidian синтаксиса."""
 
@@ -87,6 +111,10 @@ class ObsidianPreprocessor(Preprocessor):
 
         # 0.1 Нормализуем горизонтальные линии --- → ***
         content = self._normalize_horizontal_rules(content)
+
+        # 0.2 Разделяем блочные элементы, которые Obsidian терпит,
+        # но Pandoc может склеить с соседним абзацем.
+        content = self._normalize_block_boundaries(content)
 
         # ![[file]] или ![[file|width]] → ![](найденный_путь) с опциональной шириной
         def replace_image(match):
@@ -109,17 +137,20 @@ class ObsidianPreprocessor(Preprocessor):
 
         content = re.sub(r"!\[\[(.*?)\]\]", replace_image, content)
 
-        # ИСПРАВЛЕНИЕ БАГ #8: [[link]] → [link](#slug) вместо .md
+        # [[link]] → [link](link.md)
         def replace_link(match):
             full_text = match.group(1)
             if "|" in full_text:
                 link, display = full_text.split("|", 1)
-                # Создаём slug для якоря (lowercase, пробелы → дефисы)
-                slug = link.strip().lower().replace(" ", "-").replace("_", "-")
-                return f"[{display.strip()}](#{slug})"
+                target = link.strip()
+                if not target.endswith(".md"):
+                    target = f"{target}.md"
+                return f"[{display.strip()}]({target})"
             else:
-                slug = full_text.lower().replace(" ", "-").replace("_", "-")
-                return f"[{full_text}](#{slug})"
+                target = full_text.strip()
+                if not target.endswith(".md"):
+                    target = f"{target}.md"
+                return f"[{full_text}]({target})"
 
         content = re.sub(r"\[\[([^\]]+)\]\]", replace_link, content)
 

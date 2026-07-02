@@ -21,6 +21,17 @@ function createController(shell) {
   const svg = viewport ? viewport.querySelector("svg") : null;
   if (!viewport || !svg) return null;
 
+  // Mermaid CLI writes intrinsic sizing into the inline SVG style, including
+  // `max-width: <diagram width>px`. For tall diagrams that cap can leave the
+  // actual SVG as a narrow strip at the left side of a wide viewport. Normalize
+  // the root SVG sizing before transforms so `preserveAspectRatio` can center
+  // portrait and wide diagrams inside the viewport in normal and fullscreen modes.
+  svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+  svg.style.width = "100%";
+  svg.style.height = "100%";
+  svg.style.maxWidth = "none";
+  svg.style.display = "block";
+
   const layer = ensureTransformLayer(svg);
   let scale = 1;
   let x = 0;

@@ -1,11 +1,16 @@
 """Tests for opt-in copy-mode Mermaid SVG pan/zoom."""
 
+from pathlib import Path
+
 import pytest
 
 from md_converter import Converter, ConverterConfig
 from md_converter.preprocessors import MermaidPreprocessor
 from md_converter.processors import TemplateProcessor
 from md_converter.config import FeaturesConfig, StylesConfig
+
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
 MERMAID_MD = """# Diagram
@@ -132,3 +137,12 @@ def test_template_includes_panzoom_assets_only_for_copy_panzoom() -> None:
     assert "function initMermaidPanZoom" in copy_header
     assert "assets/css/modules/mermaid-panzoom.css" not in embed_header
     assert "function initMermaidPanZoom" not in embed_header
+
+
+def test_panzoom_assets_override_mmdc_inline_max_width_for_tall_svgs() -> None:
+    css = (PROJECT_ROOT / "assets/css/modules/mermaid-panzoom.css").read_text(encoding="utf-8")
+    js = (PROJECT_ROOT / "assets/js/modules/mermaidPanZoom.js").read_text(encoding="utf-8")
+
+    assert "max-width: none !important;" in css
+    assert 'svg.style.maxWidth = "none";' in js
+    assert 'svg.setAttribute("preserveAspectRatio", "xMidYMid meet");' in js

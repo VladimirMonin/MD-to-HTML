@@ -3,7 +3,8 @@
 ## Требования
 
 - **Windows** (тестировалось на Windows 10/11)
-- **Python 3.9+**
+- **Python 3.10+**
+- **uv** для управления Python-окружением
 - **Node.js 16+** (для mermaid-filter)
 - **Pandoc 3.x**
 
@@ -71,12 +72,6 @@ Get-Command mermaid-filter.cmd -ErrorAction SilentlyContinue
 
 ## Шаг 4: Установка Python зависимостей
 
-### Установить Poetry (если еще нет)
-
-```powershell
-(Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | py -
-```
-
 ### Клонировать репозиторий
 
 ```powershell
@@ -87,7 +82,7 @@ cd MD-to-HTML
 ### Установить Python зависимости
 
 ```powershell
-poetry install
+uv sync --frozen --all-groups
 ```
 
 **Что установится:**
@@ -101,7 +96,7 @@ poetry install
 Запустите тестовую сборку:
 
 ```powershell
-poetry run python test_build.py
+uv run python test_build.py
 ```
 
 **Что должно произойти:**
@@ -127,7 +122,8 @@ poetry run python test_build.py
 MD-to-HTML/
 ├── build_book.py          # Основной скрипт сборки
 ├── test_build.py          # Тестовый скрипт
-├── pyproject.toml         # Python зависимости
+├── pyproject.toml         # Python зависимости и метаданные проекта
+├── uv.lock                # Зафиксированные версии зависимостей uv
 ├── assets/
 │   ├── css/
 │   │   └── book_style.css # Стили для HTML/EPUB
@@ -150,7 +146,7 @@ MD-to-HTML/
 ### Интерактивный режим
 
 ```powershell
-poetry run python build_book.py
+uv run python build_book.py
 ```
 
 **Вам предложат:**
@@ -196,17 +192,17 @@ build_book("path/to/markdown.md", "output_name", "epub")
 - **Зачем:** Преобразует Mermaid код в SVG/PNG для EPUB
 - **Команда проверки:** `Get-Command mermaid-filter.cmd`
 
-### 4. **Python + Poetry** (обязательно)
+### 4. **Python + uv** (обязательно)
 
 - **Что:** Python окружение и менеджер зависимостей
 - **Зачем:** Запуск build_book.py
-- **Команда проверки:** `python --version`, `poetry --version`
+- **Команда проверки:** `python --version`, `uv --version`
 
 ### 5. **natsort** (Python пакет)
 
 - **Что:** Библиотека для естественной сортировки
 - **Зачем:** Правильная сортировка "Глава 1", "Глава 2", "Глава 10"
-- **Устанавливается через:** `poetry install`
+- **Устанавливается через:** `uv sync --frozen --all-groups`
 
 ---
 
@@ -316,7 +312,7 @@ npm update --global mermaid-filter
 ### Обновить Python зависимости
 
 ```powershell
-poetry update
+uv lock --upgrade
 ```
 
 ---

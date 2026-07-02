@@ -6,16 +6,16 @@
 
 ### Установка зависимостей
 
-Рекомендуется использовать `uv` для быстрой установки:
+Проект использует `uv` и зафиксированный `uv.lock`:
 
 ```bash
-uv pip install -e .
+uv sync --frozen --all-groups
 ```
 
-Или через Poetry:
+После этого запускайте команды через окружение проекта:
 
 ```bash
-poetry install
+uv run python cli.py <input> [options]
 ```
 
 ### Использование
@@ -55,6 +55,7 @@ python cli.py <input> [options]
 python cli.py doc/README.md -f html
 python cli.py "result/День №1" -f both --title "День 1"
 python cli.py test.md -m copy --no-breadcrumbs
+python cli.py diagrams.md -m copy --mermaid-panzoom
 ```
 
 **GUI (рекомендуется):**
@@ -80,7 +81,8 @@ MD_to_HTML/
 ├── cli.py                  # CLI точка входа (argparse)
 ├── convert.py              # Python точка входа (YAML)
 ├── config.yaml             # Конфигурация по умолчанию
-├── pyproject.toml          # Poetry зависимости
+├── pyproject.toml          # Метаданные и зависимости Python-пакета
+├── uv.lock                 # Зафиксированные версии зависимостей uv
 │
 ├── md_converter/           # Основной пакет
 │   ├── __init__.py
@@ -147,6 +149,7 @@ MD_to_HTML/
 - `media_mode` - embed (встроить) или copy (в папку media/)
 - `template` - book (минималистичный) или web (Bootstrap)
 - `features` - toc, breadcrumbs, mermaid, code_copy и др.
+- `features.mermaid_panzoom` - opt-in SVG pan/zoom для Mermaid только в HTML + `media_mode: copy`; default `false`, embed остаётся single-file WebP.
 
 CLI аргументы переопределяют config.yaml.
 
@@ -165,6 +168,7 @@ python cli.py <input> [options]
 - `-t, --template` - book | web
 - `--title`, `--author`, `--brand` - метаданные
 - `--no-toc`, `--no-breadcrumbs` - отключение функций
+- `--mermaid-panzoom` - SVG pan/zoom для Mermaid (только HTML + `--media copy`)
 
 Примеры:
 
@@ -266,8 +270,8 @@ JavaScript разбит на ES6 модули:
 
 ## 📦 Зависимости
 
-- **Python**: 3.9+
-- **Poetry**: Управление зависимостями
+- **Python**: 3.10+
+- **uv**: Управление зависимостями и виртуальным окружением
 - **Pandoc**: 3.7+ (для конвертации)
 - **natsort**: Естественная сортировка файлов
 - **PyYAML**: Парсинг конфигов
@@ -338,7 +342,7 @@ MIT License — см. [LICENSE](LICENSE)
 
 ```bash
 # Проверка всего проекта
-poetry run mypy gui/ md_converter/
+uv run mypy gui/ md_converter/
 
 # Конфигурация в pyproject.toml секции [tool.mypy]
 ```
@@ -346,7 +350,7 @@ poetry run mypy gui/ md_converter/
 ### Тестирование
 
 ```bash
-poetry run pytest tests/
+uv run pytest tests/
 ```
 
 ## � Документация

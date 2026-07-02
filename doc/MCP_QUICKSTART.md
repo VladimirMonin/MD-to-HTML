@@ -6,7 +6,7 @@
 
 ```bash
 cd C:\PY\MD_to_HTML
-uv pip install -e .
+uv sync --frozen --all-groups
 ```
 
 ### 2. Добавление в VS Code

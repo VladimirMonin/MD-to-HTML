@@ -1,6 +1,6 @@
 # MD to HTML Конвертер
 
-[![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://python.org)
+[![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://python.org)
 [![Markdown](https://img.shields.io/badge/Markdown-Support-green.svg)](https://daringfireball.net/projects/markdown/)
 [![Bootstrap](https://img.shields.io/badge/Bootstrap-5-purple.svg)](https://getbootstrap.com/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -62,16 +62,10 @@ MD_to_HTML/
    cd MD_to_HTML
    ```
 
-2. **Установите зависимости с помощью Poetry:**
+2. **Установите зависимости с помощью uv:**
 
    ```bash
-   poetry install
-   ```
-
-   Или используйте pip:
-
-   ```bash
-   pip install -r requirements.txt
+   uv sync --frozen --all-groups
    ```
 
 ### Использование

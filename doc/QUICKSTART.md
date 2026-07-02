@@ -13,15 +13,11 @@ cd MD-to-HTML
 
 **Требования:**
 
-- Python 3.9+
-- Poetry (менеджер зависимостей)
+- Python 3.10+
+- uv
 
 ```bash
-# Установка Poetry (если еще не установлен)
-curl -sSL https://install.python-poetry.org | python3 -
-
-# Установка зависимостей проекта
-poetry install
+uv sync --frozen --all-groups
 ```
 
 ### 3. Установка Pandoc
@@ -79,7 +75,7 @@ mermaid-filter --version
 ### CLI (быстрый способ)
 
 ```bash
-poetry run python cli.py doc/README.md
+uv run python cli.py doc/README.md
 ```
 
 Результат: `build/README.html`
@@ -87,7 +83,7 @@ poetry run python cli.py doc/README.md
 ### Интерактивное меню (пошаговый способ)
 
 ```bash
-poetry run python convert.py
+uv run python convert.py
 ```
 
 Программа задаст вопросы:

@@ -28,22 +28,15 @@ MCP (Model Context Protocol) сервер для MD-to-HTML конвертера
 
 ```bash
 cd C:\PY\MD_to_HTML
-uv pip install -e .
+uv sync --frozen --all-groups
 ```
 
-Или через обычный pip:
-
-```bash
-cd C:\PY\MD_to_HTML
-pip install -e .
-```
-
-Это установит пакет `mcp` (Model Context Protocol Python SDK) вместе с другими зависимостями.
+Это создаст/обновит `.venv` и установит `mcp` (Model Context Protocol Python SDK) вместе с другими зависимостями по `uv.lock`.
 
 ### 2. Проверка установки
 
 ```bash
-python mcp_server.py
+uv run python mcp_server.py
 ```
 
 Сервер должен запуститься и ожидать входящих MCP запросов через stdio.

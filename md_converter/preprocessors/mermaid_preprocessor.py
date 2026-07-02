@@ -295,6 +295,7 @@ class MermaidPreprocessor(Preprocessor):
             flags=re.IGNORECASE,
         )
         sanitized = re.sub(r"javascript\s*:", "", sanitized, flags=re.IGNORECASE)
+        sanitized = self._remove_svg_max_width_style(sanitized)
 
         svg_open = sanitized.split(">", 1)[0]
         if "<svg" in svg_open and "preserveAspectRatio" not in svg_open:
@@ -302,6 +303,30 @@ class MermaidPreprocessor(Preprocessor):
                 "<svg", '<svg preserveAspectRatio="xMidYMid meet"', 1
             )
         return sanitized
+
+    def _remove_svg_max_width_style(self, svg: str) -> str:
+        """Remove mmdc's root max-width style that side-anchors portrait SVGs."""
+
+        def clean_style(match: re.Match[str]) -> str:
+            quote = match.group(1)
+            style = match.group(2)
+            parts = [part.strip() for part in style.split(";")]
+            kept = [
+                part
+                for part in parts
+                if part and not part.lower().startswith("max-width")
+            ]
+            if not kept:
+                return ""
+            return f' style={quote}{"; ".join(kept)};{quote}'
+
+        return re.sub(
+            r"\sstyle\s*=\s*(['\"])(.*?)\1",
+            clean_style,
+            svg,
+            count=1,
+            flags=re.IGNORECASE | re.DOTALL,
+        )
 
     def _render_diagram_svg(self, diagram_code: str, diagram_index: int) -> str:
         """Рендерит Mermaid диаграмму в SVG и возвращает sanitized inline SVG."""

@@ -28,6 +28,11 @@ SVG_WITH_XSS = """<svg width="100" height="80" onload="alert(1)">
 <g onclick="alert(3)"><text>safe label</text></g>
 </svg>"""
 
+SVG_WITH_MERMAID_MAX_WIDTH = (
+    '<svg width="100%" style="max-width: 169.406px; background-color: white;" '
+    'viewBox="0 0 169.40625 1318"><text>tall</text></svg>'
+)
+
 
 def test_config_default_keeps_mermaid_panzoom_disabled() -> None:
     config = ConverterConfig()
@@ -116,6 +121,16 @@ def test_svg_sanitizer_strips_scripts_events_and_javascript_urls() -> None:
     assert "javascript:" not in sanitized.lower()
     assert 'preserveAspectRatio="xMidYMid meet"' in sanitized
     assert "safe label" in sanitized
+
+
+def test_svg_sanitizer_removes_mmdc_root_max_width_for_tall_panzoom() -> None:
+    preprocessor = MermaidPreprocessor(format_type="html")
+
+    sanitized = preprocessor._sanitize_svg(SVG_WITH_MERMAID_MAX_WIDTH)
+
+    assert "max-width" not in sanitized
+    assert 'style="background-color: white;"' in sanitized
+    assert 'preserveAspectRatio="xMidYMid meet"' in sanitized
 
 
 def test_template_includes_panzoom_assets_only_for_copy_panzoom() -> None:

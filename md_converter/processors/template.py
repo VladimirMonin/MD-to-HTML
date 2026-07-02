@@ -26,6 +26,7 @@ class TemplateProcessor:
         self.features = features
         self.styles = styles
         self.media_mode = media_mode
+        self.mermaid_panzoom_enabled = bool(features.mermaid_panzoom) and media_mode == "copy"
 
     def build_header(self, format_type: str) -> str:
         """
@@ -53,6 +54,8 @@ class TemplateProcessor:
             css_files.append("assets/css/modules/breadcrumbs.css")
         if self.features.fullscreen or self.features.code_copy:
             css_files.append("assets/css/modules/interactive.css")
+        if self.mermaid_panzoom_enabled:
+            css_files.append("assets/css/modules/mermaid-panzoom.css")
         if self.features.diff_blocks:
             css_files.append("assets/css/modules/diff.css")
         if self.features.plyr:
@@ -109,6 +112,7 @@ document.addEventListener('DOMContentLoaded', function() {{
     // Инициализация функций (если они определены)
     if (typeof addCodeCopyButtons === 'function') addCodeCopyButtons();
     if (typeof enableFullscreenMedia === 'function') enableFullscreenMedia();
+    if (typeof initMermaidPanZoom === 'function') initMermaidPanZoom();
     if (typeof initDynamicBreadcrumbs === 'function') initDynamicBreadcrumbs();
     if (typeof smoothScrollTOC === 'function') smoothScrollTOC();
     
@@ -173,6 +177,8 @@ document.addEventListener('DOMContentLoaded', function() {{
             js_modules.append("assets/js/modules/smoothScroll.js")
         if self.features.plyr:
             js_modules.append("assets/js/modules/media.js")
+        if self.mermaid_panzoom_enabled:
+            js_modules.append("assets/js/modules/mermaidPanZoom.js")
 
         # Читаем все модули
         js_code = []

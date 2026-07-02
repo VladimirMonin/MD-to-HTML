@@ -1,5 +1,6 @@
-"""Препроцессор для Mermaid диаграмм - рендеринг через CLI в WebP."""
+"""Препроцессор для Mermaid диаграмм - рендеринг через CLI в WebP/SVG."""
 
+import html
 import re
 import subprocess
 import sys
@@ -55,6 +56,13 @@ class MermaidPreprocessor(Preprocessor):
         # Режим медиа и output_dir
         self.media_mode = config.media_mode
         self.output_dir = Path(config.output_dir)
+        # Rich SVG pan/zoom is intentionally opt-in and copy-mode/HTML-only.
+        self.mermaid_panzoom = (
+            bool(config.features.mermaid_panzoom)
+            and self.media_mode == "copy"
+            and self.format_type == "html"
+            and "epub" not in getattr(config, "formats", [])
+        )
 
         # mmdc ищем лениво, только когда действительно надо рендерить.
         self.mmdc_path: str | None = None
@@ -242,12 +250,131 @@ class MermaidPreprocessor(Preprocessor):
                 f"{rendered_code}"
             )
 
+        escaped_source = self._escape_source_debug_text(source)
         return (
             f'\n<script type="text/plain" class="mermaid-source" data-diagram="{diagram_index}">\n'
             '<div class="mermaid">\n'
-            f'{source}\n'
+            f'{escaped_source}\n'
             '</div>\n'
             '</script>\n'
+        )
+
+    def _escape_source_debug_text(self, source: str) -> str:
+        """
+        Escape script boundaries inside the inert Mermaid debug block.
+
+        Keep Mermaid syntax readable for existing diagnostics/tests while preventing
+        a malicious diagram from closing the text/plain script and opening an
+        executable script tag.
+        """
+        return re.sub(
+            r"</?script\b[^>]*>",
+            lambda match: html.escape(match.group(0), quote=False),
+            source,
+            flags=re.IGNORECASE,
+        )
+
+    def _sanitize_svg(self, svg: str) -> str:
+        """Strip executable content from mmdc SVG before inlining it."""
+        sanitized = re.sub(
+            r"<script\b[^>]*>.*?</script>",
+            "",
+            svg,
+            flags=re.IGNORECASE | re.DOTALL,
+        )
+        sanitized = re.sub(
+            r"\s+on[a-zA-Z]+\s*=\s*(['\"]).*?\1",
+            "",
+            sanitized,
+            flags=re.IGNORECASE | re.DOTALL,
+        )
+        sanitized = re.sub(
+            r"\s+on[a-zA-Z]+\s*=\s*[^\s>/]+",
+            "",
+            sanitized,
+            flags=re.IGNORECASE,
+        )
+        sanitized = re.sub(r"javascript\s*:", "", sanitized, flags=re.IGNORECASE)
+
+        svg_open = sanitized.split(">", 1)[0]
+        if "<svg" in svg_open and "preserveAspectRatio" not in svg_open:
+            sanitized = sanitized.replace(
+                "<svg", '<svg preserveAspectRatio="xMidYMid meet"', 1
+            )
+        return sanitized
+
+    def _render_diagram_svg(self, diagram_code: str, diagram_index: int) -> str:
+        """Рендерит Mermaid диаграмму в SVG и возвращает sanitized inline SVG."""
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".mmd", delete=False, encoding="utf-8"
+        ) as tmp_file:
+            tmp_file.write(diagram_code)
+            tmp_path = Path(tmp_file.name)
+
+        svg_path = tmp_path.with_suffix(".svg")
+
+        try:
+            if not self.mmdc_path:
+                self.mmdc_path = self._find_mmdc()
+
+            cmd = [
+                self.mmdc_path,
+                "-i",
+                str(tmp_path),
+                "-o",
+                str(svg_path),
+                "-t",
+                self.theme,
+                "-b",
+                self.background,
+            ]
+
+            subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=30,
+                check=True,
+                stdin=subprocess.DEVNULL,
+            )
+
+            return self._sanitize_svg(svg_path.read_text(encoding="utf-8"))
+
+        finally:
+            import time
+
+            time.sleep(0.05)
+            for path in [tmp_path, svg_path]:
+                try:
+                    if path.exists():
+                        path.unlink()
+                except PermissionError:
+                    pass
+
+    def _panzoom_toolbar(self) -> str:
+        return (
+            '<div class="mermaid-toolbar" aria-label="Управление диаграммой">'
+            '<button type="button" class="mermaid-zoom-in" aria-label="Увеличить">+</button>'
+            '<button type="button" class="mermaid-zoom-out" aria-label="Уменьшить">−</button>'
+            '<button type="button" class="mermaid-reset" aria-label="Сбросить масштаб">Сброс</button>'
+            '<button type="button" class="mermaid-panzoom-fullscreen" aria-label="На весь экран">На весь экран</button>'
+            '</div>'
+        )
+
+    def _panzoom_html_block(
+        self,
+        svg: str,
+        source_block: str,
+        diagram_index: int,
+    ) -> str:
+        return (
+            f'\n<figure class="mermaid-panzoom-shell" data-mermaid-index="{diagram_index}">\n'
+            f'{self._panzoom_toolbar()}\n'
+            f'<div class="mermaid-viewport" role="img" aria-label="Mermaid Diagram {diagram_index}">\n'
+            f'{svg}\n'
+            '</div>'
+            f'{source_block}\n'
+            '</figure>\n'
         )
 
     def _render_diagram(self, diagram_code: str, diagram_index: int) -> bytes:
@@ -367,6 +494,10 @@ class MermaidPreprocessor(Preprocessor):
                 source_block = self._source_debug_block(
                     original_diagram_code, diagram_code, current
                 )
+
+                if self.mermaid_panzoom:
+                    svg = self._render_diagram_svg(diagram_code, current)
+                    return self._panzoom_html_block(svg, source_block, current)
 
                 # Рендерим в память
                 webp_bytes = self._render_diagram(diagram_code, current)

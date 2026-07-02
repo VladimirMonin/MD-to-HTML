@@ -57,6 +57,7 @@ class FeaturesConfig:
     diff_blocks: bool = True
     callouts: bool = True
     mermaid: bool = True
+    mermaid_panzoom: bool = False
     plyr: bool = True
 
 

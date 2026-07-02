@@ -373,6 +373,7 @@ def convert_markdown_to_html(
     validate_media: bool = True,
     validate_mermaid: bool = False,  # ОТКЛЮЧЕНО - двойная обработка Mermaid
     mermaid_theme: str = "forest",
+    mermaid_panzoom: bool = False,
     source_type: str = "auto",
 ) -> dict:
     """
@@ -454,6 +455,12 @@ def convert_markdown_to_html(
     mermaid_theme (str): Тема для Mermaid диаграмм.
         По умолчанию: "forest" (зелёная)
         Варианты: "default", "forest", "dark", "neutral", "base"
+
+    mermaid_panzoom (bool): Включить rich SVG pan/zoom для Mermaid.
+        По умолчанию: False
+        Работает только для output_format="html" и media_mode="copy".
+        В режиме embed намеренно возвращается validation error, чтобы не
+        создавать скрытую зависимость single-file HTML от соседних assets.
 
     source_type (str): Тип источника Markdown документа.
         По умолчанию: "auto" (автоопределение)
@@ -623,6 +630,14 @@ def convert_markdown_to_html(
     try:
         # ===== ЭТАП 1: ВАЛИДАЦИЯ ВХОДНЫХ ПАРАМЕТРОВ =====
 
+        if mermaid_panzoom and media_mode != "copy":
+            raise ValidationError(
+                "mermaid_panzoom requires media_mode='copy'; embed mode remains single-file WebP"
+            )
+
+        if mermaid_panzoom and output_format != "html":
+            raise ValidationError("mermaid_panzoom is available for HTML output only")
+
         # Проверка входного файла
         input_path = Path(input_file)
         if not input_path.exists():
@@ -728,6 +743,7 @@ def convert_markdown_to_html(
                 diff_blocks=True,
                 callouts=True,
                 mermaid=True,
+                mermaid_panzoom=mermaid_panzoom,
                 plyr=True,
             ),
             advanced=AdvancedConfig(pandoc_extra_args=[], custom_css=[], custom_js=[]),
@@ -758,6 +774,7 @@ def convert_markdown_to_html(
                 "media_files_found": len(extract_media_paths(markdown_content)),
                 "media_files_missing": len(missing_files),
                 "output_format": output_format,
+                "mermaid_mode": "svg-panzoom" if mermaid_panzoom else "webp",
             },
             "message": "Конвертация успешно завершена",
         }
@@ -811,6 +828,14 @@ def convert_markdown_to_html(
                 "total_missing": len(e.missing_files),
                 "media_folder": media_folder,
             },
+        }
+
+    except ValidationError as e:
+        return {
+            "status": "error",
+            "error_type": type(e).__name__,
+            "message": str(e),
+            "details": {},
         }
 
     except Exception as e:

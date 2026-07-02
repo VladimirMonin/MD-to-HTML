@@ -69,6 +69,11 @@ def main():
         "--no-breadcrumbs", action="store_true", help="Отключить breadcrumbs"
     )
     parser.add_argument("--no-mermaid", action="store_true", help="Отключить Mermaid")
+    parser.add_argument(
+        "--mermaid-panzoom",
+        action="store_true",
+        help="Включить SVG pan/zoom для Mermaid (только HTML + --media copy)",
+    )
 
     # Тема
     parser.add_argument(
@@ -106,6 +111,7 @@ def main():
     config.features.toc = not args.no_toc
     config.features.breadcrumbs = not args.no_breadcrumbs
     config.features.mermaid = not args.no_mermaid
+    config.features.mermaid_panzoom = args.mermaid_panzoom
 
     # Конвертация
     converter = Converter(config)

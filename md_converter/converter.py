@@ -24,7 +24,16 @@ class Converter:
             config: Конфигурация конвертера
         """
         self.config = config
+        self._validate_config()
         self._setup_pipeline()
+
+    def _validate_config(self):
+        """Validate feature combinations that affect output packaging."""
+        if self.config.features.mermaid_panzoom:
+            if self.config.media_mode != "copy":
+                raise ValueError("Mermaid pan/zoom requires media_mode='copy'")
+            if any(fmt != "html" for fmt in self.config.formats):
+                raise ValueError("Mermaid pan/zoom is available for HTML output only")
 
     def _setup_pipeline(self):
         """Настройка pipeline на основе конфига."""

@@ -28,6 +28,7 @@ features:
   diff_blocks: true
   callouts: true
   mermaid: true
+  mermaid_panzoom: false
   plyr: true
 advanced:
   pandoc_extra_args: []

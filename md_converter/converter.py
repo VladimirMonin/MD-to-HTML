@@ -1,5 +1,6 @@
 """Главный класс конвертера - оркестратор pipeline."""
 
+import os
 import sys
 from pathlib import Path
 from typing import Optional, Union
@@ -9,6 +10,7 @@ from .preprocessors import (
     CalloutsPreprocessor,
     MermaidPreprocessor,
     DiffPreprocessor,
+    TimecodesPreprocessor,
 )
 from .processors import MediaProcessor, MergerProcessor, TemplateProcessor
 from .backends import PandocBackend
@@ -46,6 +48,9 @@ class Converter:
 
         if self.config.features.callouts:
             self.preprocessors.append(CalloutsPreprocessor())
+
+        if self.config.features.timecodes:
+            self.preprocessors.append(TimecodesPreprocessor())
 
         # Mermaid и Diff добавятся для каждого формата отдельно
 
@@ -120,7 +125,9 @@ class Converter:
         # 2. Обработка медиа
         print("📎 Этап 2: Обработка медиа...", file=sys.stderr)
         # Передаём реальный input_path, чтобы относительные пути к медиа разрешались корректно
-        content, media_map = self.media_processor.process(content, input_path)
+        content, media_map = self.media_processor.process(
+            content, input_path, output_name=output_name
+        )
         print(f"  ✓ Обработано {len(media_map)} медиа файлов\n", file=sys.stderr)
 
         # 3. Конвертация для каждого формата
@@ -146,7 +153,8 @@ class Converter:
 
             # Подготовка header
             print("🎨 Этап 4: Генерация шаблона...", file=sys.stderr)
-            header = self.template_processor.build_header(fmt)
+            asset_base = self._asset_base_for_output(output_name, fmt)
+            header = self.template_processor.build_header(fmt, asset_base=asset_base)
             print("  ✓ Шаблон готов\n", file=sys.stderr)
 
             # Конвертация через Pandoc
@@ -172,3 +180,13 @@ class Converter:
             results.append(output_path)
 
         return results
+
+    def _asset_base_for_output(self, output_name: str, format_type: str) -> str:
+        """Путь к assets относительно фактического HTML output-файла."""
+        if format_type != "html":
+            return "assets"
+
+        output_dir = Path(self.config.output_dir)
+        html_parent = (output_dir / f"{output_name}.html").parent
+        rel_path = Path(os.path.relpath(output_dir / "assets", start=html_parent))
+        return rel_path.as_posix()

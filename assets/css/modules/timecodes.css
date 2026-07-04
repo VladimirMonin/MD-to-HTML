@@ -1,0 +1,179 @@
+/* Static media timecode panels */
+
+:root {
+  --media-timecode-component-width: 1000px;
+  --media-timecode-border: #d9e2ec;
+  --media-timecode-surface: #ffffff;
+  --media-timecode-muted: #fbfcfd;
+  --media-timecode-text: #334155;
+  --media-timecode-soft-text: #64748b;
+  --media-timecode-accent: #64748b;
+  --media-timecode-active: #eef3f7;
+}
+
+.timecode-panel {
+  box-sizing: border-box;
+  max-width: var(--media-timecode-component-width);
+  margin: 1rem auto 2.4em;
+  padding: 0;
+  border: 1px solid var(--media-timecode-border);
+  border-radius: 16px;
+  background: var(--media-timecode-surface);
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+}
+
+figure.media-player + .timecode-panel,
+.plyr + .timecode-panel {
+  margin-top: 0;
+  border-top: 0;
+  border-radius: 0 0 16px 16px;
+  background: #fbfcfd;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.055);
+}
+
+.timecode-panel-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0;
+  padding: 0.95rem 1rem 0.72rem;
+  border-bottom: 1px solid #e8eef5;
+  background: #f8fafc;
+  color: var(--media-timecode-soft-text);
+  font-size: 0.78rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+}
+
+.timecode-panel-title::before {
+  content: none;
+  display: none;
+}
+
+.timecode-button {
+  display: flex;
+  box-sizing: border-box;
+  width: 100%;
+  align-items: center;
+  gap: 0.78rem;
+  margin: 0;
+  padding: 0.78rem 1rem;
+  border: 0;
+  border-top: 1px solid #edf2f7;
+  border-radius: 0;
+  background: #ffffff;
+  color: var(--media-timecode-text);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
+}
+
+.timecode-button:hover,
+.timecode-button:focus-visible {
+  background: #f4f8fb;
+  box-shadow: inset 4px 0 0 rgba(100, 116, 139, 0.42);
+  outline: none;
+}
+
+.timecode-button.is-active,
+.timecode-button[aria-current="true"] {
+  background: var(--media-timecode-active);
+  box-shadow: inset 4px 0 0 rgba(71, 85, 105, 0.86);
+}
+
+.timecode-time {
+  flex: 0 0 auto;
+  padding: 0.18rem 0.54rem;
+  border-radius: 999px;
+  background: #e2e8f0;
+  color: #334155;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.84em;
+  font-weight: 650;
+}
+
+.timecode-button.is-active .timecode-time,
+.timecode-button[aria-current="true"] .timecode-time {
+  background: #d8e1ea;
+}
+
+.timecode-label {
+  min-width: 0;
+  color: var(--media-timecode-text);
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.timecode-panel--no-media {
+  opacity: 0.75;
+}
+
+@media (max-width: 768px) {
+  .timecode-panel {
+    margin: 0.85rem 0 1.5em;
+    border-radius: 12px;
+  }
+
+  figure.media-player + .timecode-panel,
+  .plyr + .timecode-panel {
+    margin-top: 0;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .timecode-button {
+    align-items: flex-start;
+    padding-right: 0.85rem;
+    padding-left: 0.85rem;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --media-timecode-border: rgba(148, 163, 184, 0.25);
+    --media-timecode-surface: #1f2937;
+    --media-timecode-muted: rgba(15, 23, 42, 0.42);
+    --media-timecode-text: #e2e8f0;
+    --media-timecode-soft-text: #cbd5e1;
+    --media-timecode-accent: #94a3b8;
+    --media-timecode-active: rgba(71, 85, 105, 0.54);
+  }
+
+  .timecode-panel {
+    border-color: var(--media-timecode-border);
+    background: var(--media-timecode-surface);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.25);
+  }
+
+  .timecode-panel-title,
+  .timecode-button,
+  .timecode-label {
+    color: var(--media-timecode-text);
+  }
+
+  .timecode-panel-title {
+    border-bottom-color: rgba(148, 163, 184, 0.22);
+    background: rgba(15, 23, 42, 0.32);
+  }
+
+  .timecode-button {
+    border-top-color: rgba(148, 163, 184, 0.24);
+    background: var(--media-timecode-muted);
+  }
+
+  .timecode-button:hover,
+  .timecode-button:focus-visible {
+    background: rgba(30, 41, 59, 0.95);
+  }
+
+  .timecode-button.is-active,
+  .timecode-button[aria-current="true"] {
+    border-color: rgba(203, 213, 225, 0.34);
+    background: var(--media-timecode-active);
+  }
+
+  .timecode-time {
+    background: rgba(148, 163, 184, 0.2);
+    color: #e2e8f0;
+  }
+}

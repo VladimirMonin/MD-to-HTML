@@ -6,6 +6,10 @@ from typing import Optional
 from .base import Preprocessor
 
 
+AUDIO_EXTENSIONS = {".mp3", ".m4a", ".ogg", ".opus", ".wav", ".flac", ".aac"}
+VIDEO_EXTENSIONS = {".mp4", ".webm", ".mov", ".m4v", ".avi", ".mkv"}
+
+
 class ObsidianPreprocessor(Preprocessor):
     """
     Обрабатывает Obsidian-специфичный синтаксис:
@@ -103,6 +107,17 @@ class ObsidianPreprocessor(Preprocessor):
 
         return "\n".join(normalized) + ("\n" if content.endswith("\n") else "")
 
+    @staticmethod
+    def _media_embed_html(path: str, width: str | None = None) -> str | None:
+        """HTML для Obsidian audio/video embeds; None для обычных изображений."""
+        suffix = Path(path).suffix.lower()
+        if suffix in AUDIO_EXTENSIONS:
+            return f'<audio controls src="{path}"></audio>'
+        if suffix in VIDEO_EXTENSIONS:
+            width_attr = f' width="{width}"' if width and width.isdigit() else ""
+            return f'<video controls src="{path}"{width_attr}></video>'
+        return None
+
     def process(self, content: str) -> str:
         """Преобразование Obsidian синтаксиса."""
 
@@ -125,6 +140,9 @@ class ObsidianPreprocessor(Preprocessor):
                 filename = filename.strip()
                 size_str = size_str.strip()
                 found_path = self._find_attachment(filename)
+                media_html = self._media_embed_html(found_path, size_str)
+                if media_html:
+                    return media_html
                 # Если size - число, трактуем как ширину
                 if size_str.isdigit():
                     return f'<img src="{found_path}" width="{size_str}" />'
@@ -133,6 +151,9 @@ class ObsidianPreprocessor(Preprocessor):
             else:
                 filename = raw.strip()
                 found_path = self._find_attachment(filename)
+                media_html = self._media_embed_html(found_path)
+                if media_html:
+                    return media_html
                 return f"![]({found_path})"
 
         content = re.sub(r"!\[\[(.*?)\]\]", replace_image, content)

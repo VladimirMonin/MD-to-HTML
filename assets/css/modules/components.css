@@ -59,10 +59,10 @@ pre.mermaid,
 .mermaid {
   background-color: #ffffff;
   padding: 1.5em;
-  border-radius: 8px;
-  border: 1px solid #e1e1e8;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
   text-align: center;
-  margin: 1.5em 0;
+  margin: 2em 0;
   white-space: pre;
   overflow-x: auto;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -70,8 +70,7 @@ pre.mermaid,
 
 pre.mermaid:hover,
 .mermaid:hover {
-  transform: scale(1.02);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
 }
 
 /* Цитаты */
@@ -145,6 +144,5 @@ img:not(.no-fullscreen) {
 }
 
 img:not(.no-fullscreen):hover {
-  transform: scale(1.02);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
 }

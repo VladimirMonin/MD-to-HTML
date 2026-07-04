@@ -1,0 +1,39 @@
+output_dir: ./build/vladimir-preview/timecodes-callouts-obsidian-qa-cycle1/copy
+template: web
+media_mode: copy
+formats:
+  - html
+input:
+  path: ./fixtures/visual/timecodes_callouts_real_obsidian/source/real_obsidian_visual_fixture.md
+  source_type: obsidian
+  files_folder: ./fixtures/visual/timecodes_callouts_real_obsidian/source
+metadata:
+  title: "Real Obsidian visual fixture"
+  author: "Hermes kanban t_a534339e"
+  lang: ru
+  brand_image: ""
+styles:
+  highlight_theme: github-dark
+  mermaid_theme: forest
+  mermaid_scale: 2
+  mermaid_format: webp
+  mermaid_quality: 85
+  mermaid_background: white
+fonts:
+  embed: true
+  dir: assets/fonts
+features:
+  toc: true
+  toc_depth: 3
+  breadcrumbs: true
+  code_copy: true
+  fullscreen: true
+  diff_blocks: true
+  callouts: true
+  mermaid: true
+  mermaid_panzoom: false
+  plyr: true
+advanced:
+  pandoc_extra_args: []
+  custom_css: []
+  custom_js: []

@@ -625,8 +625,66 @@ section.cite {
    ВЛОЖЕННЫЕ CALLOUTS
    ════════════════════════════════════════════════════════════════ */
 
+/* Stable Obsidian callout DOM contract emitted by CalloutsPreprocessor. */
+.callout-title,
+.callout-title > p {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  color: var(--callout-title-color);
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.callout-title {
+  margin-bottom: 0.65rem;
+}
+
+.callout-title > p {
+  flex-wrap: wrap;
+}
+
+.callout-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  min-width: 1.35rem;
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.callout-icon::before {
+  content: var(--callout-icon);
+}
+
+.callout-title-text {
+  color: var(--callout-title-color);
+}
+
+.callout-body > :first-child {
+  margin-top: 0;
+}
+
+.callout-body > :last-child {
+  margin-bottom: 0;
+}
+
+.callout-body p {
+  margin: 0.5rem 0;
+}
+
+.callout-body ul,
+.callout-body ol {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
 div.note > div.note,
 section.note > section.note,
+div.callout > div.callout,
 div.info > div.info,
 section.info > section.info,
 div.tip > div.tip,
@@ -728,5 +786,128 @@ section.danger > section.danger {
   div.cite,
   section.cite {
     --callout-title-color: #90a4ae;
+  }
+}
+
+/* Stable callout DOM contract emitted by CalloutsPreprocessor.
+   These overrides keep legacy type variables but make callouts read like calm
+   article annotations instead of bright test/admin fixtures. */
+.callout {
+  padding: 0;
+  margin: 1.6rem 0;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  border-left: 4px solid var(--callout-title-color, #64748b);
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+}
+
+.callout:hover {
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+}
+
+.callout-title {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.85rem 1rem;
+  background: var(--callout-bg, #f8fafc);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+  color: var(--callout-title-color, #475569);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.callout-icon {
+  display: inline-flex;
+  width: 1.35rem;
+  height: 1.35rem;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.callout-icon::before {
+  content: var(--callout-icon, "ℹ️");
+}
+
+.callout-title-text {
+  min-width: 0;
+}
+
+.callout-body {
+  padding: 0.95rem 1.05rem 1rem;
+  color: #334155;
+}
+
+.callout-body > :first-child {
+  margin-top: 0;
+}
+
+.callout-body > :last-child {
+  margin-bottom: 0;
+}
+
+.callout-body ul,
+.callout-body ol {
+  margin: 0.65rem 0 0.65rem 1.25rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  .callout {
+    border-color: rgba(148, 163, 184, 0.22);
+    background: #1e293b;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.25);
+  }
+
+  .callout-title {
+    border-bottom-color: rgba(148, 163, 184, 0.18);
+    background: rgba(15, 23, 42, 0.48);
+  }
+
+  .callout-icon {
+    background: rgba(15, 23, 42, 0.55);
+  }
+
+  .callout-body {
+    color: #e2e8f0;
+  }
+}
+
+/* Higher-specificity final pass: legacy selectors such as div.note are kept for
+   backwards compatibility and are more specific than .callout alone. */
+div.callout,
+section.callout {
+  padding: 0;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  border-left: 4px solid var(--callout-title-color, #64748b);
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+}
+
+div.callout > .callout-title,
+section.callout > .callout-title {
+  margin: 0;
+  padding: 0.85rem 1rem;
+  color: var(--callout-title-color, #475569);
+}
+
+div.callout > .callout-body,
+section.callout > .callout-body {
+  padding: 0.95rem 1.05rem 1rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  div.callout,
+  section.callout {
+    border-color: rgba(148, 163, 184, 0.22);
+    background: #1e293b;
   }
 }

@@ -1,0 +1,402 @@
+{
+  "html_files": [
+    "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/real_obsidian_visual_fixture.html",
+    "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/embed/real_obsidian_visual_fixture.html"
+  ],
+  "counts": {
+    "total": 43,
+    "data": 7,
+    "external": 4,
+    "local": 18,
+    "local_missing": 0
+  },
+  "references": [
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/real_obsidian_visual_fixture.html",
+      "tag": "link",
+      "attr": "href",
+      "value": "assets/css/book_style.css",
+      "kind": "local",
+      "resolved_path": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/assets/css/book_style.css",
+      "exists": true
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/real_obsidian_visual_fixture.html",
+      "tag": "link",
+      "attr": "href",
+      "value": "assets/css/modules/base.css",
+      "kind": "local",
+      "resolved_path": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/assets/css/modules/base.css",
+      "exists": true
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/real_obsidian_visual_fixture.html",
+      "tag": "link",
+      "attr": "href",
+      "value": "assets/css/modules/components.css",
+      "kind": "local",
+      "resolved_path": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/assets/css/modules/components.css",
+      "exists": true
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/real_obsidian_visual_fixture.html",
+      "tag": "link",
+      "attr": "href",
+      "value": "assets/css/modules/admonitions.css",
+      "kind": "local",
+      "resolved_path": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/assets/css/modules/admonitions.css",
+      "exists": true
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/real_obsidian_visual_fixture.html",
+      "tag": "link",
+      "attr": "href",
+      "value": "assets/css/modules/toc.css",
+      "kind": "local",
+      "resolved_path": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/assets/css/modules/toc.css",
+      "exists": true
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/real_obsidian_visual_fixture.html",
+      "tag": "link",
+      "attr": "href",
+      "value": "assets/css/modules/breadcrumbs.css",
+      "kind": "local",
+      "resolved_path": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/assets/css/modules/breadcrumbs.css",
+      "exists": true
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/real_obsidian_visual_fixture.html",
+      "tag": "link",
+      "attr": "href",
+      "value": "assets/css/modules/interactive.css",
+      "kind": "local",
+      "resolved_path": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/assets/css/modules/interactive.css",
+      "exists": true
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/real_obsidian_visual_fixture.html",
+      "tag": "link",
+      "attr": "href",
+      "value": "assets/css/modules/diff.css",
+      "kind": "local",
+      "resolved_path": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/assets/css/modules/diff.css",
+      "exists": true
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/real_obsidian_visual_fixture.html",
+      "tag": "link",
+      "attr": "href",
+      "value": "assets/css/modules/media.css",
+      "kind": "local",
+      "resolved_path": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/assets/css/modules/media.css",
+      "exists": true
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/real_obsidian_visual_fixture.html",
+      "tag": "link",
+      "attr": "href",
+      "value": "assets/css/modules/timecodes.css",
+      "kind": "local",
+      "resolved_path": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/assets/css/modules/timecodes.css",
+      "exists": true
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/real_obsidian_visual_fixture.html",
+      "tag": "link",
+      "attr": "href",
+      "value": "assets/css/modules/responsive.css",
+      "kind": "local",
+      "resolved_path": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/assets/css/modules/responsive.css",
+      "exists": true
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/real_obsidian_visual_fixture.html",
+      "tag": "link",
+      "attr": "href",
+      "value": "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css",
+      "kind": "external",
+      "resolved_path": null,
+      "exists": null
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/real_obsidian_visual_fixture.html",
+      "tag": "script",
+      "attr": "src",
+      "value": "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js",
+      "kind": "external",
+      "resolved_path": null,
+      "exists": null
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/real_obsidian_visual_fixture.html",
+      "tag": "link",
+      "attr": "href",
+      "value": "https://cdn.plyr.io/3.7.8/plyr.css",
+      "kind": "external",
+      "resolved_path": null,
+      "exists": null
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/real_obsidian_visual_fixture.html",
+      "tag": "script",
+      "attr": "src",
+      "value": "https://cdn.plyr.io/3.7.8/plyr.polyfilled.js",
+      "kind": "external",
+      "resolved_path": null,
+      "exists": null
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/real_obsidian_visual_fixture.html",
+      "tag": "a",
+      "attr": "href",
+      "value": "#real-obsidian-visual-fixture",
+      "kind": "anchor",
+      "resolved_path": null,
+      "exists": null
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/real_obsidian_visual_fixture.html",
+      "tag": "a",
+      "attr": "href",
+      "value": "#primary-obsidian-media-embeds",
+      "kind": "anchor",
+      "resolved_path": null,
+      "exists": null
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/real_obsidian_visual_fixture.html",
+      "tag": "a",
+      "attr": "href",
+      "value": "#audio-from-real-vault-media",
+      "kind": "anchor",
+      "resolved_path": null,
+      "exists": null
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/real_obsidian_visual_fixture.html",
+      "tag": "a",
+      "attr": "href",
+      "value": "#generated-local-video-via-obsidian-embed",
+      "kind": "anchor",
+      "resolved_path": null,
+      "exists": null
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/real_obsidian_visual_fixture.html",
+      "tag": "a",
+      "attr": "href",
+      "value": "#real-vault-screenshots",
+      "kind": "anchor",
+      "resolved_path": null,
+      "exists": null
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/real_obsidian_visual_fixture.html",
+      "tag": "a",
+      "attr": "href",
+      "value": "#mermaid-smoke",
+      "kind": "anchor",
+      "resolved_path": null,
+      "exists": null
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/real_obsidian_visual_fixture.html",
+      "tag": "a",
+      "attr": "href",
+      "value": "#raw-html-parity-negative-case",
+      "kind": "anchor",
+      "resolved_path": null,
+      "exists": null
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/real_obsidian_visual_fixture.html",
+      "tag": "img",
+      "attr": "src",
+      "value": "media/cover-01.webp",
+      "kind": "local",
+      "resolved_path": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/media/cover-01.webp",
+      "exists": true
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/real_obsidian_visual_fixture.html",
+      "tag": "audio",
+      "attr": "src",
+      "value": "media/lm-studio-01-audio.opus",
+      "kind": "local",
+      "resolved_path": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/media/lm-studio-01-audio.opus",
+      "exists": true
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/real_obsidian_visual_fixture.html",
+      "tag": "video",
+      "attr": "src",
+      "value": "media/local-demo-video.mp4",
+      "kind": "local",
+      "resolved_path": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/media/local-demo-video.mp4",
+      "exists": true
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/real_obsidian_visual_fixture.html",
+      "tag": "img",
+      "attr": "src",
+      "value": "media/lm-studio-01-1.webp",
+      "kind": "local",
+      "resolved_path": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/media/lm-studio-01-1.webp",
+      "exists": true
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/real_obsidian_visual_fixture.html",
+      "tag": "img",
+      "attr": "src",
+      "value": "media/diagram_1.webp",
+      "kind": "local",
+      "resolved_path": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/media/diagram_1.webp",
+      "exists": true
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/real_obsidian_visual_fixture.html",
+      "tag": "audio",
+      "attr": "src",
+      "value": "media/raw-local-tone.wav",
+      "kind": "local",
+      "resolved_path": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/media/raw-local-tone.wav",
+      "exists": true
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/real_obsidian_visual_fixture.html",
+      "tag": "video",
+      "attr": "src",
+      "value": "media/raw-local-video.mp4",
+      "kind": "local",
+      "resolved_path": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/copy/media/raw-local-video.mp4",
+      "exists": true
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/embed/real_obsidian_visual_fixture.html",
+      "tag": "a",
+      "attr": "href",
+      "value": "#real-obsidian-visual-fixture",
+      "kind": "anchor",
+      "resolved_path": null,
+      "exists": null
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/embed/real_obsidian_visual_fixture.html",
+      "tag": "a",
+      "attr": "href",
+      "value": "#primary-obsidian-media-embeds",
+      "kind": "anchor",
+      "resolved_path": null,
+      "exists": null
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/embed/real_obsidian_visual_fixture.html",
+      "tag": "a",
+      "attr": "href",
+      "value": "#audio-from-real-vault-media",
+      "kind": "anchor",
+      "resolved_path": null,
+      "exists": null
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/embed/real_obsidian_visual_fixture.html",
+      "tag": "a",
+      "attr": "href",
+      "value": "#generated-local-video-via-obsidian-embed",
+      "kind": "anchor",
+      "resolved_path": null,
+      "exists": null
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/embed/real_obsidian_visual_fixture.html",
+      "tag": "a",
+      "attr": "href",
+      "value": "#real-vault-screenshots",
+      "kind": "anchor",
+      "resolved_path": null,
+      "exists": null
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/embed/real_obsidian_visual_fixture.html",
+      "tag": "a",
+      "attr": "href",
+      "value": "#mermaid-smoke",
+      "kind": "anchor",
+      "resolved_path": null,
+      "exists": null
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/embed/real_obsidian_visual_fixture.html",
+      "tag": "a",
+      "attr": "href",
+      "value": "#raw-html-parity-negative-case",
+      "kind": "anchor",
+      "resolved_path": null,
+      "exists": null
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/embed/real_obsidian_visual_fixture.html",
+      "tag": "img",
+      "attr": "src",
+      "value": "data:image/webp;base64,<data elided: 292647 chars>",
+      "kind": "data",
+      "resolved_path": null,
+      "exists": null
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/embed/real_obsidian_visual_fixture.html",
+      "tag": "audio",
+      "attr": "src",
+      "value": "data:audio/opus;base64,<data elided: 17659047 chars>",
+      "kind": "data",
+      "resolved_path": null,
+      "exists": null
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/embed/real_obsidian_visual_fixture.html",
+      "tag": "video",
+      "attr": "src",
+      "value": "data:video/mp4;base64,<data elided: 2428094 chars>",
+      "kind": "data",
+      "resolved_path": null,
+      "exists": null
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/embed/real_obsidian_visual_fixture.html",
+      "tag": "img",
+      "attr": "src",
+      "value": "data:image/webp;base64,<data elided: 371519 chars>",
+      "kind": "data",
+      "resolved_path": null,
+      "exists": null
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/embed/real_obsidian_visual_fixture.html",
+      "tag": "img",
+      "attr": "src",
+      "value": "data:image/webp;base64,<data elided: 37951 chars>",
+      "kind": "data",
+      "resolved_path": null,
+      "exists": null
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/embed/real_obsidian_visual_fixture.html",
+      "tag": "audio",
+      "attr": "src",
+      "value": "data:audio/x-wav;base64,<data elided: 940928 chars>",
+      "kind": "data",
+      "resolved_path": null,
+      "exists": null
+    },
+    {
+      "html_file": "build/vladimir-preview/timecodes-callouts-obsidian-final-repair/embed/real_obsidian_visual_fixture.html",
+      "tag": "video",
+      "attr": "src",
+      "value": "data:video/mp4;base64,<data elided: 167234 chars>",
+      "kind": "data",
+      "resolved_path": null,
+      "exists": null
+    }
+  ]
+}

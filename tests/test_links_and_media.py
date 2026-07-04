@@ -210,6 +210,100 @@ class TestMediaModes:
         # Но если Pandoc не встроил - размеры могут быть похожи
         assert embed_size > 0 and copy_size > 0
 
+    def test_copy_mode_nested_output_rewrites_assets_and_raw_html_media(
+        self, temp_workspace
+    ):
+        """COPY: nested HTML должен ссылаться на assets/media относительно себя."""
+        test_file = temp_workspace / "raw_media.md"
+        test_file.write_text(
+            """# Raw media
+
+<audio controls src="tone.mp3"></audio>
+
+<video controls>
+  <source src='clip.mp4' type='video/mp4'>
+</video>
+""",
+            encoding="utf-8",
+        )
+        (temp_workspace / "tone.mp3").write_bytes(b"FAKE_MP3")
+        (temp_workspace / "clip.mp4").write_bytes(b"FAKE_MP4")
+
+        config = ConverterConfig()
+        config.formats = ["html"]
+        config.media_mode = "copy"
+        config.output_dir = str(temp_workspace / "build")
+        config.metadata.title = "Nested Copy"
+        config.features.mermaid = False
+
+        converter = Converter(config)
+        results = converter.convert(str(test_file), "nested/copy_result")
+
+        html_file = results[0]
+        html = html_file.read_text(encoding="utf-8")
+
+        assert html_file == Path(config.output_dir) / "nested" / "copy_result.html"
+        assert (Path(config.output_dir) / "assets" / "css" / "modules" / "base.css").exists()
+        assert (Path(config.output_dir) / "media" / "tone.mp3").exists()
+        assert (Path(config.output_dir) / "media" / "clip.mp4").exists()
+        assert 'href="../assets/css/modules/base.css"' in html
+        assert 'href="../assets/css/book_style.css"' in html
+        assert 'src="../media/tone.mp3"' in html
+        assert "src='../media/clip.mp4'" in html or 'src="../media/clip.mp4"' in html
+
+    def test_embed_mode_raw_html_audio_is_single_file(self, temp_workspace):
+        """EMBED: raw HTML audio должен стать data: URI, а не sibling-файлом."""
+        test_file = temp_workspace / "raw_audio.md"
+        test_file.write_text(
+            '# Raw audio\n\n<audio controls src="tone.mp3"></audio>\n',
+            encoding="utf-8",
+        )
+        (temp_workspace / "tone.mp3").write_bytes(b"FAKE_MP3")
+
+        config = ConverterConfig()
+        config.formats = ["html"]
+        config.media_mode = "embed"
+        config.output_dir = str(temp_workspace / "build_embed_raw")
+        config.metadata.title = "Embed Raw Audio"
+        config.features.mermaid = False
+
+        converter = Converter(config)
+        results = converter.convert(str(test_file), "embed_raw")
+
+        html = results[0].read_text(encoding="utf-8")
+        assert not (Path(config.output_dir) / "media").exists()
+        assert "data:" in html
+        assert "tone.mp3" not in html
+
+    def test_obsidian_audio_video_embeds_are_packaged(self, temp_workspace):
+        """Obsidian ![[audio/video]] должен стать media player и попасть в copy media."""
+        test_file = temp_workspace / "obsidian_media.md"
+        test_file.write_text(
+            "# Obsidian media\n\n![[tone.opus]]\n\n![[clip.mp4|640]]\n",
+            encoding="utf-8",
+        )
+        (temp_workspace / "tone.opus").write_bytes(b"FAKE_OPUS")
+        (temp_workspace / "clip.mp4").write_bytes(b"FAKE_MP4")
+
+        config = ConverterConfig()
+        config.formats = ["html"]
+        config.media_mode = "copy"
+        config.output_dir = str(temp_workspace / "build_obsidian")
+        config.input.source_type = "obsidian"
+        config.metadata.title = "Obsidian Media"
+        config.features.mermaid = False
+
+        converter = Converter(config)
+        results = converter.convert(str(test_file), "obsidian_result")
+
+        html = results[0].read_text(encoding="utf-8")
+        assert (Path(config.output_dir) / "media" / "tone.opus").exists()
+        assert (Path(config.output_dir) / "media" / "clip.mp4").exists()
+        assert '<audio class="plyr-audio"' in html
+        assert '<video class="plyr-video"' in html
+        assert 'src="media/tone.opus"' in html
+        assert 'src="media/clip.mp4"' in html
+
 
 class TestImageSearch:
     """Тесты поиска изображений в разных папках."""

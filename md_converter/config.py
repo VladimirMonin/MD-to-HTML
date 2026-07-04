@@ -59,6 +59,7 @@ class FeaturesConfig:
     mermaid: bool = True
     mermaid_panzoom: bool = False
     plyr: bool = True
+    timecodes: bool = True
 
 
 @dataclass

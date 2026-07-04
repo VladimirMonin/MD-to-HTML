@@ -1,12 +1,13 @@
-"""Препроцессор для Obsidian Callouts → Pandoc Admonitions."""
+"""Препроцессор для Obsidian Callouts → stable Pandoc callout DOM."""
 
+import html
 import re
 from .base import Preprocessor
 
 
 class CalloutsPreprocessor(Preprocessor):
     """
-    Преобразует Obsidian Callouts в Pandoc Divs.
+    Преобразует Obsidian Callouts в Pandoc Divs со стабильным DOM-контрактом.
 
     Поддерживаемые типы (Obsidian standard):
     - note, abstract/summary/tldr, info, todo, tip/hint/important
@@ -14,10 +15,15 @@ class CalloutsPreprocessor(Preprocessor):
     - failure/fail/missing, danger/error, bug, example, quote/cite
 
     Синтаксис:
-    > [!NOTE] Title  → ::: note
-    > Content         Title
-    >                  Content
-                       :::
+    > [!NOTE] Title  → ::: {.callout .callout-note .note data-callout="note"}
+    > Content            ::: {.callout-title}
+    >                    <span class="callout-icon" aria-hidden="true"></span>
+    >                    <span class="callout-title-text">Title</span>
+    >                    :::
+    >                    ::: {.callout-body}
+    >                    Content
+    >                    :::
+    >                    :::
     """
 
     # Все поддерживаемые типы Obsidian callouts
@@ -70,8 +76,13 @@ class CalloutsPreprocessor(Preprocessor):
                 if callout_type not in self.CALLOUT_TYPES:
                     callout_type = "note"
 
-                # Начало div блока
-                result.append(f"\n::: {callout_type}")
+                display_title = title or callout_type.capitalize()
+
+                # Начало div блока. Сохраняем старый type-class (note/warning/...)
+                # для существующих CSS-переменных и добавляем стабильный contract.
+                result.append(
+                    f'\n::: {{.callout .callout-{callout_type} .{callout_type} data-callout="{callout_type}"}}'
+                )
 
                 # Собираем содержимое (все строки начинающиеся с >)
                 i += 1
@@ -89,6 +100,7 @@ class CalloutsPreprocessor(Preprocessor):
                         if bold_match:
                             # Это заголовок, используем его
                             title = bold_match.group(1)
+                            display_title = title
                             first_line = False
                             i += 1
                             continue
@@ -97,12 +109,22 @@ class CalloutsPreprocessor(Preprocessor):
                     content_lines.append(clean_line)
                     i += 1
 
-                # Добавляем заголовок если есть
-                if title:
-                    result.append(f"**{title}**\n")
+                # Заголовок contract-нодой. Текст экранируем, тело ниже оставляем
+                # Markdown-ом, чтобы Pandoc продолжал рендерить списки/bold/code.
+                result.append("::: {.callout-title}")
+                result.append('<span class="callout-icon" aria-hidden="true"></span>')
+                result.append(
+                    f'<span class="callout-title-text">{html.escape(display_title)}</span>'
+                )
+                result.append(":::")
+                result.append("")
+
+                result.append("::: {.callout-body}")
 
                 # Добавляем содержимое
                 result.extend(content_lines)
+
+                result.append(":::")
 
                 # Закрываем div
                 result.append(":::")

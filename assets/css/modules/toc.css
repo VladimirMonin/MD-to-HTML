@@ -1,15 +1,12 @@
 /* TABLE OF CONTENTS */
 
 #TOC {
-  background: linear-gradient(
-    135deg,
-    rgba(102, 126, 234, 0.95) 0%,
-    rgba(118, 75, 162, 0.95) 100%
-  );
-  padding: 2em;
+  background: #ffffff;
+  padding: 1.35em;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
-  margin: 2em 0;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  margin: 1.6em 0;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
 }
 
 #TOC ul {
@@ -27,29 +24,31 @@
 }
 
 #TOC a {
-  color: #ffffff;
+  color: #334155;
   text-decoration: none;
   font-weight: 500;
-  transition: all 0.3s ease;
+  transition: color 0.16s ease, background 0.16s ease;
   display: inline-block;
-  padding: 0.3em 0;
+  padding: 0.18em 0.25em;
+  border-radius: 6px;
 }
 
 #TOC a:hover {
-  color: #ffd700;
-  transform: translateX(5px);
+  color: #0f172a;
+  background: #f1f5f9;
   text-decoration: none;
 }
 
 nav#TOC::before {
-  content: "📚 Содержание";
+  content: "Содержание";
   display: block;
-  font-size: 1.8em;
+  font-size: 0.82em;
   font-weight: bold;
-  color: #ffffff;
-  margin-bottom: 1em;
-  text-align: center;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  color: #64748b;
+  margin-bottom: 0.9em;
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 #TOC ul ul {

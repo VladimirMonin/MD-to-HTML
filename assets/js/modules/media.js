@@ -61,7 +61,7 @@ function initVideoPlayer() {
   // Инициализация для видео
   if (videoElements.length) {
     videoElements.forEach((video) => {
-      new Plyr(video, {
+      const player = new Plyr(video, {
         controls: [
           "play-large",
           "play",
@@ -79,6 +79,7 @@ function initVideoPlayer() {
           options: [0.5, 0.75, 1, 1.25, 1.5, 2],
         },
       });
+      video.__mdToHtmlPlyr = player;
     });
     console.log(`Инициализировано ${videoElements.length} видео плееров`);
   }
@@ -86,7 +87,7 @@ function initVideoPlayer() {
   // Инициализация для аудио
   if (audioElements.length) {
     audioElements.forEach((audio) => {
-      new Plyr(audio, {
+      const player = new Plyr(audio, {
         controls: [
           "play",
           "progress",
@@ -102,6 +103,7 @@ function initVideoPlayer() {
           options: [0.5, 0.75, 1, 1.25, 1.5, 2],
         },
       });
+      audio.__mdToHtmlPlyr = player;
     });
     console.log(`Инициализировано ${audioElements.length} аудио плееров`);
   }

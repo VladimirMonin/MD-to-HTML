@@ -39,7 +39,10 @@ def test_callouts_preprocessor():
     test_md = "> [!NOTE] Заголовок\n> Текст"
     result = prep.process(test_md)
 
-    assert "::: NOTE" in result or "::: note" in result
+    assert '::: {.callout .callout-note .note data-callout="note"}' in result
+    assert "::: {.callout-title}" in result
+    assert 'class="callout-icon"' in result
+    assert "::: {.callout-body}" in result
 
 
 def test_mermaid_preprocessor_html():

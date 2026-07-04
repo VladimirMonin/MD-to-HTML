@@ -28,12 +28,13 @@ class TemplateProcessor:
         self.media_mode = media_mode
         self.mermaid_panzoom_enabled = bool(features.mermaid_panzoom) and media_mode == "copy"
 
-    def build_header(self, format_type: str) -> str:
+    def build_header(self, format_type: str, asset_base: str = "assets") -> str:
         """
         Генерирует HTML header для Pandoc --include-in-header.
 
         Args:
             format_type: "html" или "epub"
+            asset_base: путь к папке assets относительно output HTML
 
         Returns:
             HTML код для вставки в <head>
@@ -60,6 +61,8 @@ class TemplateProcessor:
             css_files.append("assets/css/modules/diff.css")
         if self.features.plyr:
             css_files.append("assets/css/modules/media.css")
+        if self.features.timecodes:
+            css_files.append("assets/css/modules/timecodes.css")
 
         css_files.append("assets/css/modules/responsive.css")
 
@@ -69,7 +72,10 @@ class TemplateProcessor:
         else:
             # Режим copy - ссылки на файлы
             css_html = "\n".join(
-                [f'<link rel="stylesheet" href="{css}">' for css in css_files]
+                [
+                    f'<link rel="stylesheet" href="{self._asset_href(css, asset_base)}">'
+                    for css in css_files
+                ]
             )
 
         # Собираем JS
@@ -124,15 +130,30 @@ document.addEventListener('DOMContentLoaded', function() {{
             settings: ['quality', 'speed'],
             speed: {{ selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 2] }}
         }});
+        players.forEach(function(player) {{
+            if (player && player.media) player.media.__mdToHtmlPlyr = player;
+        }});
         console.log('🎬 Initialized ' + players.length + ' Plyr instances');
     }} else {{
         console.warn('⚠️ Plyr library not loaded');
     }}
+
+    // Инициализация статических таймкодов после Plyr, но без жёсткой зависимости от него
+    if (typeof initTimecodes === 'function') initTimecodes();
     
     console.log('✅ All features initialized');
 }});
 </script>
 """
+
+    @staticmethod
+    def _asset_href(asset_path: str, asset_base: str) -> str:
+        """Переписать package-relative assets/... в output-relative href."""
+        if asset_path == "assets":
+            return asset_base
+        if asset_path.startswith("assets/"):
+            return f"{asset_base}/{asset_path[len('assets/') :]}"
+        return asset_path
 
     def _get_inline_css(self, css_files: list[str]) -> str:
         """
@@ -177,6 +198,8 @@ document.addEventListener('DOMContentLoaded', function() {{
             js_modules.append("assets/js/modules/smoothScroll.js")
         if self.features.plyr:
             js_modules.append("assets/js/modules/media.js")
+        if self.features.timecodes:
+            js_modules.append("assets/js/modules/timecodes.js")
         if self.mermaid_panzoom_enabled:
             js_modules.append("assets/js/modules/mermaidPanZoom.js")
 

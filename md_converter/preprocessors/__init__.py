@@ -6,6 +6,7 @@ from .callouts import CalloutsPreprocessor
 from .mermaid_preprocessor import MermaidPreprocessor
 from .mermaid_autofix import MermaidAutoFixPreprocessor
 from .diff import DiffPreprocessor
+from .timecodes import TimecodesPreprocessor
 
 __all__ = [
     "Preprocessor",
@@ -14,4 +15,5 @@ __all__ = [
     "MermaidPreprocessor",
     "MermaidAutoFixPreprocessor",
     "DiffPreprocessor",
+    "TimecodesPreprocessor",
 ]

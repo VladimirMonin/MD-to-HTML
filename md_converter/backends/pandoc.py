@@ -50,6 +50,7 @@ class PandocBackend:
         # Формируем команду Pandoc
         output_ext = "epub" if format_type == "epub" else "html"
         output_file = output_dir / f"{output_name}.{output_ext}"
+        output_file.parent.mkdir(parents=True, exist_ok=True)
 
         cmd = [
             "pandoc",
@@ -76,7 +77,14 @@ class PandocBackend:
         # Это важно для MCP/GUI-запуска и одинаково работает на Linux/Windows.
         css_path = Path(__file__).resolve().parents[2] / "assets" / "css" / "book_style.css"
         if css_path.exists():
-            cmd.extend(["--css", str(css_path)])
+            if format_type == "html" and self.config.media_mode == "copy":
+                copied_css = output_dir / "assets" / "css" / "book_style.css"
+                css_arg = os.path.relpath(copied_css, start=output_file.parent).replace(
+                    os.sep, "/"
+                )
+            else:
+                css_arg = str(css_path)
+            cmd.extend(["--css", css_arg])
         else:
             print(f"⚠️ CSS файл не найден: {css_path}", file=sys.stderr)
 

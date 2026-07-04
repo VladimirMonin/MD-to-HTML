@@ -6,6 +6,7 @@ import shutil
 import sys
 from pathlib import Path
 from typing import Match, Tuple
+from urllib.parse import unquote, urlparse
 
 
 class MediaProcessor:
@@ -28,7 +29,9 @@ class MediaProcessor:
         self.files_folder = Path(files_folder) if files_folder else None
         self.output_dir = Path(output_dir)
 
-    def process(self, content: str, input_path: Path) -> Tuple[str, dict]:
+    def process(
+        self, content: str, input_path: Path, output_name: str | None = None
+    ) -> Tuple[str, dict]:
         """
         Обработать медиа в Markdown.
 
@@ -36,11 +39,7 @@ class MediaProcessor:
             (обработанный_контент, media_map)
         """
         media_map = {}
-        # Стандартный Markdown: ![alt](path)
-        media_paths = re.findall(r"!\[.*?\]\((?!http)(.*?)\)", content)
-        # HTML img теги (от ObsidianPreprocessor с |size): <img src="path" ...>
-        img_tag_paths = re.findall(r'<img\s+src="(?!http)(.*?)"', content)
-        media_paths.extend(img_tag_paths)
+        media_paths = self._extract_media_paths(content)
 
         if not media_paths:
             print("  ℹ️ Медиафайлы не найдены в MD", file=sys.stderr)
@@ -59,9 +58,6 @@ class MediaProcessor:
         for media_path in media_paths:
             if not media_path:
                 continue
-
-            # URL-декодирование пути (для "Pasted%20image%20...")
-            from urllib.parse import unquote
 
             decoded_path = unquote(media_path)
 
@@ -123,14 +119,18 @@ class MediaProcessor:
                     # Пропускаем если файл уже в целевой директории (созданный MermaidPreprocessor)
                     if abs_path.resolve() == target_path.resolve():
                         print(f"  📎 {abs_path.name} (уже в media/)", file=sys.stderr)
-                        new_path = f"media/{abs_path.name}"
+                        new_path = self._relative_output_path(
+                            target_path, output_name
+                        )
                         content = self._replace_media_path(
                             content, media_path, new_path
                         )
                         media_map[media_path] = new_path
                     else:
                         shutil.copy2(abs_path, target_path)
-                        new_path = f"media/{abs_path.name}"
+                        new_path = self._relative_output_path(
+                            target_path, output_name
+                        )
                         content = self._replace_media_path(
                             content, media_path, new_path
                         )
@@ -166,8 +166,52 @@ class MediaProcessor:
         return content, media_map
 
     @staticmethod
+    def _is_local_media_path(path: str) -> bool:
+        """True для локальных ресурсов, которые нужно копировать/встраивать."""
+        if not path:
+            return False
+        decoded = unquote(path).strip()
+        if decoded.startswith(("#", "data:")):
+            return False
+        parsed = urlparse(decoded)
+        if parsed.scheme and parsed.scheme.lower() != "file":
+            return False
+        return True
+
+    @classmethod
+    def _extract_media_paths(cls, content: str) -> list[str]:
+        """Найти Markdown media и raw HTML img/audio/video/source src."""
+        media_paths: list[str] = []
+
+        # Стандартный Markdown media: ![alt](path). Обычные ссылки не трогаем.
+        for path in re.findall(r"!\[[^\]]*\]\((.*?)\)", content):
+            if cls._is_local_media_path(path):
+                media_paths.append(path)
+
+        # Raw HTML media tags. Визуальные fixture часто вставляют audio/video
+        # напрямую, поэтому их нужно валидировать и упаковывать как изображения.
+        html_src_pattern = re.compile(
+            r"<(?:img|audio|video|source)\b[^>]*\bsrc\s*=\s*(['\"])(.*?)\1",
+            re.IGNORECASE | re.DOTALL,
+        )
+        for _quote, path in html_src_pattern.findall(content):
+            if cls._is_local_media_path(path):
+                media_paths.append(path)
+
+        return media_paths
+
+    def _relative_output_path(self, target_path: Path, output_name: str | None) -> str:
+        """Путь к скопированному ресурсу относительно фактического HTML файла."""
+        if output_name:
+            html_parent = (self.output_dir / f"{output_name}.html").parent
+        else:
+            html_parent = self.output_dir
+        rel_path = os.path.relpath(target_path, start=html_parent)
+        return rel_path.replace(os.sep, "/")
+
+    @staticmethod
     def _replace_media_path(content: str, old_path: str, new_path: str) -> str:
-        """Заменить путь к медиа файлу в обоих форматах: markdown и HTML img."""
+        """Заменить путь к медиа файлу в Markdown и HTML media src."""
         escaped = re.escape(old_path)
         # 1. Стандартный Markdown: ![alt](old_path) → ![alt](new_path)
         def replace_markdown_media(match: Match[str]) -> str:
@@ -178,14 +222,17 @@ class MediaProcessor:
             replace_markdown_media,
             content,
         )
-        # 2. HTML img тег: <img src="old_path" → <img src="new_path"
+        # 2. Raw HTML media src: <img/audio/video/source src="old_path">
         def replace_html_media(match: Match[str]) -> str:
-            return match.group(1) + new_path + '"'
+            return match.group(1) + match.group(2) + new_path + match.group(2)
 
         content = re.sub(
-            r'(<img\s+src=")' + escaped + r'"',
+            r"(<(?:img|audio|video|source)\b[^>]*\bsrc\s*=\s*)(['\"])"
+            + escaped
+            + r"\2",
             replace_html_media,
             content,
+            flags=re.IGNORECASE | re.DOTALL,
         )
         return content
 

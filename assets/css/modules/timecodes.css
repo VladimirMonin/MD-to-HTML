@@ -2,13 +2,14 @@
 
 :root {
   --media-timecode-component-width: 1000px;
-  --media-timecode-border: #d9e2ec;
+  --media-timecode-border: #c4d0dc;
   --media-timecode-surface: #ffffff;
   --media-timecode-muted: #fbfcfd;
   --media-timecode-text: #334155;
   --media-timecode-soft-text: #64748b;
-  --media-timecode-accent: #64748b;
-  --media-timecode-active: #eef3f7;
+  --media-timecode-accent: #3498db;
+  --media-timecode-active: rgba(52, 152, 219, 0.10);
+  --media-timecode-divider: #cdd6e0;
 }
 
 .timecode-panel {
@@ -25,9 +26,9 @@
 figure.media-player + .timecode-panel,
 .plyr + .timecode-panel {
   margin-top: 0;
-  border-top: 0;
+  border-top: 1px solid var(--media-timecode-border);
   border-radius: 0 0 16px 16px;
-  background: #fbfcfd;
+  background: #ffffff;
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.055);
 }
 
@@ -37,11 +38,11 @@ figure.media-player + .timecode-panel,
   justify-content: space-between;
   margin: 0;
   padding: 0.95rem 1rem 0.72rem;
-  border-bottom: 1px solid #e8eef5;
+  border-bottom: 1px solid var(--media-timecode-divider);
   background: #f8fafc;
   color: var(--media-timecode-soft-text);
-  font-size: 0.78rem;
-  font-weight: 750;
+  font-size: 0.85em;
+  font-weight: 700;
   letter-spacing: 0.08em;
   line-height: 1.2;
 }
@@ -60,7 +61,7 @@ figure.media-player + .timecode-panel,
   margin: 0;
   padding: 0.78rem 1rem;
   border: 0;
-  border-top: 1px solid #edf2f7;
+  border-top: 1px solid var(--media-timecode-divider);
   border-radius: 0;
   background: #ffffff;
   color: var(--media-timecode-text);
@@ -71,31 +72,31 @@ figure.media-player + .timecode-panel,
 
 .timecode-button:hover,
 .timecode-button:focus-visible {
-  background: #f4f8fb;
-  box-shadow: inset 4px 0 0 rgba(100, 116, 139, 0.42);
+  background: rgba(52, 152, 219, 0.06);
+  box-shadow: inset 4px 0 0 rgba(52, 152, 219, 0.50);
   outline: none;
 }
 
 .timecode-button.is-active,
 .timecode-button[aria-current="true"] {
   background: var(--media-timecode-active);
-  box-shadow: inset 4px 0 0 rgba(71, 85, 105, 0.86);
+  box-shadow: inset 4px 0 0 rgba(52, 152, 219, 0.70);
 }
 
 .timecode-time {
   flex: 0 0 auto;
   padding: 0.18rem 0.54rem;
   border-radius: 999px;
-  background: #e2e8f0;
+  background: #cbd5e1;
   color: #334155;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 0.84em;
-  font-weight: 650;
+  font-size: 0.80em;
+  font-weight: 600;
 }
 
 .timecode-button.is-active .timecode-time,
 .timecode-button[aria-current="true"] .timecode-time {
-  background: #d8e1ea;
+  background: rgba(52, 152, 219, 0.15);
 }
 
 .timecode-label {
@@ -135,8 +136,9 @@ figure.media-player + .timecode-panel,
     --media-timecode-muted: rgba(15, 23, 42, 0.42);
     --media-timecode-text: #e2e8f0;
     --media-timecode-soft-text: #cbd5e1;
-    --media-timecode-accent: #94a3b8;
-    --media-timecode-active: rgba(71, 85, 105, 0.54);
+    --media-timecode-accent: #3498db;
+    --media-timecode-active: rgba(52, 152, 219, 0.15);
+    --media-timecode-divider: rgba(148, 163, 184, 0.22);
   }
 
   .timecode-panel {
@@ -152,18 +154,18 @@ figure.media-player + .timecode-panel,
   }
 
   .timecode-panel-title {
-    border-bottom-color: rgba(148, 163, 184, 0.22);
+    border-bottom-color: var(--media-timecode-divider);
     background: rgba(15, 23, 42, 0.32);
   }
 
   .timecode-button {
-    border-top-color: rgba(148, 163, 184, 0.24);
+    border-top-color: var(--media-timecode-divider);
     background: var(--media-timecode-muted);
   }
 
   .timecode-button:hover,
   .timecode-button:focus-visible {
-    background: rgba(30, 41, 59, 0.95);
+    background: rgba(52, 152, 219, 0.12);
   }
 
   .timecode-button.is-active,
